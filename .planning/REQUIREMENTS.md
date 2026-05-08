@@ -235,8 +235,8 @@ Phase mappings derived from `.planning/research/SUMMARY.md` Recommended Phase Or
 | FOUN-10 | Phase 4 | Pending |
 
 **Coverage:**
-- v1 requirements: 75 total
-- Mapped to phases: 75
+- v1 requirements: 76 total
+- Mapped to phases: 76
 - Unmapped: 0 ✓
 
 ---
