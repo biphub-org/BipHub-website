@@ -1,0 +1,23 @@
+**C. Verify `lib/countries.ts` exports `getCountryFlagEmoji(iso2)`.**
+
+If Plan 01-02 didn't add it, add it as a small helper at the bottom of `lib/countries.ts`:
+
+```typescript
+/**
+ * ISO alpha-2 -> regional indicator emoji pair (works in modern OS-rendered fonts).
+ * Returns the 2-char regional indicator combo; renders as a flag in browsers + Satori.
+ */
+export function getCountryFlagEmoji(iso2: string): string {
+  if (!iso2 || iso2.length !== 2) return ''
+  const code = iso2.toUpperCase()
+  const A = 0x1f1e6
+  return String.fromCodePoint(
+    A + code.charCodeAt(0) - 65,
+    A + code.charCodeAt(1) - 65,
+  )
+}
+```
+
+(If `getCountryFlagEmoji` already exists in `lib/countries.ts` from Plan 01-02, skip this step.)
+
+**D. Verify the OG image is auto-discovered by Next.js metadata.**

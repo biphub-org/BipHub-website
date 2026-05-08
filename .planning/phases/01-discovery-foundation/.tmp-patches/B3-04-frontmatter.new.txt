@@ -1,0 +1,10 @@
+files_modified:
+  - app/globals.css
+  - app/(public)/layout.tsx
+  - components/home/StickyNav.tsx
+  - components/home/Footer.tsx
+  - components/home/LogoMark.tsx
+  - components/ui/Button.tsx
+  - components/ui/sheet.tsx
+  - lib/utils/cn.ts
+  - package.json

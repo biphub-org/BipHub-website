@@ -1,0 +1,7 @@
+  truths:
+    - "Every page rendered under (public) shows a sticky 68px translucent nav with the BipHub LogoMark, and the Footer with the mandatory non-affiliation disclaimer"
+    - "The LogoMark renders exactly 11 stars in a ring (NEVER 12 — STATE.md blocker, PITFALLS Pitfall 8, UI-SPEC line 122)"
+    - "Footer disclaimer text 'Independent project — not affiliated with the European Commission' appears in components/home/Footer.tsx source, with em-dash and no period (UI-SPEC line 239)"
+    - "app/globals.css declares the full EU palette + 6 choropleth tier colors + breakpoint overrides + radii + shadows in a single @theme inline block per UI-SPEC lines 152-184"
+    - "Tailwind v4 md: breakpoint resolves to 60rem (960px), lg: to 64rem (1024px), per UI-SPEC line 462-468"
+    - "All 5 primary palette tokens and 6 choropleth tiers are declared in @theme inline"

@@ -1,0 +1,5 @@
+**C. Confirm `getCountryFlagEmoji` is owned by Plan 01-02.**
+
+The helper now lives in `lib/countries.ts` as a canonical export from Plan 01-02 (see 01-02 `<interfaces>` block). If `grep "export function getCountryFlagEmoji" lib/countries.ts` returns 0 matches, Plan 01-02 has regressed — STOP and fix it there, do not add the helper here. Task 1 of this plan imports the function from `@/lib/countries` and Task 2's `opengraph-image.tsx` does the same; both rely on the upstream contract.
+
+**D. Verify the OG image is auto-discovered by Next.js metadata.**

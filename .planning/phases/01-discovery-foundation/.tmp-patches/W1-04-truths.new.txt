@@ -1,0 +1,8 @@
+  truths:
+    - "Every page rendered under (public) shows a sticky 68px translucent nav with the BipHub LogoMark, and the Footer with the mandatory non-affiliation disclaimer"
+    - "The LogoMark renders exactly 11 stars in a ring (NEVER 12 — STATE.md blocker, PITFALLS Pitfall 8, UI-SPEC line 122)"
+    - "Footer disclaimer text 'Independent project — not affiliated with the European Commission' appears verbatim on every page in the (public) route group, with em-dash and no period (UI-SPEC line 239)"
+    - "At a 959px viewport the desktop nav links are hidden and the mobile hamburger is visible; at 960px+ the desktop links appear and the hamburger hides (verifies the md=60rem breakpoint override from UI-SPEC line 462-468)"
+    - "At a 1023px viewport the BIP detail layout is single-column; at 1024px+ the right sidebar layout becomes two-column with sticky behavior (verifies the lg=64rem breakpoint override; the 2-col layout itself ships in 01-07 but the breakpoint is set in 01-04 globals.css and is testable here via DevTools media-query inspection)"
+    - "Inter loads from /_next/static/media — no requests to fonts.googleapis.com appear in the network tab when /, /bips, or /bip/[slug] is loaded (FOUN-04 in user-observable form)"
+    - "The map intensity tier classes (`fill-bip-tier-0` through `fill-bip-tier-5`) compile into the production CSS bundle and are verifiable via grep on `.next/static/css/*.css` after `npm run build` (closes PITFALLS Pitfall 13 at the build-output layer; downstream EuropeMap in 01-05 depends on this)"

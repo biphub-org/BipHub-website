@@ -1,0 +1,1 @@
+    - `lib/countries.ts` exports `getCountryFlagEmoji(iso2)` (verified by grep on file)

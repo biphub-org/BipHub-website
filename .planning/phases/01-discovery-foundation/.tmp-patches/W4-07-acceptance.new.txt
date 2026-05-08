@@ -1,0 +1,1 @@
+    - `lib/countries.ts` exports `getCountryFlagEmoji(code)` (owned by Plan 01-02; verified by `grep "export function getCountryFlagEmoji" lib/countries.ts` returning 1 match. If missing, Plan 01-02 has regressed — fix there, not here.)

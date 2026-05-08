@@ -1,0 +1,2 @@
+  <action>
+**A. `components/bip/BipFiltersSidebar.tsx`** — desktop ≥1024px sidebar. Seven collapsible filter groups inside shadcn Accordion. Country open by default; rest collapsed.

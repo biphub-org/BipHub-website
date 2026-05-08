@@ -1,0 +1,4 @@
+  <action>
+**Scope note (W3 advisory — not a structural split):** Task 3 co-locates 7 filter widgets across 2 client components (`BipFiltersSidebar`, `BipFiltersDrawer`). Effective new-file count after shadcn primitive emissions is ~12. Executor should mentally checkpoint between widgets to avoid context drift; if individual widget implementation begins to skim, stop and re-read the relevant UI-SPEC section before continuing. No structural split required at this scale.
+
+**A. `components/bip/BipFiltersSidebar.tsx`** — desktop ≥1024px sidebar. Seven collapsible filter groups inside shadcn Accordion. Country open by default; rest collapsed.

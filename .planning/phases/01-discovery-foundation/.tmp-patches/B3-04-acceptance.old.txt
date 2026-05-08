@@ -1,0 +1,3 @@
+    - `npm run build` exits 0
+    - `npm run dev` and `curl -s http://localhost:3000 | grep -c "Independent project"` returns ≥1
+    - `grep -rE "(\\b12\\b.*star|star.*\\b12\\b|length:[[:space:]]*12)" components/home/LogoMark.tsx` returns 0 matches (the EU 12-star prohibition)

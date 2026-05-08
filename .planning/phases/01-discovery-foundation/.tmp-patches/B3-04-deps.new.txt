@@ -1,0 +1,1 @@
+1. **Add deps:** `npm install clsx tailwind-merge` and `npm install @tabler/icons-react` (per UI-SPEC line 25 — Tabler is the locked icon library; Plan 01-05/06/07 will use it). Also install the shadcn Sheet primitive that Task 2 requires for the mobile navigation menu: `npx shadcn@latest add sheet`. Verify it landed at `components/ui/sheet.tsx`.
