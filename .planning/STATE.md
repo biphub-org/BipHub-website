@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 1 plans verified (8 plans, 5 waves) — ready for `/gsd-execute-phase 1`
-last_updated: "2026-05-08T23:40:17.962Z"
-last_activity: 2026-05-08 -- Phase 1 execution started
+stopped_at: Plan 01-01 Tasks 1+2 complete — awaiting Task 3 human-verify (Docker Desktop must be started)
+last_updated: "2026-05-09T00:00:00Z"
+last_activity: 2026-05-09 -- Plan 01-01 bootstrap executed; Tasks 1+2 committed; Task 3 checkpoint pending
 progress:
   total_phases: 4
   completed_phases: 0
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-05-08)
 ## Current Position
 
 Phase: 1 (Discovery Foundation) — EXECUTING
-Plan: 1 of 8
+Plan: 1 of 8 — CHECKPOINT (Task 3 awaiting Docker + human verify)
 Status: Executing Phase 1
-Last activity: 2026-05-08 -- Phase 1 execution started
+Last activity: 2026-05-09 -- Plan 01-01 Tasks 1+2 committed; awaiting Task 3 human verification
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -61,6 +61,11 @@ Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
 - Init: Use `motion` (not `framer-motion`), Zod v3 (not v4), `@vnedyalk0v/react19-simple-maps` (not original), Next.js 15.5.x LTS (not 16)
+- Plan 01-01: @supabase/ssr pinned to exact 0.5.2 (no ^ prefix) per STATE.md blocker; `slugify` pinned exact 1.6.9
+- Plan 01-01: `CookieOptions` type imported from @supabase/ssr to satisfy strict TS in setAll signature
+- Plan 01-01: `eslint.config.mjs` flat config required for ESLint 9 + Next.js 15.5 (`next lint` needs flat config)
+- Plan 01-01: shadcn@latest init requires Tailwind v4 pre-installed via npm before running init
+- Plan 01-01: EC disclaimer added to canary homepage per CLAUDE.md requirement (every page must show disclaimer)
 - Init: GeoJSON served from `/public` at runtime via `dynamic()` — never imported into JS bundle
 - Init: `getClaims()` everywhere in server code — never `getSession()`; `await cookies()` in all client factories
 - Init: Seed-first Phase 1 — 20 SQL-seeded approved BIPs unblock student discovery before coordinator pipeline exists
@@ -91,5 +96,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-05-09
-Stopped at: Phase 1 plans verified (8 plans, 5 waves) — ready for `/gsd-execute-phase 1`
-Resume file: .planning/phases/01-discovery-foundation/01-01-PLAN.md (Walking Skeleton)
+Stopped at: Plan 01-01 Task 3 — checkpoint:human-verify (Docker Desktop required for Supabase start)
+Resume file: .planning/phases/01-discovery-foundation/01-01-PLAN.md (Task 3 verification)
+Resume instructions: Start Docker Desktop, run `npx supabase start && npx supabase db reset && npm run dev`, verify http://localhost:3000 shows "Approved BIPs in database: 1", then type "approved" to continue

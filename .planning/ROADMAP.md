@@ -32,7 +32,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   5. Every Supabase table has RLS enabled with USING + WITH CHECK on UPDATE policies; the repo runs with `supabase start` + `npm run dev` and a seeded database, no extra steps
 **Plans:** 8 plans
 Plans:
-- [ ] 01-01-PLAN.md — Walking skeleton: Next.js 15 + Supabase + Tailwind v4 stack bootstrap, lib/supabase factories, minimal RLS-protected bips table, canary RSC homepage
+- [~] 01-01-PLAN.md — Walking skeleton: Next.js 15 + Supabase + Tailwind v4 stack bootstrap, lib/supabase factories, minimal RLS-protected bips table, canary RSC homepage [Tasks 1+2 done; Task 3 checkpoint:human-verify pending Docker start]
 - [ ] 01-02-PLAN.md — Full schema: universities + profiles + bips (12 added Erasmus+ fields) + bip_partner_universities, RLS with USING+WITH CHECK, unaccent + tsvector GIN search, generated TypeScript types, ISCED + countries lookup tables
 - [ ] 01-03-PLAN.md — Seed catalog: 20 plausible synthetic BIPs satisfying D-17 distribution constraints (>=10 countries, all 8 ISCED groups, mix open/closed/lang/level/green/inclusion), verify-seed.ts checker
 - [ ] 01-04-PLAN.md — Public route-group chrome: full @theme inline EU palette + 6 choropleth tiers + breakpoint overrides, StickyNav + Footer (INFO-03 disclaimer) + 11-star LogoMark + Button + cn utility
