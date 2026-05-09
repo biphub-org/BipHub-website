@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Plan 01-01 Tasks 1+2 complete — awaiting Task 3 human-verify (Docker Desktop must be started)
-last_updated: "2026-05-09T00:00:00Z"
-last_activity: 2026-05-09 -- Plan 01-01 bootstrap executed; Tasks 1+2 committed; Task 3 checkpoint pending
+stopped_at: Plan 01-01 complete — proceeding to Plan 01-02 (Wave 2, full schema + RLS)
+last_updated: "2026-05-09T00:15:00Z"
+last_activity: 2026-05-09 -- Plan 01-01 verified; .env.local migrated to publishable/secret keys; live count = 1
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 8
-  completed_plans: 0
-  percent: 0
+  completed_plans: 1
+  percent: 12
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-05-08)
 ## Current Position
 
 Phase: 1 (Discovery Foundation) — EXECUTING
-Plan: 1 of 8 — CHECKPOINT (Task 3 awaiting Docker + human verify)
+Plan: 1 of 8 complete (Wave 1 done) — Wave 2 next (Plan 01-02 full schema + RLS)
 Status: Executing Phase 1
-Last activity: 2026-05-09 -- Plan 01-01 Tasks 1+2 committed; awaiting Task 3 human verification
+Last activity: 2026-05-09 -- Plan 01-01 verified end-to-end; .env.local key format fixed (publishable/secret); live count from RSC = 1
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░] 12%
 
 ## Performance Metrics
 
@@ -66,6 +66,7 @@ Recent decisions affecting current work:
 - Plan 01-01: `eslint.config.mjs` flat config required for ESLint 9 + Next.js 15.5 (`next lint` needs flat config)
 - Plan 01-01: shadcn@latest init requires Tailwind v4 pre-installed via npm before running init
 - Plan 01-01: EC disclaimer added to canary homepage per CLAUDE.md requirement (every page must show disclaimer)
+- Plan 01-01 (post-verify): Supabase CLI 2.98.x emits the new key system (`sb_publishable_*` / `sb_secret_*`) and the legacy `eyJ…iss=supabase-demo` JWTs no longer authenticate against PostgREST. `.env.local` must be populated from `npx supabase status` after each `supabase start`. README needs a "Local development" note in Plan 01-04 (chrome) or 01-08 (auth).
 - Init: GeoJSON served from `/public` at runtime via `dynamic()` — never imported into JS bundle
 - Init: `getClaims()` everywhere in server code — never `getSession()`; `await cookies()` in all client factories
 - Init: Seed-first Phase 1 — 20 SQL-seeded approved BIPs unblock student discovery before coordinator pipeline exists

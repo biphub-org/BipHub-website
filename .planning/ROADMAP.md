@@ -30,9 +30,9 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. A student can full-text search BIP titles and descriptions (including accented characters such as "Munchen" finding "München") and see matching BIP cards or a meaningful empty state
   4. A student can open a BIP detail page at `/bip/[slug]`, read all BIP fields, share via web share API or copy link, and bookmark via localStorage — and the page has SSR meta tags and a per-BIP OG image
   5. Every Supabase table has RLS enabled with USING + WITH CHECK on UPDATE policies; the repo runs with `supabase start` + `npm run dev` and a seeded database, no extra steps
-**Plans:** 8 plans
+**Plans:** 1/8 plans executed
 Plans:
-- [~] 01-01-PLAN.md — Walking skeleton: Next.js 15 + Supabase + Tailwind v4 stack bootstrap, lib/supabase factories, minimal RLS-protected bips table, canary RSC homepage [Tasks 1+2 done; Task 3 checkpoint:human-verify pending Docker start]
+- [x] 01-01-PLAN.md — Walking skeleton: Next.js 15 + Supabase + Tailwind v4 stack bootstrap, lib/supabase factories, minimal RLS-protected bips table, canary RSC homepage [completed 2026-05-09]
 - [ ] 01-02-PLAN.md — Full schema: universities + profiles + bips (12 added Erasmus+ fields) + bip_partner_universities, RLS with USING+WITH CHECK, unaccent + tsvector GIN search, generated TypeScript types, ISCED + countries lookup tables
 - [ ] 01-03-PLAN.md — Seed catalog: 20 plausible synthetic BIPs satisfying D-17 distribution constraints (>=10 countries, all 8 ISCED groups, mix open/closed/lang/level/green/inclusion), verify-seed.ts checker
 - [ ] 01-04-PLAN.md — Public route-group chrome: full @theme inline EU palette + 6 choropleth tiers + breakpoint overrides, StickyNav + Footer (INFO-03 disclaimer) + 11-star LogoMark + Button + cn utility
@@ -148,7 +148,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Discovery Foundation | 0/TBD | Not started | - |
+| 1. Discovery Foundation | 1/8 | In Progress|  |
 | 2. Coordinator Auth + Submission | 0/TBD | Not started | - |
 | 3. Admin Review + Email Notifications | 0/TBD | Not started | - |
 | 4. Polish + Static Content + Performance Hardening | 0/TBD | Not started | - |
