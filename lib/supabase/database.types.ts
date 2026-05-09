@@ -211,6 +211,7 @@ export type Database = {
         Row: {
           contact_email: string | null
           created_at: string
+          erasmus_code: string | null
           full_name: string | null
           id: string
           role: string
@@ -220,6 +221,7 @@ export type Database = {
         Insert: {
           contact_email?: string | null
           created_at?: string
+          erasmus_code?: string | null
           full_name?: string | null
           id: string
           role?: string
@@ -229,6 +231,7 @@ export type Database = {
         Update: {
           contact_email?: string | null
           created_at?: string
+          erasmus_code?: string | null
           full_name?: string | null
           id?: string
           role?: string
@@ -281,6 +284,10 @@ export type Database = {
     }
     Functions: {
       immutable_unaccent: { Args: { "": string }; Returns: string }
+      insert_university_if_not_exists: {
+        Args: { p_country: string; p_erasmus_code?: string; p_name: string }
+        Returns: string
+      }
       unaccent: { Args: { "": string }; Returns: string }
     }
     Enums: {
