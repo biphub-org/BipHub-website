@@ -1,58 +1,66 @@
-import { Button as ButtonPrimitive } from "@base-ui/react/button"
-import { cva, type VariantProps } from "class-variance-authority"
+/**
+ * BipHub Button component — pill-shaped primary/gold/ghost variants.
+ *
+ * Replaces the shadcn base-ui version (Plan 01-01) with the EU-branded
+ * button per UI-SPEC lines 388-394.
+ *
+ * Variants:
+ *   primary — EU blue background, white text, lifts on hover
+ *   gold    — EU gold background, ink text
+ *   ghost   — transparent, border, subtle hover
+ *
+ * Sizes: sm / md / lg
+ *
+ * Uses rounded-pill (--radius-pill: 999px) for pill shape per UI-SPEC.
+ */
 
-import { cn } from "@/lib/utils"
+import { forwardRef, type ButtonHTMLAttributes } from 'react'
+import { cn } from '@/lib/utils/cn'
 
-const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-  {
-    variants: {
-      variant: {
-        default: "bg-primary text-primary-foreground [a]:hover:bg-primary/80",
-        outline:
-          "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80 aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
-        ghost:
-          "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
-        destructive:
-          "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
-        link: "text-primary underline-offset-4 hover:underline",
-      },
-      size: {
-        default:
-          "h-8 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
-        xs: "h-6 gap-1 rounded-[min(var(--radius-md),10px)] px-2 text-xs in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
-        sm: "h-7 gap-1 rounded-[min(var(--radius-md),12px)] px-2.5 text-[0.8rem] in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3.5",
-        lg: "h-9 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
-        icon: "size-8",
-        "icon-xs":
-          "size-6 rounded-[min(var(--radius-md),10px)] in-data-[slot=button-group]:rounded-lg [&_svg:not([class*='size-'])]:size-3",
-        "icon-sm":
-          "size-7 rounded-[min(var(--radius-md),12px)] in-data-[slot=button-group]:rounded-lg",
-        "icon-lg": "size-9",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
-  }
-)
+type Variant = 'primary' | 'gold' | 'ghost'
+type Size = 'sm' | 'md' | 'lg'
 
-function Button({
-  className,
-  variant = "default",
-  size = "default",
-  ...props
-}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
-  return (
-    <ButtonPrimitive
-      data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
-      {...props}
-    />
-  )
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: Variant
+  size?: Size
 }
 
-export { Button, buttonVariants }
+const variantStyles: Record<Variant, string> = {
+  primary:
+    'bg-eu-blue text-white border border-eu-blue ' +
+    'hover:bg-eu-blue-dark hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(0,51,153,0.25)] ' +
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-eu-blue focus-visible:ring-offset-2 focus-visible:ring-offset-white',
+  gold:
+    'bg-eu-gold text-ink border border-eu-gold ' +
+    'hover:bg-eu-gold-dark hover:-translate-y-px ' +
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-eu-gold focus-visible:ring-offset-2 focus-visible:ring-offset-white',
+  ghost:
+    'bg-transparent text-ink border border-border ' +
+    'hover:border-ink hover:bg-bg-soft ' +
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-eu-blue focus-visible:ring-offset-2 focus-visible:ring-offset-white',
+}
+
+const sizeStyles: Record<Size, string> = {
+  sm: 'h-9 px-4 text-sm',
+  md: 'h-11 px-5 text-sm',
+  lg: 'h-12 px-7 text-base',
+}
+
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant = 'primary', size = 'md', ...props }, ref) => {
+    return (
+      <button
+        ref={ref}
+        className={cn(
+          'inline-flex items-center justify-center font-semibold whitespace-nowrap rounded-pill',
+          'transition-all duration-200 ease-out disabled:pointer-events-none disabled:opacity-50',
+          variantStyles[variant],
+          sizeStyles[size],
+          className,
+        )}
+        {...props}
+      />
+    )
+  },
+)
+Button.displayName = 'Button'

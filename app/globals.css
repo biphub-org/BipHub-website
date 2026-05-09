@@ -4,233 +4,292 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Plan 01-04 will add the full @theme inline { ... } block here with EU palette,
-   choropleth tier colors, breakpoint overrides (md=960px, lg=1024px), and font-family
-   binding for Inter via --font-inter. */
+/* ============================================================
+ * BipHub design tokens — Tailwind v4 CSS-first config.
+ *
+ * Source of truth: .planning/phases/01-discovery-foundation/01-UI-SPEC.md
+ *   - Color: lines 152-184 (verbatim)
+ *   - Breakpoints: lines 462-468 (md=960px, lg=1024px — diverges from Tailwind defaults)
+ *   - Choropleth tiers: lines 138-148 (D-05 fixed bins, NOT quantile)
+ *   - Radii / shadows: lines 423-437
+ *
+ * NEVER add tokens not in UI-SPEC without re-running /gsd-ui-research-phase.
+ * ============================================================ */
 
 @theme inline {
 
-    --font-heading: var(--font-sans);
+  /* ---------- EU palette ---------- */
+  --color-eu-blue: #003399;
+  --color-eu-blue-dark: #002270;
+  --color-eu-blue-light: #1a4dab;
+  --color-eu-blue-50: #eef2fb;
+  --color-eu-blue-100: #dde6f7;
+  --color-eu-gold: #FFCC00;
+  --color-eu-gold-dark: #e6b800;
+  --color-eu-gold-soft: #fff4cc;
 
-    --font-sans: var(--font-sans);
+  --color-ink: #0a1735;
+  --color-ink-2: #2c3658;
+  --color-muted: #6b7390;
+  --color-muted-2: #9ca3b8;
+  --color-border: #e5e8f0;
+  --color-border-strong: #d1d6e3;
+  --color-bg-soft: #f7f8fc;
+  --color-bg-hero: #f4f6fc;
 
-    --color-sidebar-ring: var(--sidebar-ring);
+  /* ---------- Choropleth tier fills (D-05 — fixed bins) ----------
+     PITFALLS Pitfall 13: classes referencing these MUST be full
+     string literals in lib/map/bins.ts (Plan 01-05) — NEVER concatenated.
 
-    --color-sidebar-border: var(--sidebar-border);
+     Safelist — the static scanner MUST see these full class strings:
+       fill-bip-tier-0  fill-bip-tier-1  fill-bip-tier-2
+       fill-bip-tier-3  fill-bip-tier-4  fill-bip-tier-5
+  */
+  --color-bip-tier-0: #e5e8f0;
+  --color-bip-tier-1: #dde6f7;
+  --color-bip-tier-2: #b7c8ec;
+  --color-bip-tier-3: #6884cc;
+  --color-bip-tier-4: #1a4dab;
+  --color-bip-tier-5: #003399;
 
-    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  /* ---------- Radii ---------- */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
 
-    --color-sidebar-accent: var(--sidebar-accent);
+  /* ---------- Shadows ---------- */
+  --shadow-sm: 0 1px 2px rgba(10, 23, 53, 0.04);
+  --shadow-md: 0 4px 16px rgba(10, 23, 53, 0.06);
+  --shadow-lg: 0 12px 40px rgba(10, 23, 53, 0.08);
 
-    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  /* ---------- Breakpoints (UI-SPEC line 462-468) ----------
+     Override Tailwind v4 defaults to match the locked mockup.
+     md=960px (desktop nav visible) — NOT the default 768px.
+     lg=1024px (BIP detail 2-column, /bips sidebar) — NOT the default 1024px. */
+  --breakpoint-md: 60rem;   /* 960px */
+  --breakpoint-lg: 64rem;   /* 1024px */
 
-    --color-sidebar-primary: var(--sidebar-primary);
+  /* ---------- Font binding ----------
+     Plan 01-01's app/layout.tsx loaded Inter via next/font with
+     variable: '--font-inter'. Bind it to font-sans here. */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
-    --color-sidebar-foreground: var(--sidebar-foreground);
+  /* ---------- shadcn/base-ui token aliases (existing, kept for compatibility) ---------- */
+  --font-heading: var(--font-sans);
 
-    --color-sidebar: var(--sidebar);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
 
-    --color-chart-5: var(--chart-5);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
 
-    --color-chart-4: var(--chart-4);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
 
-    --color-chart-3: var(--chart-3);
+  /* Note: --color-border is overridden above with EU border token #e5e8f0.
+     shadcn components that use --color-border will pick up the EU border color.
+     This is intentional — both the EU palette and shadcn reference this token. */
 
-    --color-chart-2: var(--chart-2);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
 
-    --color-chart-1: var(--chart-1);
+  /* Note: --color-muted is overridden above with EU muted token #6b7390. */
 
-    --color-ring: var(--ring);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
 
-    --color-input: var(--input);
-
-    --color-border: var(--border);
-
-    --color-destructive: var(--destructive);
-
-    --color-accent-foreground: var(--accent-foreground);
-
-    --color-accent: var(--accent);
-
-    --color-muted-foreground: var(--muted-foreground);
-
-    --color-muted: var(--muted);
-
-    --color-secondary-foreground: var(--secondary-foreground);
-
-    --color-secondary: var(--secondary);
-
-    --color-primary-foreground: var(--primary-foreground);
-
-    --color-primary: var(--primary);
-
-    --color-popover-foreground: var(--popover-foreground);
-
-    --color-popover: var(--popover);
-
-    --color-card-foreground: var(--card-foreground);
-
-    --color-card: var(--card);
-
-    --color-foreground: var(--foreground);
-
-    --color-background: var(--background);
-
-    --radius-sm: calc(var(--radius) * 0.6);
-
-    --radius-md: calc(var(--radius) * 0.8);
-
-    --radius-lg: var(--radius);
-
-    --radius-xl: calc(var(--radius) * 1.4);
-
-    --radius-2xl: calc(var(--radius) * 1.8);
-
-    --radius-3xl: calc(var(--radius) * 2.2);
-
-    --radius-4xl: calc(var(--radius) * 2.6);
+  /* Radii — EU values above override these shadcn calc()s for sm/md/lg */
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 :root {
 
-    --background: oklch(1 0 0);
+  --background: oklch(1 0 0);
 
-    --foreground: oklch(0.145 0 0);
+  --foreground: oklch(0.145 0 0);
 
-    --card: oklch(1 0 0);
+  --card: oklch(1 0 0);
 
-    --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.145 0 0);
 
-    --popover: oklch(1 0 0);
+  --popover: oklch(1 0 0);
 
-    --popover-foreground: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.145 0 0);
 
-    --primary: oklch(0.205 0 0);
+  --primary: oklch(0.205 0 0);
 
-    --primary-foreground: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.985 0 0);
 
-    --secondary: oklch(0.97 0 0);
+  --secondary: oklch(0.97 0 0);
 
-    --secondary-foreground: oklch(0.205 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
 
-    --muted: oklch(0.97 0 0);
+  --muted: oklch(0.97 0 0);
 
-    --muted-foreground: oklch(0.556 0 0);
+  --muted-foreground: oklch(0.556 0 0);
 
-    --accent: oklch(0.97 0 0);
+  --accent: oklch(0.97 0 0);
 
-    --accent-foreground: oklch(0.205 0 0);
+  --accent-foreground: oklch(0.205 0 0);
 
-    --destructive: oklch(0.577 0.245 27.325);
+  --destructive: oklch(0.577 0.245 27.325);
 
-    --border: oklch(0.922 0 0);
+  --border: oklch(0.922 0 0);
 
-    --input: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
 
-    --ring: oklch(0.708 0 0);
+  --ring: oklch(0.708 0 0);
 
-    --chart-1: oklch(0.87 0 0);
+  --chart-1: oklch(0.87 0 0);
 
-    --chart-2: oklch(0.556 0 0);
+  --chart-2: oklch(0.556 0 0);
 
-    --chart-3: oklch(0.439 0 0);
+  --chart-3: oklch(0.439 0 0);
 
-    --chart-4: oklch(0.371 0 0);
+  --chart-4: oklch(0.371 0 0);
 
-    --chart-5: oklch(0.269 0 0);
+  --chart-5: oklch(0.269 0 0);
 
-    --radius: 0.625rem;
+  --radius: 0.625rem;
 
-    --sidebar: oklch(0.985 0 0);
+  --sidebar: oklch(0.985 0 0);
 
-    --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
 
-    --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
 
-    --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
 
-    --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
 
-    --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
 
-    --sidebar-border: oklch(0.922 0 0);
+  --sidebar-border: oklch(0.922 0 0);
 
-    --sidebar-ring: oklch(0.708 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
 }
 
 .dark {
 
-    --background: oklch(0.145 0 0);
+  --background: oklch(0.145 0 0);
 
-    --foreground: oklch(0.985 0 0);
+  --foreground: oklch(0.985 0 0);
 
-    --card: oklch(0.205 0 0);
+  --card: oklch(0.205 0 0);
 
-    --card-foreground: oklch(0.985 0 0);
+  --card-foreground: oklch(0.985 0 0);
 
-    --popover: oklch(0.205 0 0);
+  --popover: oklch(0.205 0 0);
 
-    --popover-foreground: oklch(0.985 0 0);
+  --popover-foreground: oklch(0.985 0 0);
 
-    --primary: oklch(0.922 0 0);
+  --primary: oklch(0.922 0 0);
 
-    --primary-foreground: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.205 0 0);
 
-    --secondary: oklch(0.269 0 0);
+  --secondary: oklch(0.269 0 0);
 
-    --secondary-foreground: oklch(0.985 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
 
-    --muted: oklch(0.269 0 0);
+  --muted: oklch(0.269 0 0);
 
-    --muted-foreground: oklch(0.708 0 0);
+  --muted-foreground: oklch(0.708 0 0);
 
-    --accent: oklch(0.269 0 0);
+  --accent: oklch(0.269 0 0);
 
-    --accent-foreground: oklch(0.985 0 0);
+  --accent-foreground: oklch(0.985 0 0);
 
-    --destructive: oklch(0.704 0.191 22.216);
+  --destructive: oklch(0.704 0.191 22.216);
 
-    --border: oklch(1 0 0 / 10%);
+  --border: oklch(1 0 0 / 10%);
 
-    --input: oklch(1 0 0 / 15%);
+  --input: oklch(1 0 0 / 15%);
 
-    --ring: oklch(0.556 0 0);
+  --ring: oklch(0.556 0 0);
 
-    --chart-1: oklch(0.87 0 0);
+  --chart-1: oklch(0.87 0 0);
 
-    --chart-2: oklch(0.556 0 0);
+  --chart-2: oklch(0.556 0 0);
 
-    --chart-3: oklch(0.439 0 0);
+  --chart-3: oklch(0.439 0 0);
 
-    --chart-4: oklch(0.371 0 0);
+  --chart-4: oklch(0.371 0 0);
 
-    --chart-5: oklch(0.269 0 0);
+  --chart-5: oklch(0.269 0 0);
 
-    --sidebar: oklch(0.205 0 0);
+  --sidebar: oklch(0.205 0 0);
 
-    --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
 
-    --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
 
-    --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
 
-    --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
 
-    --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
 
-    --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-border: oklch(1 0 0 / 10%);
 
-    --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-ring: oklch(0.556 0 0);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    }
+  }
   body {
     @apply bg-background text-foreground;
-    }
+  }
   html {
     @apply font-sans;
-    }
+  }
+}
+
+/* ---------- Skip link (FOUN-03 / UI-SPEC accessibility line 484) ---------- */
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  z-index: 200;
+  transform: translateY(-200%);
+  transition: transform 150ms ease;
+  background: var(--color-eu-blue);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+}
+.skip-link:focus-visible { transform: translateY(0); outline: none; }
+
+/* ---------- Reduced motion (UI-SPEC line 481) ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
