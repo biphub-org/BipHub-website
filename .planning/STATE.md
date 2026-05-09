@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Plan 01-01 complete — proceeding to Plan 01-02 (Wave 2, full schema + RLS)
-last_updated: "2026-05-09T00:15:00Z"
-last_activity: 2026-05-09 -- Plan 01-01 verified; .env.local migrated to publishable/secret keys; live count = 1
+stopped_at: Plan 01-02 complete — proceeding to Plan 01-03 (seed catalog, 20 synthetic BIPs)
+last_updated: "2026-05-09T01:00:00Z"
+last_activity: 2026-05-09 -- Plan 01-02 complete; full schema live in local Supabase; all RLS UPDATE policies have USING+WITH CHECK; FTS smoke test passed; domain types generated
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 8
-  completed_plans: 1
-  percent: 12
+  completed_plans: 2
+  percent: 25
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-05-08)
 ## Current Position
 
 Phase: 1 (Discovery Foundation) — EXECUTING
-Plan: 1 of 8 complete (Wave 1 done) — Wave 2 next (Plan 01-02 full schema + RLS)
+Plan: 2 of 8 complete (Wave 2 done) — Wave 3 next (Plan 01-03 seed catalog)
 Status: Executing Phase 1
-Last activity: 2026-05-09 -- Plan 01-01 verified end-to-end; .env.local key format fixed (publishable/secret); live count from RSC = 1
+Last activity: 2026-05-09 -- Plan 01-02 complete; full schema live in local Supabase; all RLS UPDATE policies have USING+WITH CHECK; FTS smoke test passed; domain types generated
 
-Progress: [█░░░░░░░░░] 12%
+Progress: [██░░░░░░░░] 25%
 
 ## Performance Metrics
 
@@ -76,6 +76,9 @@ Recent decisions affecting current work:
 - Phase 1: `/bip/[slug]` is 2-column desktop with sticky sidebar (deadline + Apply CTA + key facts); single column with sticky bottom Apply on mobile/tablet
 - Phase 1: Bookmarks via heart icon + `localStorage["biphub:bookmarks"]` JSON array; no `/bookmarks` page in v1
 - Phase 1: Seed catalog = 20 plausible synthetic BIPs marked `is_seed = true`; no scraping until ToS reviewed
+- Plan 01-02: immutable_unaccent() wrapper required — unaccent() is STABLE not IMMUTABLE; GENERATED ALWAYS AS STORED requires IMMUTABLE; wrapper is safe (text normalization only, no side effects)
+- Plan 01-02: coordinator UPDATE on bips restricted to draft/pending — WITH CHECK prevents self-promotion to approved/rejected (PITFALLS Pitfall 5 implementation)
+- Plan 01-02: lib/countries.ts canonical property is `code` (not iso2) — locked contract for downstream plans 01-05, 01-06, 01-07
 
 ### Pending Todos
 
@@ -97,6 +100,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-05-09
-Stopped at: Plan 01-01 Task 3 — checkpoint:human-verify (Docker Desktop required for Supabase start)
-Resume file: .planning/phases/01-discovery-foundation/01-01-PLAN.md (Task 3 verification)
-Resume instructions: Start Docker Desktop, run `npx supabase start && npx supabase db reset && npm run dev`, verify http://localhost:3000 shows "Approved BIPs in database: 1", then type "approved" to continue
+Stopped at: Plan 01-02 complete — all tasks done, SUMMARY.md committed
+Resume file: .planning/phases/01-discovery-foundation/01-03-PLAN.md
+Resume instructions: Run `npx supabase status` to verify local stack is running, then execute Plan 01-03 (seed catalog — 20 synthetic BIPs)
