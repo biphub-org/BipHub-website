@@ -67,7 +67,15 @@ Plans:
   3. A coordinator can start a BIP submission wizard, have their progress auto-saved between steps and on field blur, and complete a preview step before final submission — with the submitted BIP appearing as `pending` in their dashboard
   4. A coordinator's dashboard at `/dashboard` lists all their BIPs with correct status badges; draft and pending BIPs are editable; rejected BIPs display the rejection reason
   5. Opening the same draft in two tabs does not cause silent data loss (optimistic locking via `updated_at`); a mid-form session expiry triggers a recovery path via `onAuthStateChange` + localStorage backup
-**Plans:** TBD
+**Plans:** 7 plans
+Plans:
+- [ ] 02-01-PLAN.md — Migration 00009 (profiles.erasmus_code + insert_university_if_not_exists SECURITY DEFINER) + db reset + types regen + 13 shadcn UI primitives + status color tokens + lib/utils/status.ts
+- [ ] 02-02-PLAN.md — (auth) route group: layout + login/register/verify-email/reset-password/reset-password-update pages + 4 client forms (RHF + Zod v3) + 5 Server Actions (signIn/signUp/signOut/requestPasswordReset/updatePassword) + auth/callback route handler (PKCE)
+- [ ] 02-03-PLAN.md — Middleware Phase 2 redirect branches + x-pathname header injection; (public)/layout.tsx async + getClaims; StickyNav session-aware (D-15)
+- [ ] 02-04-PLAN.md — (dashboard) layout (auth + profile-complete gate via x-pathname) + DashboardNav + /onboarding RSC + OnboardingForm + UniversityCombobox (with inline add-new flow via SECURITY DEFINER RPC) + saveProfileAction + searchUniversitiesAction + addUniversityAction
+- [ ] 02-05-PLAN.md — Coordinator /dashboard: getCoordinatorBips RSC query + DashboardBipList (shadcn Tabs + URL ?status=) + DashboardBipCard (status badge from STATUS_BADGE_CLASSES + per-status actions) + Delete/Withdraw dialogs + deleteDraftAction + withdrawBipAction
+- [ ] 02-06-PLAN.md — Wizard core: lib/store/bip-draft.ts (Zustand) + lib/schemas/bip-wizard.ts (4 step schemas) + lib/actions/bip-draft.ts (saveDraftAction with updated_at optimistic lock) + slug utility + BipSubmissionWizard shell (1.5s debounced auto-save + onAuthStateChange SIGNED_OUT recovery) + SaveStatusIndicator + WizardStep1..4 components
+- [ ] 02-07-PLAN.md — Wizard Step 5 Preview (draftToBipDetail adapter reusing Phase 1 BipBody + BipSidebar) + TwoTabConflictDialog + new + edit page entry routes (/dashboard/bips/new + /dashboard/bips/[id]/edit) + getCoordinatorBipById query + submitBipAction (full re-validation, finalizeSlug, partner upsert with (unverified) suffix, status='pending')
 **UI hint:** yes
 
 **Key Deliverables:**
@@ -149,6 +157,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Discovery Foundation | 8/8 | Complete    | 2026-05-09 |
-| 2. Coordinator Auth + Submission | 0/TBD | Not started | - |
+| 2. Coordinator Auth + Submission | 0/7 | Not started | - |
 | 3. Admin Review + Email Notifications | 0/TBD | Not started | - |
 | 4. Polish + Static Content + Performance Hardening | 0/TBD | Not started | - |
