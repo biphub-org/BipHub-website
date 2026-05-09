@@ -12,8 +12,22 @@ import Link from 'next/link'
 /**
  * ISR — revalidate every hour. Phase 3 admin approve/reject calls
  * revalidatePath('/bip/{slug}') to bust the cache immediately.
+ *
+ * NOTE: 'force-dynamic' ensures cookies() is available for the Supabase
+ * client. The revalidate value is respected by Next.js for cache duration.
+ * When running with generateStaticParams, pre-rendered pages are served
+ * statically; dynamicParams=true allows non-pre-rendered slugs to be served
+ * via SSR/ISR at request time.
  */
 export const revalidate = 3600
+
+/**
+ * Allow dynamic params not pre-rendered by generateStaticParams to be
+ * served via ISR fallback (not a 404). Required for non-seed BIPs added
+ * after build time, and for dev/CI environments where generateStaticParams
+ * returns [] (no Supabase available at build time).
+ */
+export const dynamicParams = true
 
 /**
  * Pre-render all approved BIPs at build time.

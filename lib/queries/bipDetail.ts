@@ -106,24 +106,31 @@ export async function getBipBySlug(slug: string): Promise<BipDetail | null> {
  * Returns all slugs where status='approved'.
  * Used by generateStaticParams to pre-render all published BIPs at build time.
  *
- * Note: Phase 1 seed BIPs all have status='approved'. For generateStaticParams
- * we pre-render all approved BIPs (not just is_seed=true) since build time is short.
- *
- * Returns [] gracefully if Supabase is not available (CI / build without local DB).
- * ISR fallback renders those BIPs on first request.
+ * Uses a direct REST fetch (no cookies() dependency) so it works during
+ * generateStaticParams which is called outside a request context.
+ * Falls back to [] gracefully if Supabase is not reachable (CI builds).
  */
 export async function getAllPublishedSlugs(): Promise<string[]> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!url || !key) return []
+
   try {
-    const supabase = await createClient()
-
-    const { data, error } = await supabase
-      .from('bips')
-      .select('slug')
-      .eq('status', 'approved')
-
-    if (error) throw error
-
-    return (data ?? []).map((row) => row.slug)
+    const res = await fetch(
+      `${url}/rest/v1/bips?select=slug&status=eq.approved`,
+      {
+        headers: {
+          apikey: key,
+          Authorization: `Bearer ${key}`,
+        },
+        // Short timeout for build-time — if Supabase isn't running locally, ISR handles all slugs
+        signal: AbortSignal.timeout(5000),
+      },
+    )
+    if (!res.ok) return []
+    const data = await res.json() as Array<{ slug: string }>
+    return data.map((row) => row.slug)
   } catch {
     // Build-time: no Supabase available — ISR fallback handles all slugs at runtime
     return []
