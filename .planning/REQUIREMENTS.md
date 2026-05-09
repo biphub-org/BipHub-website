@@ -33,16 +33,16 @@
 
 ### Detail (BIP Detail Page)
 
-- [ ] **DETL-01**: User sees BIP detail page at `/bip/[slug]` with human-readable URL
-- [ ] **DETL-02**: User sees full BIP info: title, description, learning outcomes, virtual component description, physical mobility details
-- [ ] **DETL-03**: User sees host university and partner universities (registered or free-text)
-- [ ] **DETL-04**: User sees physical start/end dates, application deadline, ECTS credits, max participants, eligibility notes
-- [ ] **DETL-05**: User sees CEFR minimum language level required
+- [x] **DETL-01**: User sees BIP detail page at `/bip/[slug]` with human-readable URL
+- [x] **DETL-02**: User sees full BIP info: title, description, learning outcomes, virtual component description, physical mobility details
+- [x] **DETL-03**: User sees host university and partner universities (registered or free-text)
+- [x] **DETL-04**: User sees physical start/end dates, application deadline, ECTS credits, max participants, eligibility notes
+- [x] **DETL-05**: User sees CEFR minimum language level required
 - [x] **DETL-06**: User sees badges for "Green travel eligible" and "Inclusion support" when applicable
-- [ ] **DETL-07**: User sees how-to-apply information (coordinator contact details or external URL)
-- [ ] **DETL-08**: User can share the BIP via web share API or copy link
+- [x] **DETL-07**: User sees how-to-apply information (coordinator contact details or external URL)
+- [x] **DETL-08**: User can share the BIP via web share API or copy link
 - [x] **DETL-09**: User can bookmark the BIP via localStorage (no account required)
-- [ ] **DETL-10**: BIP detail page has SSR meta tags and a per-BIP OpenGraph image
+- [x] **DETL-10**: BIP detail page has SSR meta tags and a per-BIP OpenGraph image
 
 ### Info (Static Content)
 
@@ -177,16 +177,16 @@ Phase mappings derived from `.planning/research/SUMMARY.md` Recommended Phase Or
 | BROW-11 | Phase 1 | Complete |
 | BROW-12 | Phase 1 | Complete |
 | BROW-13 | Phase 1 | Complete |
-| DETL-01 | Phase 1 | Pending |
-| DETL-02 | Phase 1 | Pending |
-| DETL-03 | Phase 1 | Pending |
-| DETL-04 | Phase 1 | Pending |
-| DETL-05 | Phase 1 | Pending |
+| DETL-01 | Phase 1 | Complete |
+| DETL-02 | Phase 1 | Complete |
+| DETL-03 | Phase 1 | Complete |
+| DETL-04 | Phase 1 | Complete |
+| DETL-05 | Phase 1 | Complete |
 | DETL-06 | Phase 1 | Complete |
-| DETL-07 | Phase 1 | Pending |
-| DETL-08 | Phase 1 | Pending |
+| DETL-07 | Phase 1 | Complete |
+| DETL-08 | Phase 1 | Complete |
 | DETL-09 | Phase 1 | Complete |
-| DETL-10 | Phase 1 | Pending |
+| DETL-10 | Phase 1 | Complete |
 | INFO-03 | Phase 1 | Complete |
 | FOUN-01 | Phase 1 | Complete |
 | FOUN-02 | Phase 1 | Complete |

@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Plan 01-06 complete — /bips browse page shipped; next: Plan 01-07 (/bip/[slug] detail page)"
-last_updated: "2026-05-09T07:30:00.000Z"
-last_activity: 2026-05-09 -- Plans 01-01..01-06 + 01-08 complete (7/8); 01-07 pending
+stopped_at: "Plan 01-07 tasks 1-3 complete (human-verify checkpoint); Task 4 = visual verification of /bip/[slug] detail page"
+last_updated: "2026-05-09T02:25:06Z"
+last_activity: 2026-05-09 -- Plans 01-01..01-08 all complete (8/8); Phase 1 awaiting human verification of detail page
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 8
-  completed_plans: 7
-  percent: 88
+  completed_plans: 8
+  percent: 100
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-05-08)
 ## Current Position
 
 Phase: 1 (Discovery Foundation) — EXECUTING
-Plan: 7 of 8 complete (Plan 01-06 done) — Plan 01-07 (/bip/[slug] detail page) pending
-Status: Executing Phase 1
-Last activity: 2026-05-09 -- Plan 01-06 (/bips browse page) shipped; BROW-01..13 + FOUN-02 satisfied; Plan 01-07 still pending
+Plan: 8 of 8 complete (Plan 01-07 done, awaiting human verification Task 4) — All automated tasks shipped
+Status: Executing Phase 1 — human verification checkpoint
+Last activity: 2026-05-09 -- Plan 01-07 (/bip/[slug] detail page) tasks 1-3 committed; Task 4 = human-verify checkpoint
 
-Progress: [████████░░] 75%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -54,6 +54,7 @@ Progress: [████████░░] 75%
 *Updated after each plan completion*
 | Phase 01 P04 | 40min | 2 tasks | 9 files |
 | Phase 01 P05 | 90min | 2 tasks | 21 files |
+| Phase 01 P07 | 150min | 3 tasks | 22 files |
 
 ## Accumulated Context
 
@@ -102,6 +103,12 @@ Recent decisions affecting current work:
 - Plan 01-06: BipFiltersDrawer uses vaul-based shadcn Drawer for mobile; BipFiltersSidebar is 'use client' for desktop
 - Plan 01-06: shadcn accordion/slider use @base-ui/react (not @radix-ui) — Accordion needs `multiple` prop not `type='multiple'`; Slider onValueChange is (v: number | readonly number[])
 - Plan 01-06: Button.tsx extended with asChild support (@radix-ui/react-slot) and shadcn compat variant/size aliases (outline, secondary, destructive, link, icon, default)
+- Plan 01-07: ISR strategy revalidate=3600 + dynamicParams=true; Phase 3 admin approve/reject will call revalidatePath() to bust cache immediately
+- Plan 01-07: Inter TTF fonts (inter-bold.ttf + inter-semibold.ttf) from unpkg.com/inter-font@3.19.0 committed to public/fonts (OFL 1.1); not fetched from googleapis at OG image runtime (GDPR + Pitfall 15)
+- Plan 01-07: ShareButton degradation chain: navigator.share (canShare check) → navigator.clipboard.writeText (Sonner toast) → silently unsupported
+- Plan 01-07: BipApplyCta branches: closed (disabled button) | type=url (Link target=_blank) | type=contact (mailto anchor)
+- Plan 01-07: Partner display: registered partners show university.name (country); free-text raw partners append (unverified) suffix to partner_name_raw
+- Plan 01-07: getAllPublishedSlugs uses direct REST fetch (no createClient/cookies dependency) — avoids cookies() outside request scope during generateStaticParams at build time
 
 ### Pending Todos
 
@@ -122,7 +129,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-05-09T07:30:00.000Z
-Stopped at: Plan 01-06 complete — /bips browse page shipped; next Plan 01-07 (/bip/[slug] detail page)
+Last session: 2026-05-09T02:25:06Z
+Stopped at: Plan 01-07 Task 4 — human-verify checkpoint. Visit http://localhost:3011/bip/responsible-ai-business-strategy-leuven-2026 to verify detail page end-to-end (14 verification steps).
 Resume file: None
-Resume instructions: Plan 01-07 remains. Run /gsd-execute-phase 1 for 01-07 (/bip/[slug] detail page with 2-col desktop layout, OG image, share + bookmark).
+Resume instructions: After human verification passes, Phase 1 is complete. Run /gsd-execute-phase 2 to begin coordinator auth + submission.

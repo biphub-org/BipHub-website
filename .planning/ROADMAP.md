@@ -30,7 +30,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. A student can full-text search BIP titles and descriptions (including accented characters such as "Munchen" finding "München") and see matching BIP cards or a meaningful empty state
   4. A student can open a BIP detail page at `/bip/[slug]`, read all BIP fields, share via web share API or copy link, and bookmark via localStorage — and the page has SSR meta tags and a per-BIP OG image
   5. Every Supabase table has RLS enabled with USING + WITH CHECK on UPDATE policies; the repo runs with `supabase start` + `npm run dev` and a seeded database, no extra steps
-**Plans:** 7/8 plans executed
+**Plans:** 8/8 plans executed
 Plans:
 - [x] 01-01-PLAN.md — Walking skeleton: Next.js 15 + Supabase + Tailwind v4 stack bootstrap, lib/supabase factories, minimal RLS-protected bips table, canary RSC homepage [completed 2026-05-09]
 - [x] 01-02-PLAN.md — Full schema: universities + profiles + bips (12 added Erasmus+ fields) + bip_partner_universities, RLS with USING+WITH CHECK, unaccent + tsvector GIN search, generated TypeScript types, ISCED + countries lookup tables [completed 2026-05-09]
@@ -38,7 +38,7 @@ Plans:
 - [x] 01-04-PLAN.md — Public route-group chrome: full @theme inline EU palette + 6 choropleth tiers + breakpoint overrides, StickyNav + Footer (INFO-03 disclaimer) + 11-star LogoMark + Button + cn utility
 - [x] 01-05-PLAN.md — Homepage composition: Hero + EuropeMap (dynamic+TopoJSON, fixed bins, keyboard fallback) + CategoriesBar + StatsSection (LazyMotion count-up) + RecentBips (>=6 threshold) + HowItWorks + UniversityCTA + BipCard + BookmarkHeartIsland + bookmarks Zustand store
 - [x] 01-06-PLAN.md — /bips browse: RSC shell + parseSearchParams (Zod) + buildSupabaseQuery + getBips (single PostgREST embed) + BipFiltersSidebar (desktop) + BipFiltersDrawer (mobile Vaul) + BipSearchBar (300ms debounce) + BipSortControl + BipPagination + BipsEmptyState (D-04) + canonical=/bips [completed 2026-05-09]
-- [ ] 01-07-PLAN.md — /bip/[slug] detail: 2-col desktop / mobile bottom Apply bar, BipHeader+BipBody+BipSidebar (sticky 340px), DeadlineBadge + BipApplyCta branching, ShareButton (Web Share API + clipboard fallback), reused BookmarkHeartIsland, opengraph-image.tsx with bundled Inter, BipNotFound, ISR + canonical
+- [x] 01-07-PLAN.md — /bip/[slug] detail: 2-col desktop / mobile bottom Apply bar, BipHeader+BipBody+BipSidebar (sticky 340px), DeadlineBadge + BipApplyCta branching, ShareButton (Web Share API + clipboard fallback), reused BookmarkHeartIsland, opengraph-image.tsx with bundled Inter, BipNotFound, ISR + canonical [completed 2026-05-09]
 - [x] 01-08-PLAN.md — Auth infrastructure: lib/supabase/middleware.ts + lib/supabase/admin.ts (with ESLint no-restricted-imports isolation), middleware.ts expanded with getClaims() session refresh (no redirects in Phase 1 — Pitfall 2 prevention), migration 00008 profiles.role -> auth.users.raw_app_meta_data.role mirror trigger
 **UI hint:** yes
 
@@ -148,7 +148,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Discovery Foundation | 6/8 | In Progress|  |
+| 1. Discovery Foundation | 8/8 | Awaiting human verification | 2026-05-09 |
 | 2. Coordinator Auth + Submission | 0/TBD | Not started | - |
 | 3. Admin Review + Email Notifications | 0/TBD | Not started | - |
 | 4. Polish + Static Content + Performance Hardening | 0/TBD | Not started | - |
