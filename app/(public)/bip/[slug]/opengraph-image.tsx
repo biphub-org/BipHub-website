@@ -193,6 +193,7 @@ export default async function Image({
         {bip.ects_credits && (
           <div
             style={{
+              display: 'flex',
               position: 'absolute',
               bottom: 64,
               left: 64,
@@ -204,7 +205,7 @@ export default async function Image({
               fontWeight: 700,
             }}
           >
-            {bip.ects_credits} ECTS
+            {`${bip.ects_credits} ECTS`}
           </div>
         )}
 
