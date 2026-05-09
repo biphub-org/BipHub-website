@@ -8,10 +8,10 @@
 ### Discovery (Homepage)
 
 - [ ] **DISC-01**: User sees homepage matching `biphub-homepage.html` visual (sticky nav, hero with gold underline accent, 96px section padding, EU palette, Inter typography)
-- [ ] **DISC-02**: User sees an interactive Europe map showing all 29 Erasmus+ countries with color intensity scaled to BIP count, click filters `/bips` by country
-- [ ] **DISC-03**: User sees an 8-category field-of-study bar (Engineering, Business, Sciences, Arts & Design, Health, Social Sciences, Environment, Humanities), click filters `/bips`
-- [ ] **DISC-04**: User sees a live stats section (BIPs / Universities / Countries / Open applications) with count-up animation on scroll into view
-- [ ] **DISC-05**: User sees "Recently added" section showing 3 BIP cards when ≥6 approved BIPs exist; sees "be among the first" coordinator acquisition teaser when below threshold
+- [x] **DISC-02**: User sees an interactive Europe map showing all 29 Erasmus+ countries with color intensity scaled to BIP count, click filters `/bips` by country
+- [x] **DISC-03**: User sees an 8-category field-of-study bar (Engineering, Business, Sciences, Arts & Design, Health, Social Sciences, Environment, Humanities), click filters `/bips`
+- [x] **DISC-04**: User sees a live stats section (BIPs / Universities / Countries / Open applications) with count-up animation on scroll into view
+- [x] **DISC-05**: User sees "Recently added" section showing 3 BIP cards when ≥6 approved BIPs exist; sees "be among the first" coordinator acquisition teaser when below threshold
 - [ ] **DISC-06**: User sees a 3-step "How it works" explainer (Find → Apply → Go) with numbered circles and dashed connectors on desktop
 - [ ] **DISC-07**: User sees a dark-navy university CTA section with mock feature rows and gold primary CTA
 
@@ -20,11 +20,11 @@
 - [ ] **BROW-01**: User sees BIP listing page at `/bips` as a responsive card grid (no tables)
 - [ ] **BROW-02**: User can filter BIPs by country
 - [ ] **BROW-03**: User can filter BIPs by subject area (ISCED-F field group)
-- [ ] **BROW-04**: User can filter BIPs by language of instruction
-- [ ] **BROW-05**: User can filter BIPs by physical mobility date range
-- [ ] **BROW-06**: User can filter BIPs by ECTS credits
-- [ ] **BROW-07**: User can filter BIPs by application status (open / closed)
-- [ ] **BROW-08**: User can filter BIPs by study level (Bachelor / Master / PhD)
+- [x] **BROW-04**: User can filter BIPs by language of instruction
+- [x] **BROW-05**: User can filter BIPs by physical mobility date range
+- [x] **BROW-06**: User can filter BIPs by ECTS credits
+- [x] **BROW-07**: User can filter BIPs by application status (open / closed)
+- [x] **BROW-08**: User can filter BIPs by study level (Bachelor / Master / PhD)
 - [ ] **BROW-09**: User can full-text search across BIP title, description, and university name (with `unaccent` so "Munchen" finds "München")
 - [ ] **BROW-10**: User can sort by newest, deadline soonest, or alphabetical
 - [ ] **BROW-11**: User filter selections are reflected in the URL (`/bips?country=de&field=engineering`) and shareable
@@ -38,7 +38,7 @@
 - [ ] **DETL-03**: User sees host university and partner universities (registered or free-text)
 - [ ] **DETL-04**: User sees physical start/end dates, application deadline, ECTS credits, max participants, eligibility notes
 - [ ] **DETL-05**: User sees CEFR minimum language level required
-- [ ] **DETL-06**: User sees badges for "Green travel eligible" and "Inclusion support" when applicable
+- [x] **DETL-06**: User sees badges for "Green travel eligible" and "Inclusion support" when applicable
 - [ ] **DETL-07**: User sees how-to-apply information (coordinator contact details or external URL)
 - [ ] **DETL-08**: User can share the BIP via web share API or copy link
 - [ ] **DETL-09**: User can bookmark the BIP via localStorage (no account required)
@@ -105,7 +105,7 @@
 - [ ] **FOUN-06**: Site has a privacy policy page covering data processing for EU users
 - [ ] **FOUN-07**: Coordinator can delete their account; approved BIPs are anonymized, drafts deleted (GDPR right to erasure)
 - [ ] **FOUN-08**: Repository is open-source with MIT license, README, and CONTRIBUTING.md
-- [ ] **FOUN-09**: Local dev setup is `supabase start` + `npm run dev` with seeded data, no extra steps
+- [x] **FOUN-09**: Local dev setup is `supabase start` + `npm run dev` with seeded data, no extra steps
 - [ ] **FOUN-10**: Playwright E2E suite covers: auth flow, submission wizard, admin approve/reject, map click-to-filter
 
 ## v2 Requirements
@@ -158,20 +158,20 @@ Phase mappings derived from `.planning/research/SUMMARY.md` Recommended Phase Or
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | DISC-01 | Phase 1 | Pending |
-| DISC-02 | Phase 1 | Pending |
-| DISC-03 | Phase 1 | Pending |
-| DISC-04 | Phase 1 | Pending |
-| DISC-05 | Phase 1 | Pending |
+| DISC-02 | Phase 1 | Complete |
+| DISC-03 | Phase 1 | Complete |
+| DISC-04 | Phase 1 | Complete |
+| DISC-05 | Phase 1 | Complete |
 | DISC-06 | Phase 1 | Pending |
 | DISC-07 | Phase 1 | Pending |
 | BROW-01 | Phase 1 | Pending |
 | BROW-02 | Phase 1 | Pending |
 | BROW-03 | Phase 1 | Pending |
-| BROW-04 | Phase 1 | Pending |
-| BROW-05 | Phase 1 | Pending |
-| BROW-06 | Phase 1 | Pending |
-| BROW-07 | Phase 1 | Pending |
-| BROW-08 | Phase 1 | Pending |
+| BROW-04 | Phase 1 | Complete |
+| BROW-05 | Phase 1 | Complete |
+| BROW-06 | Phase 1 | Complete |
+| BROW-07 | Phase 1 | Complete |
+| BROW-08 | Phase 1 | Complete |
 | BROW-09 | Phase 1 | Pending |
 | BROW-10 | Phase 1 | Pending |
 | BROW-11 | Phase 1 | Pending |
@@ -182,7 +182,7 @@ Phase mappings derived from `.planning/research/SUMMARY.md` Recommended Phase Or
 | DETL-03 | Phase 1 | Pending |
 | DETL-04 | Phase 1 | Pending |
 | DETL-05 | Phase 1 | Pending |
-| DETL-06 | Phase 1 | Pending |
+| DETL-06 | Phase 1 | Complete |
 | DETL-07 | Phase 1 | Pending |
 | DETL-08 | Phase 1 | Pending |
 | DETL-09 | Phase 1 | Pending |
@@ -193,7 +193,7 @@ Phase mappings derived from `.planning/research/SUMMARY.md` Recommended Phase Or
 | FOUN-03 | Phase 1 | Pending |
 | FOUN-04 | Phase 1 | Pending |
 | FOUN-08 | Phase 1 | Pending |
-| FOUN-09 | Phase 1 | Pending |
+| FOUN-09 | Phase 1 | Complete |
 | AUTH-01 | Phase 2 | Pending |
 | AUTH-02 | Phase 2 | Pending |
 | AUTH-03 | Phase 2 | Pending |
