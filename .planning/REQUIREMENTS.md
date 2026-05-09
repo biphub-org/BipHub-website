@@ -104,7 +104,7 @@
 - [ ] **FOUN-05**: Site shows a GDPR cookie consent banner before any analytics scripts load
 - [ ] **FOUN-06**: Site has a privacy policy page covering data processing for EU users
 - [ ] **FOUN-07**: Coordinator can delete their account; approved BIPs are anonymized, drafts deleted (GDPR right to erasure)
-- [ ] **FOUN-08**: Repository is open-source with MIT license, README, and CONTRIBUTING.md
+- [x] **FOUN-08**: Repository is open-source with MIT license, README, and CONTRIBUTING.md
 - [x] **FOUN-09**: Local dev setup is `supabase start` + `npm run dev` with seeded data, no extra steps
 - [ ] **FOUN-10**: Playwright E2E suite covers: auth flow, submission wizard, admin approve/reject, map click-to-filter
 
@@ -192,7 +192,7 @@ Phase mappings derived from `.planning/research/SUMMARY.md` Recommended Phase Or
 | FOUN-02 | Phase 1 | Complete |
 | FOUN-03 | Phase 1 | Complete |
 | FOUN-04 | Phase 1 | Complete |
-| FOUN-08 | Phase 1 | Pending |
+| FOUN-08 | Phase 1 | Complete |
 | FOUN-09 | Phase 1 | Complete |
 | AUTH-01 | Phase 2 | Pending |
 | AUTH-02 | Phase 2 | Pending |
