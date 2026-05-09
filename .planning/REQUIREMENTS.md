@@ -7,13 +7,13 @@
 
 ### Discovery (Homepage)
 
-- [ ] **DISC-01**: User sees homepage matching `biphub-homepage.html` visual (sticky nav, hero with gold underline accent, 96px section padding, EU palette, Inter typography)
+- [x] **DISC-01**: User sees homepage matching `biphub-homepage.html` visual (sticky nav, hero with gold underline accent, 96px section padding, EU palette, Inter typography)
 - [x] **DISC-02**: User sees an interactive Europe map showing all 29 Erasmus+ countries with color intensity scaled to BIP count, click filters `/bips` by country
 - [x] **DISC-03**: User sees an 8-category field-of-study bar (Engineering, Business, Sciences, Arts & Design, Health, Social Sciences, Environment, Humanities), click filters `/bips`
 - [x] **DISC-04**: User sees a live stats section (BIPs / Universities / Countries / Open applications) with count-up animation on scroll into view
 - [x] **DISC-05**: User sees "Recently added" section showing 3 BIP cards when ≥6 approved BIPs exist; sees "be among the first" coordinator acquisition teaser when below threshold
-- [ ] **DISC-06**: User sees a 3-step "How it works" explainer (Find → Apply → Go) with numbered circles and dashed connectors on desktop
-- [ ] **DISC-07**: User sees a dark-navy university CTA section with mock feature rows and gold primary CTA
+- [x] **DISC-06**: User sees a 3-step "How it works" explainer (Find → Apply → Go) with numbered circles and dashed connectors on desktop
+- [x] **DISC-07**: User sees a dark-navy university CTA section with mock feature rows and gold primary CTA
 
 ### Browse (BIP Listing)
 
@@ -41,7 +41,7 @@
 - [x] **DETL-06**: User sees badges for "Green travel eligible" and "Inclusion support" when applicable
 - [ ] **DETL-07**: User sees how-to-apply information (coordinator contact details or external URL)
 - [ ] **DETL-08**: User can share the BIP via web share API or copy link
-- [ ] **DETL-09**: User can bookmark the BIP via localStorage (no account required)
+- [x] **DETL-09**: User can bookmark the BIP via localStorage (no account required)
 - [ ] **DETL-10**: BIP detail page has SSR meta tags and a per-BIP OpenGraph image
 
 ### Info (Static Content)
@@ -157,13 +157,13 @@ Phase mappings derived from `.planning/research/SUMMARY.md` Recommended Phase Or
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DISC-01 | Phase 1 | Pending |
+| DISC-01 | Phase 1 | Complete |
 | DISC-02 | Phase 1 | Complete |
 | DISC-03 | Phase 1 | Complete |
 | DISC-04 | Phase 1 | Complete |
 | DISC-05 | Phase 1 | Complete |
-| DISC-06 | Phase 1 | Pending |
-| DISC-07 | Phase 1 | Pending |
+| DISC-06 | Phase 1 | Complete |
+| DISC-07 | Phase 1 | Complete |
 | BROW-01 | Phase 1 | Pending |
 | BROW-02 | Phase 1 | Pending |
 | BROW-03 | Phase 1 | Pending |
@@ -185,7 +185,7 @@ Phase mappings derived from `.planning/research/SUMMARY.md` Recommended Phase Or
 | DETL-06 | Phase 1 | Complete |
 | DETL-07 | Phase 1 | Pending |
 | DETL-08 | Phase 1 | Pending |
-| DETL-09 | Phase 1 | Pending |
+| DETL-09 | Phase 1 | Complete |
 | DETL-10 | Phase 1 | Pending |
 | INFO-03 | Phase 1 | Complete |
 | FOUN-01 | Phase 1 | Complete |

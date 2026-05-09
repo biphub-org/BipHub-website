@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Wave 3 complete — Plans 01-03, 01-04, 01-08 shipped; next: Wave 4 Plan 01-05 (homepage composition)"
-last_updated: "2026-05-09T01:30:00.000Z"
-last_activity: 2026-05-09 -- Plans 01-01..01-04 + 01-08 complete (5/8); 01-05/01-06/01-07 pending
+stopped_at: "Plan 01-05 complete — homepage composition shipped; next: Plan 01-06 (/bips browse page)"
+last_updated: "2026-05-09T05:00:00.000Z"
+last_activity: 2026-05-09 -- Plans 01-01..01-05 + 01-08 complete (6/8); 01-06/01-07 pending
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 8
-  completed_plans: 5
-  percent: 62
+  completed_plans: 6
+  percent: 75
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-05-08)
 ## Current Position
 
 Phase: 1 (Discovery Foundation) — EXECUTING
-Plan: 5 of 8 complete (Wave 3 done) — Wave 4 next (Plan 01-05 homepage composition)
+Plan: 6 of 8 complete (Wave 4 Plan 01-05 done) — Wave 4 continues (Plans 01-06, 01-07 pending)
 Status: Executing Phase 1
-Last activity: 2026-05-09 -- Wave 3 (01-03 seed, 01-04 chrome, 01-08 auth-infra) complete; Plans 01-05/06/07 still pending
+Last activity: 2026-05-09 -- Plan 01-05 (homepage composition) shipped; DISC-01..07 + DETL-09 satisfied; Plans 01-06/07 still pending
 
-Progress: [██████░░░░] 62%
+Progress: [████████░░] 75%
 
 ## Performance Metrics
 
@@ -53,6 +53,7 @@ Progress: [██████░░░░] 62%
 
 *Updated after each plan completion*
 | Phase 01 P04 | 40min | 2 tasks | 9 files |
+| Phase 01 P05 | 90min | 2 tasks | 21 files |
 
 ## Accumulated Context
 
@@ -91,6 +92,10 @@ Recent decisions affecting current work:
 - Plan 01-08: ESLint no-restricted-imports rule prevents lib/supabase/admin from being imported outside app/(admin)/ and the file itself; synthetic violation test confirmed rule fires
 - Plan 01-08: migration 00008 is additive — adds REVOKE EXECUTE security hardening and backfill on top of 00002's existing sync_role_to_app_metadata() trigger (trigger already covers INSERT+UPDATE OF role correctly)
 - Plan 01-08: CookieOptions type imported explicitly in middleware.ts setAll() — TypeScript strict mode requires explicit parameter types (Rule 1 fix)
+- Plan 01-05: EuropeMap is dynamic + ssr:false in 'use client' EuropeMapWrapper; Next.js 15 rejects ssr:false in RSC — wrapper pattern is the correct fix
+- Plan 01-05: motion via LazyMotion only (StatsSection count-up); no top-level motion import anywhere
+- Plan 01-05: bookmark store uses Zustand with manual hydrate()/toggle() and localStorage key 'biphub:bookmarks'; mount-effect hydration guard prevents SSR mismatch
+- Plan 01-05: choropleth bins lookup is a static lookup object in TIERS[].fillClass and TIER_FILL_CLASSES (no template literals); class names match @theme inline tier tokens from Plan 01-04
 
 ### Pending Todos
 
@@ -111,7 +116,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-05-09T01:30:00.000Z
-Stopped at: Plan 01-08 complete — auth infrastructure shipped (middleware.ts, admin.ts, ESLint isolation, migration 00008); Phase 1 complete
+Last session: 2026-05-09T05:00:00.000Z
+Stopped at: Plan 01-05 complete — homepage composition shipped; next Plan 01-06 (/bips browse page)
 Resume file: None
-Resume instructions: Phase 1 complete. Begin Phase 2 planning (coordinator auth UI: signIn/signUp/signOut Server Actions, /login, /register, /auth/callback routes, coordinator dashboard)
+Resume instructions: Plans 01-06 and 01-07 remain. Run /gsd-execute-phase 1 for 01-06 (/bips browse page with filter sidebar, search, pagination) then 01-07 (/bip/[slug] detail page).
