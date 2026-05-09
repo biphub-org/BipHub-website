@@ -1,0 +1,131 @@
+import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
+import { getBipBySlug, getAllPublishedSlugs } from '@/lib/queries/bipDetail'
+import { getCountryName } from '@/lib/countries'
+import { BipHeader } from '@/components/bip/BipHeader'
+import { BipBody } from '@/components/bip/BipBody'
+import { BipSidebar } from '@/components/bip/BipSidebar'
+import { BipMobileApplyBar } from '@/components/bip/BipMobileApplyBar'
+import { IconChevronLeft } from '@tabler/icons-react'
+import Link from 'next/link'
+
+/**
+ * ISR — revalidate every hour. Phase 3 admin approve/reject calls
+ * revalidatePath('/bip/{slug}') to bust the cache immediately.
+ */
+export const revalidate = 3600
+
+/**
+ * Pre-render all approved BIPs at build time.
+ * Remaining live BIPs (added after build) use ISR fallback.
+ */
+export async function generateStaticParams(): Promise<{ slug: string }[]> {
+  const slugs = await getAllPublishedSlugs()
+  return slugs.map((slug) => ({ slug }))
+}
+
+/**
+ * generateMetadata — returns title, description (≤155 chars), canonical URL,
+ * and OpenGraph metadata. The colocated opengraph-image.tsx is auto-discovered
+ * by Next.js 15 and injected as og:image automatically.
+ *
+ * UI-SPEC line 287-288: title and description templates.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+  const { slug } = await params
+  const bip = await getBipBySlug(slug)
+
+  if (!bip) {
+    return { title: 'BIP not found · BipHub' }
+  }
+
+  const host = bip.host_university
+  const countryName = host?.country ? getCountryName(host.country) : ''
+  const startDate = bip.physical_start_date ?? ''
+  const endDate = bip.physical_end_date ?? ''
+  const dateRange = startDate && endDate ? `${startDate}–${endDate}` : startDate
+  const deadlineText = bip.application_deadline ? `Apply by ${bip.application_deadline}.` : ''
+
+  const descriptionFull = [
+    `${bip.title} at ${host?.name ?? ''}`,
+    `(${[bip.host_city, countryName].filter(Boolean).join(', ')}).`,
+    bip.ects_credits ? `${bip.ects_credits} ECTS,` : '',
+    bip.language_of_instruction ?? '',
+    dateRange ? `${dateRange}.` : '',
+    deadlineText,
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .slice(0, 155)
+
+  const pageTitle = `${bip.title} — ${host?.name ?? ''} · BipHub`
+
+  return {
+    title: pageTitle,
+    description: descriptionFull,
+    alternates: {
+      canonical: `https://biphub.eu/bip/${slug}`,
+    },
+    openGraph: {
+      title: pageTitle,
+      description: descriptionFull,
+      type: 'article',
+    },
+  }
+}
+
+/**
+ * /bip/[slug] — async RSC page.
+ *
+ * Layout: 2-column desktop (1fr + 340px sticky sidebar) / single-column mobile.
+ * Mobile: sticky-bottom Apply bar via <BipMobileApplyBar>.
+ *
+ * Architecture:
+ *   - getBipBySlug fetches BIP + host_university + partners in ONE query (Pitfall 21)
+ *   - notFound() triggers not-found.tsx → <BipNotFound> when slug doesn't resolve
+ *   - ISR revalidate=3600 keeps cache fresh; Phase 3 admin actions call revalidatePath()
+ */
+export default async function BipDetailPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
+  const { slug } = await params
+  const bip = await getBipBySlug(slug)
+
+  if (!bip) {
+    notFound()
+  }
+
+  return (
+    <>
+      <div className="container mx-auto max-w-[1200px] px-4 lg:px-6 py-8 lg:py-12 pb-24 lg:pb-12">
+        {/* Breadcrumb — UI-SPEC line 268 */}
+        <Link
+          href="/bips"
+          className="inline-flex items-center gap-1 text-sm text-muted hover:text-eu-blue mb-6 transition-colors"
+        >
+          <IconChevronLeft size={16} aria-hidden="true" />
+          All BIPs
+        </Link>
+
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-8 lg:gap-12">
+          <div>
+            <BipHeader bip={bip} />
+            <BipBody bip={bip} />
+          </div>
+          <BipSidebar bip={bip} />
+        </div>
+      </div>
+
+      {/* Mobile sticky bottom Apply bar — hidden at lg+ (D-10) */}
+      <div className="lg:hidden">
+        <BipMobileApplyBar bip={bip} />
+      </div>
+    </>
+  )
+}
