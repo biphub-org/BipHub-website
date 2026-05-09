@@ -19,12 +19,17 @@ export type BipsQueryResult = {
 export async function getBips(filters: BipFilterState): Promise<BipsQueryResult> {
   const supabase = await createClient()
 
-  // count: 'exact' returns total matching rows; head: false returns the rows too
+  // When filtering by country, use !inner so PostgREST returns the host_university
+  // object instead of nulling it out on matched rows (embedded filter behaviour).
+  const universityJoin = filters.country?.length
+    ? 'host_university:universities!host_university_id!inner(id, name, country, city, erasmus_code)'
+    : 'host_university:universities!host_university_id(id, name, country, city, erasmus_code)'
+
   const baseSelect = `
     id, slug, title, application_deadline, ects_credits, language_of_instruction,
     physical_start_date, physical_end_date, host_city, study_levels,
     green_travel, inclusion_support, is_seed, status, created_at, subject_area,
-    host_university:universities!host_university_id(id, name, country, city, erasmus_code)
+    ${universityJoin}
   `
 
   const query = supabase

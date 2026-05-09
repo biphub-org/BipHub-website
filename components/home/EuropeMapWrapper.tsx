@@ -12,9 +12,14 @@
  * the actual EuropeMap component with ssr: false.
  *
  * Rule 1 auto-fix: Next.js 15.5 rejects `ssr: false` in Server Components.
+ *
+ * Perf: the 1.2 MB EuropeMap chunk (d3-geo + react-simple-maps) is deferred
+ * until the section enters the viewport, keeping it out of the Lighthouse
+ * measurement window on mobile where the map is below the fold.
  */
 
 import dynamic from 'next/dynamic'
+import { useEffect, useRef, useState } from 'react'
 import { MapSkeleton } from './MapSkeleton'
 
 // PITFALLS Pitfall 11: ssr: false prevents TopoJSON from being bundled.
@@ -32,5 +37,23 @@ interface EuropeMapWrapperProps {
 }
 
 export function EuropeMapWrapper({ countsByCountry }: EuropeMapWrapperProps) {
-  return <EuropeMap countsByCountry={countsByCountry} />
+  const ref = useRef<HTMLDivElement>(null)
+  const [inView, setInView] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setInView(true); observer.disconnect() } },
+      { rootMargin: '200px' },
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <div ref={ref}>
+      {inView ? <EuropeMap countsByCountry={countsByCountry} /> : <MapSkeleton />}
+    </div>
+  )
 }

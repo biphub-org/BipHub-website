@@ -8,7 +8,7 @@ import './globals.css'
 // `latin-ext` is required so accented seed data (München, Łódź, Köln) renders.
 const inter = Inter({
   subsets: ['latin', 'latin-ext'],
-  weight: ['400', '500', '600', '700'],
+  weight: ['400', '600', '700'],
   display: 'swap',
   variable: '--font-inter',
 })

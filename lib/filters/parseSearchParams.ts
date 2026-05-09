@@ -18,7 +18,7 @@ export const STUDY_LEVELS = ['bachelor', 'master', 'phd'] as const
 const csvArray = (allowed: readonly string[]) =>
   z
     .union([z.string(), z.array(z.string())])
-    .transform((v) => (Array.isArray(v) ? v : v.split(',').filter(Boolean)))
+    .transform((v) => (Array.isArray(v) ? v : v.split(',').filter(Boolean)).map((s) => s.toLowerCase()))
     .pipe(z.array(z.enum(allowed as [string, ...string[]])))
     .optional()
 
