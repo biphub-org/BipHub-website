@@ -70,8 +70,8 @@ Plans:
 **Plans:** 7 plans
 Plans:
 - [x] 02-01-PLAN.md — Migration 00009 (profiles.erasmus_code + insert_university_if_not_exists SECURITY DEFINER) + db reset + types regen + 13 shadcn UI primitives + status color tokens + lib/utils/status.ts
-- [ ] 02-02-PLAN.md — (auth) route group: layout + login/register/verify-email/reset-password/reset-password-update pages + 4 client forms (RHF + Zod v3) + 5 Server Actions (signIn/signUp/signOut/requestPasswordReset/updatePassword) + auth/callback route handler (PKCE)
-- [ ] 02-03-PLAN.md — Middleware Phase 2 redirect branches + x-pathname header injection; (public)/layout.tsx async + getClaims; StickyNav session-aware (D-15)
+- [x] 02-02-PLAN.md — (auth) route group: layout + login/register/verify-email/reset-password/reset-password-update pages + 4 client forms (RHF + Zod v3) + 5 Server Actions (signIn/signUp/signOut/requestPasswordReset/updatePassword) + auth/callback route handler (PKCE)
+- [x] 02-03-PLAN.md — Middleware Phase 2 redirect branches + x-pathname header injection; (public)/layout.tsx async + getClaims; StickyNav session-aware (D-15)
 - [ ] 02-04-PLAN.md — (dashboard) layout (auth + profile-complete gate via x-pathname) + DashboardNav + /onboarding RSC + OnboardingForm + UniversityCombobox (with inline add-new flow via SECURITY DEFINER RPC) + saveProfileAction + searchUniversitiesAction + addUniversityAction
 - [ ] 02-05-PLAN.md — Coordinator /dashboard: getCoordinatorBips RSC query + DashboardBipList (shadcn Tabs + URL ?status=) + DashboardBipCard (status badge from STATUS_BADGE_CLASSES + per-status actions) + Delete/Withdraw dialogs + deleteDraftAction + withdrawBipAction
 - [ ] 02-06-PLAN.md — Wizard core: lib/store/bip-draft.ts (Zustand) + lib/schemas/bip-wizard.ts (4 step schemas) + lib/actions/bip-draft.ts (saveDraftAction with updated_at optimistic lock) + slug utility + BipSubmissionWizard shell (1.5s debounced auto-save + onAuthStateChange SIGNED_OUT recovery) + SaveStatusIndicator + WizardStep1..4 components
