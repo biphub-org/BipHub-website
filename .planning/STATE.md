@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Plan 01-03 complete — seed catalog live, verify:seed ALL GREEN, SUMMARY.md committed"
-last_updated: "2026-05-09T00:52:50.695Z"
+stopped_at: "Plan 01-08 complete — auth infrastructure shipped (middleware.ts, admin.ts, ESLint isolation, migration 00008)"
+last_updated: "2026-05-09T01:30:00.000Z"
 last_activity: 2026-05-09
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 8
-  completed_plans: 4
-  percent: 50
+  completed_plans: 8
+  percent: 100
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-05-08)
 ## Current Position
 
 Phase: 1 (Discovery Foundation) — EXECUTING
-Plan: 4 of 8 complete (Wave 3 done) — Wave 4 next (Plans 01-04, 01-05, 01-06, 01-07, 01-08)
-Status: Ready to execute
+Plan: 8 of 8 complete (Phase 1 complete) — Phase 2 next (coordinator auth UI)
+Status: Phase 1 complete
 Last activity: 2026-05-09
 
-Progress: [███░░░░░░░] 38%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -87,6 +87,10 @@ Recent decisions affecting current work:
 - [Phase ?]: Plan 01-04: EC disclaimer migrated from app/(public)/page.tsx (temp Plan 01-01) to components/home/Footer.tsx; Footer is rendered inside (public)/layout.tsx so all 3 routes inherit it
 - [Phase ?]: Plan 01-04: Tailwind md breakpoint overridden to 60rem (960px) via @theme inline per UI-SPEC line 462-468; all downstream plans (01-05, 01-06, 01-07) inherit this
 - [Phase ?]: Plan 01-04: lib/utils.ts (shadcn) and lib/utils/cn.ts (plan-required) both export cn from same source — chosen to keep shadcn add commands working without rewiring
+- Plan 01-08: middleware uses getClaims() only — Phase 1 has zero auth redirects (D-12, Pitfall 2)
+- Plan 01-08: ESLint no-restricted-imports rule prevents lib/supabase/admin from being imported outside app/(admin)/ and the file itself; synthetic violation test confirmed rule fires
+- Plan 01-08: migration 00008 is additive — adds REVOKE EXECUTE security hardening and backfill on top of 00002's existing sync_role_to_app_metadata() trigger (trigger already covers INSERT+UPDATE OF role correctly)
+- Plan 01-08: CookieOptions type imported explicitly in middleware.ts setAll() — TypeScript strict mode requires explicit parameter types (Rule 1 fix)
 
 ### Pending Todos
 
@@ -107,7 +111,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-05-09T00:52:50.687Z
-Stopped at: Plan 01-03 complete — seed catalog live, verify:seed ALL GREEN, SUMMARY.md committed
+Last session: 2026-05-09T01:30:00.000Z
+Stopped at: Plan 01-08 complete — auth infrastructure shipped (middleware.ts, admin.ts, ESLint isolation, migration 00008); Phase 1 complete
 Resume file: None
-Resume instructions: Run `npx supabase status` to verify local stack is running, then execute Plan 01-04 (public route-group chrome: StickyNav, Footer, EU palette, LogoMark)
+Resume instructions: Phase 1 complete. Begin Phase 2 planning (coordinator auth UI: signIn/signUp/signOut Server Actions, /login, /register, /auth/callback routes, coordinator dashboard)

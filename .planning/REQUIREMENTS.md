@@ -97,7 +97,7 @@
 
 ### Foundation (Non-Functional)
 
-- [ ] **FOUN-01**: Every Supabase table has `ENABLE ROW LEVEL SECURITY` with policies covering SELECT/INSERT/UPDATE/DELETE per role (anon, coordinator, admin) — every UPDATE policy includes both `USING` and `WITH CHECK`
+- [x] **FOUN-01**: Every Supabase table has `ENABLE ROW LEVEL SECURITY` with policies covering SELECT/INSERT/UPDATE/DELETE per role (anon, coordinator, admin) — every UPDATE policy includes both `USING` and `WITH CHECK`
 - [ ] **FOUN-02**: Homepage and `/bips` achieve Lighthouse > 90 on Performance, Accessibility, SEO; LCP < 1.5s on 4G mobile
 - [x] **FOUN-03**: Site meets WCAG AA: forms keyboard-navigable, ARIA labels present, Europe map has country `<select>` fallback for keyboard users
 - [x] **FOUN-04**: Inter font is self-hosted via `next/font` (no `fonts.googleapis.com` cross-origin request)
@@ -188,7 +188,7 @@ Phase mappings derived from `.planning/research/SUMMARY.md` Recommended Phase Or
 | DETL-09 | Phase 1 | Pending |
 | DETL-10 | Phase 1 | Pending |
 | INFO-03 | Phase 1 | Complete |
-| FOUN-01 | Phase 1 | Pending |
+| FOUN-01 | Phase 1 | Complete |
 | FOUN-02 | Phase 1 | Pending |
 | FOUN-03 | Phase 1 | Complete |
 | FOUN-04 | Phase 1 | Complete |
