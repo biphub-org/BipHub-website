@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Plan 01-03 complete — proceeding to Plan 01-04 (public route-group chrome)
-last_updated: "2026-05-09T02:00:00Z"
-last_activity: 2026-05-09 -- Plan 01-03 complete; 20-BIP seed catalog live; verify-seed.ts ALL GREEN 16/16; FTS unaccent works for München and Łódź; npm run db:reset exits 0
+stopped_at: "Plan 01-03 complete — seed catalog live, verify:seed ALL GREEN, SUMMARY.md committed"
+last_updated: "2026-05-09T00:52:50.695Z"
+last_activity: 2026-05-09
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 8
-  completed_plans: 3
-  percent: 38
+  completed_plans: 4
+  percent: 50
 ---
 
 # Project State
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-05-08)
 ## Current Position
 
 Phase: 1 (Discovery Foundation) — EXECUTING
-Plan: 3 of 8 complete (Wave 3 done) — Wave 4 next (Plans 01-04, 01-05, 01-06, 01-07, 01-08)
-Status: Executing Phase 1
-Last activity: 2026-05-09 -- Plan 01-03 complete; 20-BIP seed catalog live; verify-seed.ts ALL GREEN 16/16; FTS unaccent works for München and Łódź; npm run db:reset exits 0
+Plan: 4 of 8 complete (Wave 3 done) — Wave 4 next (Plans 01-04, 01-05, 01-06, 01-07, 01-08)
+Status: Ready to execute
+Last activity: 2026-05-09
 
 Progress: [███░░░░░░░] 38%
 
@@ -52,6 +52,7 @@ Progress: [███░░░░░░░] 38%
 - Trend: —
 
 *Updated after each plan completion*
+| Phase 01 P04 | 40min | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -82,6 +83,10 @@ Recent decisions affecting current work:
 - Plan 01-03: delete-first idempotency chosen over ON CONFLICT DO NOTHING for seed.sql — simpler with FK chains
 - Plan 01-03: verify-seed.ts uses service-role key — RLS bypass correct for local-dev audit; script is outside app/ lib/ components/ so ESLint won't pick it up
 - Plan 01-03: green_travel=7 rows (target 6±1=5-7); en×16 language count (en≥10 required, passes); both within verifier range
+- [Phase ?]: Plan 01-04: 11-star LogoMark — count locked at 11 to avoid EC 12-star emblem trademark issue (CLAUDE.md never-do)
+- [Phase ?]: Plan 01-04: EC disclaimer migrated from app/(public)/page.tsx (temp Plan 01-01) to components/home/Footer.tsx; Footer is rendered inside (public)/layout.tsx so all 3 routes inherit it
+- [Phase ?]: Plan 01-04: Tailwind md breakpoint overridden to 60rem (960px) via @theme inline per UI-SPEC line 462-468; all downstream plans (01-05, 01-06, 01-07) inherit this
+- [Phase ?]: Plan 01-04: lib/utils.ts (shadcn) and lib/utils/cn.ts (plan-required) both export cn from same source — chosen to keep shadcn add commands working without rewiring
 
 ### Pending Todos
 
@@ -102,7 +107,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-05-09
+Last session: 2026-05-09T00:52:50.687Z
 Stopped at: Plan 01-03 complete — seed catalog live, verify:seed ALL GREEN, SUMMARY.md committed
-Resume file: .planning/phases/01-discovery-foundation/01-04-PLAN.md
+Resume file: None
 Resume instructions: Run `npx supabase status` to verify local stack is running, then execute Plan 01-04 (public route-group chrome: StickyNav, Footer, EU palette, LogoMark)

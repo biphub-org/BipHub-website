@@ -48,7 +48,7 @@
 
 - [ ] **INFO-01**: User can read a "What is a BIP?" explainer page covering Erasmus+ KA131, virtual component requirement, ECTS, eligibility
 - [ ] **INFO-02**: User sees a FAQ section on the explainer page
-- [ ] **INFO-03**: User sees footer disclaimer "Independent project — not affiliated with the European Commission" on every page
+- [x] **INFO-03**: User sees footer disclaimer "Independent project — not affiliated with the European Commission" on every page
 - [ ] **INFO-04**: User can link out to official EC Erasmus+ documentation
 
 ### Authentication
@@ -99,8 +99,8 @@
 
 - [ ] **FOUN-01**: Every Supabase table has `ENABLE ROW LEVEL SECURITY` with policies covering SELECT/INSERT/UPDATE/DELETE per role (anon, coordinator, admin) — every UPDATE policy includes both `USING` and `WITH CHECK`
 - [ ] **FOUN-02**: Homepage and `/bips` achieve Lighthouse > 90 on Performance, Accessibility, SEO; LCP < 1.5s on 4G mobile
-- [ ] **FOUN-03**: Site meets WCAG AA: forms keyboard-navigable, ARIA labels present, Europe map has country `<select>` fallback for keyboard users
-- [ ] **FOUN-04**: Inter font is self-hosted via `next/font` (no `fonts.googleapis.com` cross-origin request)
+- [x] **FOUN-03**: Site meets WCAG AA: forms keyboard-navigable, ARIA labels present, Europe map has country `<select>` fallback for keyboard users
+- [x] **FOUN-04**: Inter font is self-hosted via `next/font` (no `fonts.googleapis.com` cross-origin request)
 - [ ] **FOUN-05**: Site shows a GDPR cookie consent banner before any analytics scripts load
 - [ ] **FOUN-06**: Site has a privacy policy page covering data processing for EU users
 - [ ] **FOUN-07**: Coordinator can delete their account; approved BIPs are anonymized, drafts deleted (GDPR right to erasure)
@@ -187,11 +187,11 @@ Phase mappings derived from `.planning/research/SUMMARY.md` Recommended Phase Or
 | DETL-08 | Phase 1 | Pending |
 | DETL-09 | Phase 1 | Pending |
 | DETL-10 | Phase 1 | Pending |
-| INFO-03 | Phase 1 | Pending |
+| INFO-03 | Phase 1 | Complete |
 | FOUN-01 | Phase 1 | Pending |
 | FOUN-02 | Phase 1 | Pending |
-| FOUN-03 | Phase 1 | Pending |
-| FOUN-04 | Phase 1 | Pending |
+| FOUN-03 | Phase 1 | Complete |
+| FOUN-04 | Phase 1 | Complete |
 | FOUN-08 | Phase 1 | Pending |
 | FOUN-09 | Phase 1 | Complete |
 | AUTH-01 | Phase 2 | Pending |
