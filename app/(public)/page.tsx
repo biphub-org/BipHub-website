@@ -1,54 +1,86 @@
-import { createClient } from '@/lib/supabase/server'
+/**
+ * Homepage — DISC-01 through DISC-07.
+ *
+ * Async RSC that fetches all homepage data server-side, then passes typed props
+ * to each section component. Client islands (EuropeMap, CategoriesBar, StatsSection,
+ * BookmarkHeartIsland) receive pre-fetched data as props.
+ *
+ * Architecture: Pattern 1 from ARCHITECTURE.md — RSC data fetcher + client island props.
+ *
+ * revalidate = 3600: Next.js ISR — homepage data refreshes hourly without full rebuild.
+ *
+ * PITFALLS:
+ *   Pitfall 11: EuropeMap loaded via dynamic({ ssr: false }) — never imported statically.
+ *   Pitfall 12: StatsSection animation via LazyMotion (wrapped inside StatsSection).
+ *   Pitfall 13: Choropleth tier fill classes are full string literals in lib/map/bins.ts.
+ */
 
-// Walking-skeleton homepage. Plan 01-05 replaces this with the full
-// Hero + EuropeMap + CategoriesBar + StatsSection + RecentBips + HowItWorks
-// + UniversityCTA composition. For now, this RSC's only job is to prove that
-// the Next.js -> Supabase -> RLS -> render round-trip works end-to-end.
-//
-// Subsequent plans MUST keep this server-side data-fetch pattern: RSC fetches
-// data with the server client and passes it down as props (ARCHITECTURE Pattern
-// 1 "RSC passes props to client components").
+import { createClient } from '@/lib/supabase/server'
+import {
+  getApprovedBipCount,
+  getBipCountsByCountry,
+  getBipCountsByField,
+  getRecentBips,
+  getStatsSnapshot,
+} from '@/lib/queries/homepage'
+import { Hero } from '@/components/home/Hero'
+import { CategoriesBar } from '@/components/home/CategoriesBar'
+import { StatsSection } from '@/components/home/StatsSection'
+import { RecentBips } from '@/components/home/RecentBips'
+import { HowItWorks } from '@/components/home/HowItWorks'
+import { UniversityCTA } from '@/components/home/UniversityCTA'
+// EuropeMapWrapper is a 'use client' component that hosts the dynamic({ ssr: false }) import.
+// Next.js 15 requires ssr:false dynamic() to live in a client component boundary.
+import { EuropeMapWrapper } from '@/components/home/EuropeMapWrapper'
+
+// 1-hour ISR: homepage data refreshes hourly without a full rebuild.
+// Coordinate submits (Plan 02+) revalidatePath('/') explicitly.
+export const revalidate = 3600
 
 export default async function HomePage() {
   const supabase = await createClient()
-  const { count, error } = await supabase
-    .from('bips')
-    .select('*', { count: 'exact', head: true })
-    .eq('status', 'approved')
 
-  if (error) {
-    // Phase 1 skeleton: surface DB errors directly so a misconfigured local
-    // setup is obvious. Plan 01-05 will replace with proper error.tsx.
-    return (
-      <main className="min-h-screen grid place-items-center p-8">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold">BipHub — skeleton</h1>
-          <p className="mt-4 text-red-600">
-            Supabase read failed: {error.message}
-          </p>
-          <p className="mt-2 text-sm text-gray-500">
-            Run <code>npx supabase status</code> and verify
-            <code>.env.local</code> matches.
-          </p>
-        </div>
-      </main>
-    )
-  }
+  // Parallel data fetching — all queries run concurrently via Promise.all
+  const [count, countsByCountry, countsByField, recentBips, stats] = await Promise.all([
+    getApprovedBipCount(supabase),
+    getBipCountsByCountry(supabase),
+    getBipCountsByField(supabase),
+    getRecentBips(supabase, 3),
+    getStatsSnapshot(supabase),
+  ])
+
+  // First seed slug for UniversityCTA "See sample listing" CTA.
+  // Use the most-recent approved BIP slug as a stable choice.
+  const firstSampleSlug = recentBips[0]?.slug ?? 'sustainable-cities-munich-2026'
 
   return (
-    <main className="min-h-screen grid place-items-center p-8">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold">BipHub</h1>
-        <p className="mt-2 text-sm">
-          Walking skeleton — Phase 1 / Plan 01.
-        </p>
-        <p className="mt-6 text-lg">
-          Approved BIPs in database: <strong>{count ?? 0}</strong>
-        </p>
-        <p className="mt-2 text-xs text-gray-500">
-          Plan 01-04 wires the real homepage.
-        </p>
-      </div>
-    </main>
+    <>
+      {/* DISC-01: Hero with gold underline accent */}
+      <Hero />
+
+      {/* DISC-02: Interactive Europe choropleth map (ssr:false via EuropeMapWrapper client boundary) */}
+      <section id="by-country" className="bg-bg-soft py-16 border-t border-b border-border md:py-24">
+        <div className="mx-auto max-w-[1200px] px-4 md:px-6">
+          <EuropeMapWrapper countsByCountry={countsByCountry} />
+        </div>
+      </section>
+
+      {/* DISC-03: 8-category field-of-study bar */}
+      <CategoriesBar countsByField={countsByField} />
+
+      {/* DISC-04: Live stats with count-up animation (LazyMotion inside StatsSection) */}
+      <StatsSection stats={stats} />
+
+      {/* DISC-05: Recent BIPs with ≥6 threshold gate */}
+      <RecentBips totalApprovedCount={count} bips={recentBips} />
+
+      {/* DISC-06: How it works — 3 steps */}
+      <section id="how-it-works">
+        <HowItWorks />
+      </section>
+
+      {/* DISC-07: Dark navy university CTA */}
+      <UniversityCTA sampleSlug={firstSampleSlug} />
+    </>
   )
 }
