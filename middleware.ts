@@ -1,44 +1,55 @@
-import { type NextRequest } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 import { createMiddlewareClient } from '@/lib/supabase/middleware'
 
 /**
- * Edge middleware for BipHub.
+ * Edge middleware for BipHub (Phase 2).
  *
- * Phase 1 (this implementation): refresh the Supabase session cookie on every
- * matched request, validate the JWT via getClaims(), but do NOT redirect
- * anywhere. Phase 1 has no auth UI -- redirecting to /login would create the
- * infinite-redirect loop described in PITFALLS Pitfall 2 (target route does
- * not exist; matcher would still hit it; loop).
+ * Responsibilities:
+ *   1. Refresh the Supabase session cookie on every matched request via getClaims()
+ *      -- getClaims validates the JWT signature locally (PITFALLS Pitfall 1).
+ *   2. Inject `x-pathname` response header so RSC layouts (notably the
+ *      (dashboard) layout's profile-complete gate) can read the current path
+ *      without parsing referer (Pitfall 2 prevention).
+ *   3. Phase 2 redirects:
+ *        - !claims && pathname.startsWith('/dashboard' | '/onboarding') -> /login
+ *        - claims && pathname === '/login' | '/register' -> /dashboard
  *
- * Phase 2 will add the redirect branches:
- *   - if !claims && pathname.startsWith('/dashboard') -> redirect('/login')
- *   - if claims && (pathname === '/login' || pathname === '/register') -> redirect('/dashboard')
- * Phase 3 will add the role guard:
- *   - if pathname.startsWith('/admin') && claims?.app_metadata?.role !== 'admin' -> redirect('/')
+ * Phase 3 will add an admin role guard on /admin paths.
  *
- * The matcher (below the function) was set in Plan 01-01 to exclude /login,
- * /register, /auth/callback, and static assets so Phase 2's redirects can be
- * added without re-editing the config -- preventing Pitfall 2.
- *
- * Pattern from ARCHITECTURE.md lines 388-457 (modified for Phase 1: no
- * redirects yet).
+ * NEVER use the unvalidated session reader -- it does not validate JWT signatures.
  */
 export async function middleware(request: NextRequest) {
   const { supabase, response } = createMiddlewareClient(request)
 
   // CRITICAL: getClaims() validates the JWT signature on every request.
-  // NEVER use getSession() in server code (PITFALLS Pitfall 1).
-  // The result is intentionally unused in Phase 1 -- the side effect is the
-  // session cookie refresh that createMiddlewareClient triggers via setAll().
-  // Phase 2 will branch on the result for redirects.
-  await supabase.auth.getClaims()
+  // `data` itself is null when no session exists; destructure carefully.
+  const { data } = await supabase.auth.getClaims()
+  const claims = data?.claims ?? null
+
+  const { pathname } = request.nextUrl
+
+  // (2) Inject pathname header for downstream RSC layouts (Pitfall 2 fix).
+  response.headers.set('x-pathname', pathname)
+
+  // (3a) Auth-required: dashboard + onboarding.
+  if (pathname.startsWith('/dashboard') || pathname.startsWith('/onboarding')) {
+    if (!claims) {
+      return NextResponse.redirect(new URL('/login', request.url))
+    }
+  }
+
+  // (3b) Already-authenticated: bounce off the auth pages.
+  // Note: matcher excludes /login and /register from middleware execution by default
+  // (existing config), so this branch only fires if the matcher is later expanded.
+  // Kept here for defense-in-depth and clarity if matcher changes in Phase 3+.
+  if (claims && (pathname === '/login' || pathname === '/register')) {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
 
   return response
 }
 
-// Matcher set in Plan 01-01 -- DO NOT modify here. Adding redirect logic in
-// Phase 2 requires no matcher change because /login, /register, /auth/callback
-// are already excluded.
+// Matcher set in Plan 01-01. DO NOT modify.
 export const config = {
   matcher: [
     // Run middleware on every path EXCEPT:
