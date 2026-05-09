@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Plan 01-05 complete — homepage composition shipped; next: Plan 01-06 (/bips browse page)"
-last_updated: "2026-05-09T05:00:00.000Z"
-last_activity: 2026-05-09 -- Plans 01-01..01-05 + 01-08 complete (6/8); 01-06/01-07 pending
+stopped_at: "Plan 01-06 complete — /bips browse page shipped; next: Plan 01-07 (/bip/[slug] detail page)"
+last_updated: "2026-05-09T07:30:00.000Z"
+last_activity: 2026-05-09 -- Plans 01-01..01-06 + 01-08 complete (7/8); 01-07 pending
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 8
-  completed_plans: 6
-  percent: 75
+  completed_plans: 7
+  percent: 88
 ---
 
 # Project State
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-05-08)
 ## Current Position
 
 Phase: 1 (Discovery Foundation) — EXECUTING
-Plan: 6 of 8 complete (Wave 4 Plan 01-05 done) — Wave 4 continues (Plans 01-06, 01-07 pending)
+Plan: 7 of 8 complete (Plan 01-06 done) — Plan 01-07 (/bip/[slug] detail page) pending
 Status: Executing Phase 1
-Last activity: 2026-05-09 -- Plan 01-05 (homepage composition) shipped; DISC-01..07 + DETL-09 satisfied; Plans 01-06/07 still pending
+Last activity: 2026-05-09 -- Plan 01-06 (/bips browse page) shipped; BROW-01..13 + FOUN-02 satisfied; Plan 01-07 still pending
 
 Progress: [████████░░] 75%
 
@@ -96,6 +96,12 @@ Recent decisions affecting current work:
 - Plan 01-05: motion via LazyMotion only (StatsSection count-up); no top-level motion import anywhere
 - Plan 01-05: bookmark store uses Zustand with manual hydrate()/toggle() and localStorage key 'biphub:bookmarks'; mount-effect hydration guard prevents SSR mismatch
 - Plan 01-05: choropleth bins lookup is a static lookup object in TIERS[].fillClass and TIER_FILL_CLASSES (no template literals); class names match @theme inline tier tokens from Plan 01-04
+- Plan 01-06: text search uses .textSearch('search_vector', q, { type: 'websearch', config: 'english' }) — backed by GIN index on search_vector tsvector from 01-02; no separate RPC needed
+- Plan 01-06: pagination is numbered 24/page; first page is ?page=1 (NOT 0); page=1 drops the param for clean URLs
+- Plan 01-06: all filters parse via Zod BipFilterSchema.safeParse — invalid values default silently to no-filter; never throw
+- Plan 01-06: BipFiltersDrawer uses vaul-based shadcn Drawer for mobile; BipFiltersSidebar is 'use client' for desktop
+- Plan 01-06: shadcn accordion/slider use @base-ui/react (not @radix-ui) — Accordion needs `multiple` prop not `type='multiple'`; Slider onValueChange is (v: number | readonly number[])
+- Plan 01-06: Button.tsx extended with asChild support (@radix-ui/react-slot) and shadcn compat variant/size aliases (outline, secondary, destructive, link, icon, default)
 
 ### Pending Todos
 
@@ -116,7 +122,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-05-09T05:00:00.000Z
-Stopped at: Plan 01-05 complete — homepage composition shipped; next Plan 01-06 (/bips browse page)
+Last session: 2026-05-09T07:30:00.000Z
+Stopped at: Plan 01-06 complete — /bips browse page shipped; next Plan 01-07 (/bip/[slug] detail page)
 Resume file: None
-Resume instructions: Plans 01-06 and 01-07 remain. Run /gsd-execute-phase 1 for 01-06 (/bips browse page with filter sidebar, search, pagination) then 01-07 (/bip/[slug] detail page).
+Resume instructions: Plan 01-07 remains. Run /gsd-execute-phase 1 for 01-07 (/bip/[slug] detail page with 2-col desktop layout, OG image, share + bookmark).

@@ -17,19 +17,19 @@
 
 ### Browse (BIP Listing)
 
-- [ ] **BROW-01**: User sees BIP listing page at `/bips` as a responsive card grid (no tables)
-- [ ] **BROW-02**: User can filter BIPs by country
-- [ ] **BROW-03**: User can filter BIPs by subject area (ISCED-F field group)
+- [x] **BROW-01**: User sees BIP listing page at `/bips` as a responsive card grid (no tables)
+- [x] **BROW-02**: User can filter BIPs by country
+- [x] **BROW-03**: User can filter BIPs by subject area (ISCED-F field group)
 - [x] **BROW-04**: User can filter BIPs by language of instruction
 - [x] **BROW-05**: User can filter BIPs by physical mobility date range
 - [x] **BROW-06**: User can filter BIPs by ECTS credits
 - [x] **BROW-07**: User can filter BIPs by application status (open / closed)
 - [x] **BROW-08**: User can filter BIPs by study level (Bachelor / Master / PhD)
-- [ ] **BROW-09**: User can full-text search across BIP title, description, and university name (with `unaccent` so "Munchen" finds "München")
-- [ ] **BROW-10**: User can sort by newest, deadline soonest, or alphabetical
-- [ ] **BROW-11**: User filter selections are reflected in the URL (`/bips?country=de&field=engineering`) and shareable
-- [ ] **BROW-12**: User sees an empty state when no BIPs match filters
-- [ ] **BROW-13**: User can paginate through results (or infinite scroll — TBD during planning)
+- [x] **BROW-09**: User can full-text search across BIP title, description, and university name (with `unaccent` so "Munchen" finds "München")
+- [x] **BROW-10**: User can sort by newest, deadline soonest, or alphabetical
+- [x] **BROW-11**: User filter selections are reflected in the URL (`/bips?country=de&field=engineering`) and shareable
+- [x] **BROW-12**: User sees an empty state when no BIPs match filters
+- [x] **BROW-13**: User can paginate through results (or infinite scroll — TBD during planning)
 
 ### Detail (BIP Detail Page)
 
@@ -98,7 +98,7 @@
 ### Foundation (Non-Functional)
 
 - [x] **FOUN-01**: Every Supabase table has `ENABLE ROW LEVEL SECURITY` with policies covering SELECT/INSERT/UPDATE/DELETE per role (anon, coordinator, admin) — every UPDATE policy includes both `USING` and `WITH CHECK`
-- [ ] **FOUN-02**: Homepage and `/bips` achieve Lighthouse > 90 on Performance, Accessibility, SEO; LCP < 1.5s on 4G mobile
+- [x] **FOUN-02**: Homepage and `/bips` achieve Lighthouse > 90 on Performance, Accessibility, SEO; LCP < 1.5s on 4G mobile
 - [x] **FOUN-03**: Site meets WCAG AA: forms keyboard-navigable, ARIA labels present, Europe map has country `<select>` fallback for keyboard users
 - [x] **FOUN-04**: Inter font is self-hosted via `next/font` (no `fonts.googleapis.com` cross-origin request)
 - [ ] **FOUN-05**: Site shows a GDPR cookie consent banner before any analytics scripts load
@@ -164,19 +164,19 @@ Phase mappings derived from `.planning/research/SUMMARY.md` Recommended Phase Or
 | DISC-05 | Phase 1 | Complete |
 | DISC-06 | Phase 1 | Complete |
 | DISC-07 | Phase 1 | Complete |
-| BROW-01 | Phase 1 | Pending |
-| BROW-02 | Phase 1 | Pending |
-| BROW-03 | Phase 1 | Pending |
+| BROW-01 | Phase 1 | Complete |
+| BROW-02 | Phase 1 | Complete |
+| BROW-03 | Phase 1 | Complete |
 | BROW-04 | Phase 1 | Complete |
 | BROW-05 | Phase 1 | Complete |
 | BROW-06 | Phase 1 | Complete |
 | BROW-07 | Phase 1 | Complete |
 | BROW-08 | Phase 1 | Complete |
-| BROW-09 | Phase 1 | Pending |
-| BROW-10 | Phase 1 | Pending |
-| BROW-11 | Phase 1 | Pending |
-| BROW-12 | Phase 1 | Pending |
-| BROW-13 | Phase 1 | Pending |
+| BROW-09 | Phase 1 | Complete |
+| BROW-10 | Phase 1 | Complete |
+| BROW-11 | Phase 1 | Complete |
+| BROW-12 | Phase 1 | Complete |
+| BROW-13 | Phase 1 | Complete |
 | DETL-01 | Phase 1 | Pending |
 | DETL-02 | Phase 1 | Pending |
 | DETL-03 | Phase 1 | Pending |
@@ -189,7 +189,7 @@ Phase mappings derived from `.planning/research/SUMMARY.md` Recommended Phase Or
 | DETL-10 | Phase 1 | Pending |
 | INFO-03 | Phase 1 | Complete |
 | FOUN-01 | Phase 1 | Complete |
-| FOUN-02 | Phase 1 | Pending |
+| FOUN-02 | Phase 1 | Complete |
 | FOUN-03 | Phase 1 | Complete |
 | FOUN-04 | Phase 1 | Complete |
 | FOUN-08 | Phase 1 | Pending |
