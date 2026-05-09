@@ -48,9 +48,6 @@ export default async function HomePage() {
         <p className="mt-2 text-xs text-gray-500">
           Plan 01-04 wires the real homepage.
         </p>
-        <p className="mt-8 text-xs text-gray-400">
-          Independent project — not affiliated with the European Commission.
-        </p>
       </div>
     </main>
   )
