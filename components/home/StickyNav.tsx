@@ -3,12 +3,14 @@
 /**
  * BipHub sticky navigation — client component (uses usePathname for active links).
  *
- * Desktop (≥960px / md:): logo + wordmark + 4 nav links + ghost "Sign in" + primary "List your BIP"
+ * Desktop (≥960px / md:): logo + wordmark + 4 nav links + right-side block.
  * Mobile (<960px): logo + primary CTA + hamburger triggering a Sheet drawer with full nav.
  *
- * Sheet uses @base-ui/react/dialog (via shadcn sheet). The SheetClose component supports
- * a `render` prop to wrap arbitrary elements — used here to render Link inside SheetClose
- * so navigation closes the sheet automatically.
+ * Phase 2 (D-15): right-side block + Sheet bottom CTAs branch on `hasClaims`.
+ *   - Logged-out: Sign in (ghost) + List your BIP (primary)
+ *   - Logged-in:  Dashboard link + initials avatar
+ * Props are derived in (public)/layout.tsx via getClaims() and a profile fetch,
+ * passed in as plain serializable props (no client-side flash).
  *
  * FOUN-03: Sheet is keyboard-accessible by default (focus trap, Escape to close,
  * focus return to trigger). WCAG AA for <960px viewports.
@@ -35,7 +37,12 @@ const NAV_LINKS = [
   { href: '/what-is-a-bip', label: 'What is a BIP?' },
 ] as const
 
-export function StickyNav() {
+interface StickyNavProps {
+  hasClaims?: boolean
+  initials?: string | null
+}
+
+export function StickyNav({ hasClaims = false, initials = null }: StickyNavProps) {
   const pathname = usePathname()
   return (
     <header
@@ -73,13 +80,31 @@ export function StickyNav() {
         </ul>
 
         <div className="flex items-center gap-2">
-          {/* Sign in — Phase-2 route; routes to /login (404 in Phase 1 per UI-SPEC line 207) */}
-          <Link href="/login" className="hidden md:inline-flex">
-            <Button variant="ghost" size="sm">Sign in</Button>
-          </Link>
-          <Link href="/register">
-            <Button variant="primary" size="sm">List your BIP</Button>
-          </Link>
+          {hasClaims ? (
+            <>
+              <Link
+                href="/dashboard"
+                className="hidden md:inline text-sm font-semibold text-ink hover:text-eu-blue"
+              >
+                Dashboard
+              </Link>
+              <span
+                aria-label="Coordinator profile"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-eu-blue/10 text-eu-blue text-sm font-semibold"
+              >
+                {initials ?? '··'}
+              </span>
+            </>
+          ) : (
+            <>
+              <Link href="/login" className="hidden md:inline-flex">
+                <Button variant="ghost" size="sm">Sign in</Button>
+              </Link>
+              <Link href="/register">
+                <Button variant="primary" size="sm">List your BIP</Button>
+              </Link>
+            </>
+          )}
 
           {/* Mobile nav menu — Sheet drawer for <960px viewports.
               Owned end-to-end by Plan 01-04. NOT deferred to downstream plans.
@@ -110,20 +135,32 @@ export function StickyNav() {
                   />
                 ))}
                 <div className="mt-2 border-t border-border pt-4 flex flex-col gap-2">
-                  <SheetClose
-                    render={
-                      <Link href="/login" className="inline-flex">
-                        <Button variant="ghost" className="w-full">Sign in</Button>
-                      </Link>
-                    }
-                  />
-                  <SheetClose
-                    render={
-                      <Link href="/register" className="inline-flex">
-                        <Button variant="primary" className="w-full">List your BIP</Button>
-                      </Link>
-                    }
-                  />
+                  {hasClaims ? (
+                    <SheetClose
+                      render={
+                        <Link href="/dashboard" className="inline-flex">
+                          <Button variant="primary" className="w-full">Dashboard</Button>
+                        </Link>
+                      }
+                    />
+                  ) : (
+                    <>
+                      <SheetClose
+                        render={
+                          <Link href="/login" className="inline-flex">
+                            <Button variant="ghost" className="w-full">Sign in</Button>
+                          </Link>
+                        }
+                      />
+                      <SheetClose
+                        render={
+                          <Link href="/register" className="inline-flex">
+                            <Button variant="primary" className="w-full">List your BIP</Button>
+                          </Link>
+                        }
+                      />
+                    </>
+                  )}
                 </div>
               </nav>
             </SheetContent>
