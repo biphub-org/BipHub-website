@@ -69,7 +69,7 @@ Plans:
   5. Opening the same draft in two tabs does not cause silent data loss (optimistic locking via `updated_at`); a mid-form session expiry triggers a recovery path via `onAuthStateChange` + localStorage backup
 **Plans:** 7 plans
 Plans:
-- [ ] 02-01-PLAN.md — Migration 00009 (profiles.erasmus_code + insert_university_if_not_exists SECURITY DEFINER) + db reset + types regen + 13 shadcn UI primitives + status color tokens + lib/utils/status.ts
+- [x] 02-01-PLAN.md — Migration 00009 (profiles.erasmus_code + insert_university_if_not_exists SECURITY DEFINER) + db reset + types regen + 13 shadcn UI primitives + status color tokens + lib/utils/status.ts
 - [ ] 02-02-PLAN.md — (auth) route group: layout + login/register/verify-email/reset-password/reset-password-update pages + 4 client forms (RHF + Zod v3) + 5 Server Actions (signIn/signUp/signOut/requestPasswordReset/updatePassword) + auth/callback route handler (PKCE)
 - [ ] 02-03-PLAN.md — Middleware Phase 2 redirect branches + x-pathname header injection; (public)/layout.tsx async + getClaims; StickyNav session-aware (D-15)
 - [ ] 02-04-PLAN.md — (dashboard) layout (auth + profile-complete gate via x-pathname) + DashboardNav + /onboarding RSC + OnboardingForm + UniversityCombobox (with inline add-new flow via SECURITY DEFINER RPC) + saveProfileAction + searchUniversitiesAction + addUniversityAction
