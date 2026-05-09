@@ -23,7 +23,7 @@ created: 2026-05-09
 | Preset | b2fA (`https://ui.shadcn.com/create?preset=b2fA`) — pre-populated from `npx shadcn info` |
 | Component library | shadcn/ui (Radix / Base UI primitives) |
 | Icon library | Lucide React (locked — `components.json` `iconLibrary: "lucide"`) |
-| Font | Inter (400/500/600/700), self-hosted via `next/font/google` — inherited from Phase 1 root layout |
+| Font | Inter (400/600), self-hosted via `next/font/google` — inherited from Phase 1 root layout |
 
 **Already installed shadcn components (Phase 1):** `accordion`, `button`, `calendar`, `drawer`, `select`, `sheet`, `skeleton`, `slider`, `sonner`.
 
@@ -93,7 +93,7 @@ Inherited from Phase 1 — unchanged. The 4-point scale applies to all Phase 2 s
 - **Wizard card:** full-page-width within the `(dashboard)` container on mobile; max-w-[760px] centered on desktop. Not a narrow auth card.
 - **Dashboard container:** same 1200px max-w as Phase 1 public pages, 24px side padding desktop, 16px mobile.
 - **Tab bar height:** 48px (matches touch target minimum, aligns with Phase 1 nav height rhythm).
-- **Status badge vertical padding:** 3px top/bottom, 8px left/right (4+3 — close enough; do not invent a 3px token; use `py-0.5 px-2` in Tailwind).
+- **Status badge vertical padding:** 4px top/bottom (`py-1`), 8px left/right (`px-2`). Use `py-1 px-2` in Tailwind.
 - **Wizard step indicator circle:** 32px diameter — smaller than the Phase 1 "How it works" 48px circles; these are functional navigation, not decorative.
 - **Save-status indicator height:** 24px (inline text element, not a card or bar).
 
@@ -101,24 +101,26 @@ Inherited from Phase 1 — unchanged. The 4-point scale applies to all Phase 2 s
 
 ## Typography
 
-Inherited from Phase 1 — same Inter scale, same weights. No new type roles. Phase 2 form surfaces reuse existing roles:
+Phase 2 coordinator surfaces use 4 type sizes and 2 weights only. Phase 1 marketing scale (h2 `clamp(30–44px)` and eyebrow `12px`) is inherited from the global stylesheet but not used in `(auth)` or `(dashboard)` route groups.
+
+> **Note:** Weights 500 and 700 are Phase 1 marketing weights; coordinator surfaces use 400/600 only.
 
 | Role | Size | Weight | Line Height | Phase 2 Usage |
 |------|------|--------|-------------|---------------|
-| Section title (h2) | `clamp(30px, 4vw, 44px)` | 700 | 1.15 | Not used in coordinator surfaces — these are functional, not marketing |
-| Subsection (h3) | 22px | 700 | 1.25 | Wizard step title, onboarding section heading, dashboard page h1 |
-| Card title (h4) | 20px | 600 | 1.35 | Auth card heading ("Sign in to BipHub", "Create your account") |
+| Subsection (h3) | 22px | 600 | 1.25 | Wizard step title, onboarding section heading, dashboard page h1 (`Your BIPs`), auth card heading |
 | Body | 16px | 400 | 1.6 | Form field help text, wizard description body, dashboard BipCard body |
-| Body-sm | 14px | 400/500 | 1.5 | Form labels (500), input placeholder text (400), auth sub-copy ("Already have an account?") |
-| Caption | 13px | 400/500 | 1.5 | Save-status indicator ("Saving…" / "Saved"), step counter ("Step 2 of 5") |
-| Eyebrow | 12px | 600 | 1.4 | +1.2px tracking | Not used in coordinator surfaces — reserved for marketing sections |
+| Body-sm / Form label | 14px | 400 or 600 | 1.5 | Form labels (600), input placeholder text (400), auth sub-copy, step counter (`Step 2 of 5`), save-status indicator, action button text |
 | Pill/Badge | 11px | 600 | 1.4 | Status badges (Draft / Pending / Approved / Rejected), count badge on tabs |
 
-**Auth card headings:** `h4` role at 20px / 700 / -0.3px tracking. Centered. One heading per auth page.
+**Regular (400):** body text, placeholder text, captions, muted copy, auth sub-copy, help text.
 
-**Wizard step title:** `h3` role at 22px / 700 / -0.3px. Left-aligned. Accompanied by a single-sentence description at body-sm (14px / 400 / 1.5).
+**Semibold (600):** form labels, active nav states, headings (h3), badge text, button text, how-to-apply radio label, switch labels.
 
-**Dashboard page h1:** `h3` role at 22px / 700. The coordinator dashboard is a functional app surface — it does not use the large `clamp()` display sizes. `"Your BIPs"` or `"Dashboard"` is the h1.
+**Auth card headings:** h3 role at 22px / 600 / -0.3px tracking. Centered. One heading per auth page.
+
+**Wizard step title:** h3 role at 22px / 600 / -0.3px. Left-aligned. Accompanied by a single-sentence description at body-sm (14px / 400 / 1.5).
+
+**Dashboard page h1:** h3 role at 22px / 600. The coordinator dashboard is a functional app surface — it does not use the large `clamp()` display sizes. `"Your BIPs"` or `"Dashboard"` is the h1.
 
 ---
 
@@ -169,10 +171,10 @@ These rules govern the three auth pages (`/login`, `/register`, `/verify-email`)
 - **Page background:** `bg-bg-soft` (`#f7f8fc`) — full-screen, no public nav or footer.
 - **Layout:** `min-h-screen grid place-items-center px-4` — vertically and horizontally centered.
 - **Card:** `bg-white rounded-lg shadow-md p-10 w-full max-w-[440px]`. One card per page. No sidebar.
-- **Card header:** BipHub `<LogoMark>` (32px) + wordmark centered at card top, 24px below the logo: page h4 heading. No eyebrow labels on auth cards — these are functional pages.
+- **Card header:** BipHub `<LogoMark>` (32px) + wordmark centered at card top, 24px below the logo: page h3 heading. No eyebrow labels on auth cards — these are functional pages.
 - **Card footer:** Single line of 14px/400/muted text: contextual link ("Already have an account? Sign in" on register; "No account? Register" on login). 16px below the primary submit button.
 - **No StickyNav, no public Footer on auth pages.** The `(auth)/layout.tsx` renders no chrome beyond the centered layout wrapper.
-- **Legal line:** 12px / muted / centered at page bottom (outside card, fixed to page bottom): `Independent project — not affiliated with the European Commission`. This satisfies INFO-03 on auth pages where the public Footer is absent.
+- **Legal line:** 11px / muted / centered at page bottom (outside card, fixed to page bottom): `Independent project — not affiliated with the European Commission`. This satisfies INFO-03 on auth pages where the public Footer is absent.
 
 ---
 
@@ -195,7 +197,7 @@ When a coordinator session is detected, the public `StickyNav` right-side slot t
 
 - **Logged-out state (Phase 1 current):** `Sign in` (ghost) + `List your BIP` (primary).
 - **Logged-in state (Phase 2 addition):** Remove both auth CTAs. Replace with:
-  - `Dashboard` text link (14px / 500 / `text-ink` → hover `text-eu-blue`)
+  - `Dashboard` text link (14px / 600 / `text-ink` → hover `text-eu-blue`)
   - Coordinator initials avatar circle (32px) — same as dashboard nav above.
 - **Implementation:** The `(public)/layout.tsx` RSC passes `hasClaims: boolean` + `initials: string | null` as props to `<StickyNav>`. No client-side flash — session is checked at RSC render time via `getClaims()`. If `getClaims()` returns null, show logged-out state.
 
@@ -206,7 +208,7 @@ When a coordinator session is detected, the public `StickyNav` right-side slot t
 Single-page form — not a multi-step wizard. All fields visible at once, grouped into two sections.
 
 - **Layout:** Same `(dashboard)` route group chrome (nav bar) but content is a centered card: `bg-white rounded-lg shadow-md p-10 max-w-[560px] mx-auto my-12`.
-- **Page h3:** `Complete your profile` (22px / 700).
+- **Page h3:** `Complete your profile` (22px / 600).
 - **Sub-copy:** `Before you can submit a BIP, we need a few details about you and your university. This takes about 2 minutes.` (14px / 400 / muted).
 - **Section 1 — Personal details:** `Full name` (text input), `Contact email` (email input, pre-filled with auth email, editable).
 - **Section 2 — University details:** `Your university` (combobox — searchable from `universities` table; inline "Add new university" option at list bottom if not found), `Country` (select, locked to `lib/countries.ts`), `Erasmus code` (text input, placeholder `ABC UNI01`).
@@ -225,7 +227,7 @@ The wizard is a `'use client'` component mounted inside `app/(dashboard)/dashboa
 - **Page background:** `bg-bg-soft`.
 - **Wizard card:** `bg-white rounded-lg shadow-md w-full max-w-[760px] mx-auto my-8`.
 - **Wizard header (sticky within card):** `border-b border-border px-8 py-4 flex items-center justify-between`.
-  - Left: `Step {n} of 5` in caption style (13px / 500 / muted) + current step title in body-sm (14px / 600 / ink).
+  - Left: `Step {n} of 5` in body-sm style (14px / 400 / muted) + current step title in body-sm (14px / 600 / ink).
   - Center (or right of title): Step indicator dots — 5 circles, 8px diameter, 8px gap. Active: `bg-eu-blue ring-2 ring-eu-gold ring-offset-2`. Completed: `bg-eu-blue`. Upcoming: `bg-border`.
   - Right: Save-status indicator — see contract below.
 - **Wizard body:** `px-8 py-6` (or `px-6 py-5` on mobile). Max-height `calc(100vh - 180px)`, `overflow-y-auto`.
@@ -235,7 +237,7 @@ The wizard is a `'use client'` component mounted inside `app/(dashboard)/dashboa
 
 ### Save-status indicator (D-02)
 
-Positioned in the wizard header, right side, 13px / 500 / muted. Three states only — implement as a single text element, no icons needed (icon optional: spinner on saving):
+Positioned in the wizard header, right side, 14px / 400 / muted. Three states only — implement as a single text element, no icons needed (icon optional: spinner on saving):
 
 | State | Text | Color |
 |-------|------|-------|
@@ -265,7 +267,7 @@ shadcn `Dialog` — not a toast, not a banner. Triggered when `saveDraftAction` 
 Fields: `title` (text input), `isced_f_code` (select — 8 ISCED groups from `lib/isced.ts`), `description` (textarea, 4 rows min), `learning_outcomes` (textarea, 3 rows min — hint text: `One outcome per line, or a free-text paragraph`).
 
 - **Section label above field group:** none — fields have inline labels. No section headings inside steps (they are the h3 step title).
-- **Character count** shown below `title` input: `{n}/120 characters` (13px / muted). No hard limit in the UI — Zod enforces 120 max server-side.
+- **Character count** shown below `title` input: `{n}/120 characters` (14px / 400 / muted). No hard limit in the UI — Zod enforces 120 max server-side.
 - **Field order:** title → field of study → description → learning outcomes.
 
 ### Step 2 — Program Details
@@ -290,7 +292,7 @@ Fields: `green_travel` (Switch toggle), `inclusion_support` (Switch toggle), `el
   - If URL: `url` text input (placeholder: `https://...`).
   - If contact: `contact_name` text input + `contact_email` email input (two fields).
 
-- **Switch toggle layout:** Switch on the left, label to the right (14px / 500 / ink), caption below (13px / 400 / muted). Green travel caption: `Coordinators offering green travel support receive Erasmus+ bonus funding.` Inclusion support caption: `Indicates the BIP accommodates students with disabilities or special needs.`
+- **Switch toggle layout:** Switch on the left, label to the right (14px / 600 / ink), caption below (14px / 400 / muted). Green travel caption: `Coordinators offering green travel support receive Erasmus+ bonus funding.` Inclusion support caption: `Indicates the BIP accommodates students with disabilities or special needs.`
 - **How-to-apply radio group label:** `How do students apply?` (14px / 600).
 - **Conditional field reveal:** The URL/contact fields animate in with `LazyMotion` `m.div` opacity + height transition (200ms / ease) when the radio selection changes.
 
@@ -310,9 +312,9 @@ No form fields. Read-only render of the full BIP detail layout.
 ### Layout
 
 - **Page header:** Full-width row, `bg-white border-b border-border px-6 py-5`.
-  - Left: `h3` `Your BIPs` (22px / 700 / ink) + sub-line `{n} BIPs total` (14px / 400 / muted).
-  - Right: `+ Submit a BIP` button — gold primary pill (`bg-eu-gold text-ink hover:bg-eu-gold-dark font-semibold rounded-pill px-5 py-2.5`) — this is D-11, always visible.
-- **Tab bar (D-09):** `bg-white border-b border-border px-6` — 5 tabs: `All` / `Draft` / `Pending` / `Approved` / `Rejected`. Each tab: 14px / 500, `py-3`, no horizontal padding override. Active tab: `border-b-2 border-eu-blue text-ink font-semibold`. Count badge on each tab (except `All` which shows total): `bg-border text-ink-2 text-xs font-semibold rounded-full px-2 py-0.5 ml-1.5`.
+  - Left: `h3` `Your BIPs` (22px / 600 / ink) + sub-line `{n} BIPs total` (14px / 400 / muted).
+  - Right: `+ Submit a BIP` button — gold primary pill (`bg-eu-gold text-ink hover:bg-eu-gold-dark font-semibold rounded-pill px-5 py-3`) — this is D-11, always visible.
+- **Tab bar (D-09):** `bg-white border-b border-border px-6` — 5 tabs: `All` / `Draft` / `Pending` / `Approved` / `Rejected`. Each tab: 14px / 400, `py-3`, no horizontal padding override. Active tab: `border-b-2 border-eu-blue text-ink font-semibold`. Count badge on each tab (except `All` which shows total): `bg-border text-ink-2 text-xs font-semibold rounded-full px-2 py-1 ml-2`.
 - **BIP list:** Below the tab bar, full-width card list (not a grid — this is a management view). Each item is a `<DashboardBipCard>` — see below.
 - **Empty state (no BIPs at all):** Centered within list area: search-X icon, heading `No BIPs yet`, body `Start your first submission to list a Blended Intensive Program on BipHub.`, CTA `+ Submit your first BIP` (blue primary).
 - **Empty state (filtered tab, e.g. 0 Rejected BIPs):** Minimal: `No {status} BIPs.` (muted, 14px, centered). No CTA needed.
@@ -322,14 +324,14 @@ No form fields. Read-only render of the full BIP detail layout.
 A list-style card (not the public BipCard grid variant). Same `bg-white border border-border rounded-lg shadow-sm` container.
 
 - **Layout:** Single row on desktop — left 60%: title (16px / 600) + sub-line (university · host city) + ISCED field tag chip. Right 40%: status badge + date line + action buttons.
-- **Status badge:** Pill chip using the status color tokens: `bg-{status}-bg text-{status} border border-{status} rounded-pill text-xs px-2 py-0.5 font-semibold`.
-- **Date line:** `Submitted {date}` or `Last saved {date}` — 13px / 400 / muted.
+- **Status badge:** Pill chip using the status color tokens: `bg-{status}-bg text-{status} border border-{status} rounded-pill text-xs px-2 py-1 font-semibold`.
+- **Date line:** `Submitted {date}` or `Last saved {date}` — 14px / 400 / muted.
 - **Action buttons (D-10 — per status):**
   - **Draft:** `Edit` (ghost button, 14px) + `Delete` (destructive ghost, 14px / `text-status-rejected`).
   - **Pending:** `Edit` (ghost) + `Withdraw` (ghost / `text-status-pending` — conveys cautious action, not destructive).
   - **Approved:** `View public page →` (text link, 14px / eu-blue).
   - **Rejected:** `View details` (text link) — the rejection reason is shown inline below the card title as a callout (see below).
-- **Rejection reason callout (rejected BIPs only):** Inline, directly below the title inside the card. `border-l-4 border-eu-gold pl-3 py-1 bg-eu-gold-soft rounded-r-sm` — label: `Reason: ` (13px / 600 / ink-2) + reason text (13px / 400 / ink-2). Not a modal; always visible on card.
+- **Rejection reason callout (rejected BIPs only):** Inline, directly below the title inside the card. `border-l-4 border-eu-gold pl-3 py-1 bg-eu-gold-soft rounded-r-sm` — label: `Reason: ` (14px / 600 / ink-2) + reason text (14px / 400 / ink-2). Not a modal; always visible on card.
 - **`is_seed` pill:** NOT shown on dashboard BipCards (from 02-CONTEXT.md "Specific Ideas" note — coordinators submit real BIPs, `is_seed` is a public browsing detail only).
 - **Hover state:** `border-border-strong shadow-sm` — subtle, no translateY lift (this is a list management view, not a discovery card).
 - **Mobile (< 960px):** Stack layout — title + sub-line + field tag, then status badge + date on same row, then action buttons as full-width row below.
@@ -344,7 +346,7 @@ Tone: professional, direct, helpful. Sentence-case throughout. No hype. No emoji
 
 | Element | Copy |
 |---------|------|
-| Register page h4 | `Create your account` |
+| Register page h3 | `Create your account` |
 | Register page sub | `Join BipHub to list your university's Blended Intensive Programs.` |
 | Register email label | `Institutional email` |
 | Register email placeholder | `your.name@university.edu` |
@@ -353,17 +355,17 @@ Tone: professional, direct, helpful. Sentence-case throughout. No hype. No emoji
 | Register password help | `At least 8 characters.` |
 | Register submit button | `Create account →` |
 | Register footer link | `Already have an account? Sign in` |
-| Login page h4 | `Sign in to BipHub` |
+| Login page h3 | `Sign in to BipHub` |
 | Login email label | `Email` |
 | Login password label | `Password` |
 | Login submit button | `Sign in →` |
 | Login forgot password link | `Forgot your password?` |
 | Login footer link | `No account yet? Register` |
-| Verify-email page h4 | `Check your email` |
+| Verify-email page h3 | `Check your email` |
 | Verify-email body | `We've sent a verification link to {email}. Click the link to activate your account and complete your profile.` |
 | Verify-email resend | `Didn't receive it? Resend verification email` |
 | Verify-email footer | `Wrong email? Sign in with a different account` |
-| Password-reset page h4 | `Reset your password` |
+| Password-reset page h3 | `Reset your password` |
 | Password-reset body | `Enter your email and we'll send you a link to reset your password.` |
 | Password-reset submit | `Send reset link →` |
 | Password-reset confirmation | `Check your email for a reset link. It expires in 1 hour.` |
@@ -501,11 +503,11 @@ Tone: professional, direct, helpful. Sentence-case throughout. No hype. No emoji
 | Delete confirmation title | `Delete this draft?` |
 | Delete confirmation body | `This will permanently delete "{bip.title}". This cannot be undone.` |
 | Delete confirm button | `Delete draft` |
-| Delete cancel button | `Cancel` |
+| Delete cancel button | `Keep draft` |
 | Withdraw confirmation title | `Withdraw from review?` |
 | Withdraw confirmation body | `"{bip.title}" will be moved back to Draft. You can re-submit it after making edits.` |
-| Withdraw confirm button | `Withdraw` |
-| Withdraw cancel button | `Cancel` |
+| Withdraw confirm button | `Withdraw BIP` |
+| Withdraw cancel button | `Keep pending` |
 | Date format | `{D} {Mon} {YYYY}` — e.g. `9 May 2026` (EU date convention, no commas) |
 
 ### StickyNav (session-aware additions)
@@ -560,6 +562,7 @@ Confirmed via shadcn `Dialog` modal (not toast, not inline). All destructive dia
 - Body: personalised with BIP title in quotes.
 - Two buttons stacked or side-by-side: cancel (ghost/left) + confirm (destructive/right).
 - Confirm button: `bg-status-rejected text-white rounded-pill` for delete; `bg-status-pending text-white rounded-pill` for withdraw (amber, not red — withdraw is reversible).
+- Cancel button: safe-action noun label — `Keep draft` for delete dialog; `Keep pending` for withdraw dialog.
 
 ### Toast
 
