@@ -12,7 +12,7 @@ BipHub is built in four vertical MVP phases. Phase 1 ships the complete student-
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Discovery Foundation** - Students can find and explore BIPs against seeded data; core value is live and verifiable
+- [x] **Phase 1: Discovery Foundation** - Students can find and explore BIPs against seeded data; core value is live and verifiable (completed 2026-05-09)
 - [ ] **Phase 2: Coordinator Auth + Submission** - University coordinators can register, submit BIPs, and manage their listings; the data pipeline becomes self-sustaining
 - [ ] **Phase 3: Admin Review + Email Notifications** - Admin closes the editorial loop; coordinators receive status emails; audit trail is in place
 - [ ] **Phase 4: Polish + Static Content + Performance Hardening** - Everything that exists works perfectly; Lighthouse > 90; GDPR-compliant; open-source-ready
@@ -30,7 +30,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. A student can full-text search BIP titles and descriptions (including accented characters such as "Munchen" finding "München") and see matching BIP cards or a meaningful empty state
   4. A student can open a BIP detail page at `/bip/[slug]`, read all BIP fields, share via web share API or copy link, and bookmark via localStorage — and the page has SSR meta tags and a per-BIP OG image
   5. Every Supabase table has RLS enabled with USING + WITH CHECK on UPDATE policies; the repo runs with `supabase start` + `npm run dev` and a seeded database, no extra steps
-**Plans:** 8/8 plans executed
+**Plans:** 8/8 plans complete
 Plans:
 - [x] 01-01-PLAN.md — Walking skeleton: Next.js 15 + Supabase + Tailwind v4 stack bootstrap, lib/supabase factories, minimal RLS-protected bips table, canary RSC homepage [completed 2026-05-09]
 - [x] 01-02-PLAN.md — Full schema: universities + profiles + bips (12 added Erasmus+ fields) + bip_partner_universities, RLS with USING+WITH CHECK, unaccent + tsvector GIN search, generated TypeScript types, ISCED + countries lookup tables [completed 2026-05-09]
@@ -148,7 +148,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Discovery Foundation | 8/8 | Awaiting human verification | 2026-05-09 |
+| 1. Discovery Foundation | 8/8 | Complete    | 2026-05-09 |
 | 2. Coordinator Auth + Submission | 0/TBD | Not started | - |
 | 3. Admin Review + Email Notifications | 0/TBD | Not started | - |
 | 4. Polish + Static Content + Performance Hardening | 0/TBD | Not started | - |
