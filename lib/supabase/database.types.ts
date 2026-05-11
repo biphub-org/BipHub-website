@@ -79,6 +79,54 @@ export type Database = {
           },
         ]
       }
+      bip_status_history: {
+        Row: {
+          action_kind: string
+          actor_id: string | null
+          bip_id: string | null
+          created_at: string
+          from_status: string | null
+          id: string
+          note: string | null
+          to_status: string
+        }
+        Insert: {
+          action_kind: string
+          actor_id?: string | null
+          bip_id?: string | null
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          note?: string | null
+          to_status: string
+        }
+        Update: {
+          action_kind?: string
+          actor_id?: string | null
+          bip_id?: string | null
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          note?: string | null
+          to_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bip_status_history_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bip_status_history_bip_id_fkey"
+            columns: ["bip_id"]
+            isOneToOne: false
+            referencedRelation: "bips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bips: {
         Row: {
           accommodation_notes: string | null
