@@ -15,6 +15,10 @@ import { describe, it, expect } from 'vitest'
 import { render } from '@react-email/components'
 import { ApprovalEmail, type ApprovalEmailProps } from '@/lib/email/templates/ApprovalEmail'
 import { RejectionEmail, type RejectionEmailProps } from '@/lib/email/templates/RejectionEmail'
+import {
+  AdminNotificationEmail,
+  type AdminNotificationEmailProps,
+} from '@/lib/email/templates/AdminNotificationEmail'
 
 async function renderApproval(props: ApprovalEmailProps): Promise<string> {
   return render(<ApprovalEmail {...props} />)
@@ -22,6 +26,10 @@ async function renderApproval(props: ApprovalEmailProps): Promise<string> {
 
 async function renderRejection(props: RejectionEmailProps): Promise<string> {
   return render(<RejectionEmail {...props} />)
+}
+
+async function renderAdminNotif(props: AdminNotificationEmailProps): Promise<string> {
+  return render(<AdminNotificationEmail {...props} />)
 }
 
 describe('ApprovalEmail', () => {
@@ -123,9 +131,51 @@ describe('RejectionEmail', () => {
   })
 })
 
-// AdminNotificationEmail block — preserved from Plan 03-00 (filled in Plan 03-05)
+// AdminNotificationEmail — Plan 03-05 (ADMN-11 / D-14)
 describe('AdminNotificationEmail', () => {
-  it.todo('renders coordinator name + university in body')
-  it.todo('renders /admin/bips/[id]/review CTA href')
-  it.todo('renders EC disclaimer footer')
+  it('renders coordinator name + university in body', async () => {
+    const html = await renderAdminNotif({
+      bipTitle: 'Climate BIP',
+      bipId: 'abc',
+      coordinatorName: 'Alice Bobson',
+      coordinatorUniversity: 'TU Delft',
+      submittedAt: '2026-05-12T10:00:00Z',
+    })
+    expect(html).toContain('Alice Bobson')
+    expect(html).toContain('TU Delft')
+  })
+
+  it('renders /admin/bips/[id]/review CTA href', async () => {
+    const html = await renderAdminNotif({
+      bipTitle: 'X',
+      bipId: 'unique-bip-id',
+      coordinatorName: 'A',
+      coordinatorUniversity: 'U',
+      submittedAt: '2026-05-12T10:00:00Z',
+    })
+    expect(html).toContain('https://biphub.eu/admin/bips/unique-bip-id/review')
+  })
+
+  it('renders BIP title verbatim', async () => {
+    const html = await renderAdminNotif({
+      bipTitle: 'Quantum Computing BIP 2026',
+      bipId: 'x',
+      coordinatorName: 'A',
+      coordinatorUniversity: 'U',
+      submittedAt: '2026-05-12T10:00:00Z',
+    })
+    expect(html).toContain('Quantum Computing BIP 2026')
+  })
+
+  it('renders EC disclaimer footer', async () => {
+    const html = await renderAdminNotif({
+      bipTitle: 'X',
+      bipId: 'x',
+      coordinatorName: 'A',
+      coordinatorUniversity: 'U',
+      submittedAt: '2026-05-12T10:00:00Z',
+    })
+    expect(html).toContain('Independent project')
+    expect(html).toContain('not affiliated with the European Commission')
+  })
 })

@@ -96,6 +96,54 @@ describe('sendEmail (D-15 fallback)', () => {
     )
   })
 
+  it('uses dynamic subject "New BIP pending review: {title}" for admin-notification template', async () => {
+    vi.stubEnv('RESEND_API_KEY', 're_fake_test_key')
+    const { sendEmail } = await import('@/lib/email/send')
+    await sendEmail('admin@x.io', {
+      template: 'admin-notification',
+      props: {
+        bipTitle: 'Quantum BIP',
+        bipId: 'q1',
+        coordinatorName: 'Alice',
+        coordinatorUniversity: 'TU Delft',
+        submittedAt: '2026-05-12T10:00:00Z',
+      },
+    })
+    expect(mockSend).toHaveBeenCalledWith(
+      expect.objectContaining({
+        subject: 'New BIP pending review: Quantum BIP',
+      }),
+    )
+  })
+
+  it('uses static subject for approval and rejection templates', async () => {
+    vi.stubEnv('RESEND_API_KEY', 're_fake_test_key')
+    const { sendEmail } = await import('@/lib/email/send')
+    await sendEmail('a@x.io', {
+      template: 'approval',
+      props: { bipTitle: 'X', bipSlug: 'x', coordinatorName: 'A' },
+    })
+    expect(mockSend).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        subject: 'Your BIP is live on BipHub',
+      }),
+    )
+    await sendEmail('a@x.io', {
+      template: 'rejection',
+      props: {
+        bipTitle: 'X',
+        bipId: 'x',
+        coordinatorName: 'A',
+        reason: 'x'.repeat(20),
+      },
+    })
+    expect(mockSend).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        subject: 'Update needed on your BIP submission',
+      }),
+    )
+  })
+
   it('does not swallow error when resend.emails.send rejects (fire-and-forget contract D-11 enforced at caller)', async () => {
     vi.stubEnv('RESEND_API_KEY', 're_fake_test_key')
     mockSend.mockRejectedValueOnce(new Error('Resend down'))
