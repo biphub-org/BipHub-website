@@ -137,7 +137,59 @@ export const step4Schema = z
 export type Step4Values = z.infer<typeof step4Schema>
 
 /**
- * Plan 02-07 declares a flat `fullBipSchema` that re-applies cross-step
- * refinements at submission time. The wizard's auto-save path validates
- * per step only, so omitting it here is intentional.
+ * Plan 02-07's `submitBipAction` keeps a private flat schema for the
+ * coordinator submit path. Plan 03-07 (admin edit) needs the same
+ * cross-field validation but lives in `lib/actions/admin-bips.ts`,
+ * which cannot reach a `'use server'` module's internals. The exported
+ * `fullBipSchema` below mirrors that flat shape verbatim so admin
+ * updates run through the identical validator surface (T-03-04
+ * mitigation). Keep the two in sync — any field change in submit's
+ * inline schema must also land here.
  */
+export const fullBipSchema = z
+  .object({
+    // Step 1
+    title: step1Schema.shape.title,
+    isced_f_code: step1Schema.shape.isced_f_code,
+    description: step1Schema.shape.description,
+    learning_outcomes: step1Schema.shape.learning_outcomes,
+    // Step 2 — re-declare without per-step `.refine`s; they live below.
+    virtual_component_description: z.string().trim().min(20).max(2000),
+    virtual_timing: z.enum(VIRTUAL_TIMINGS),
+    host_city: z.string().trim().min(2).max(120),
+    physical_start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    physical_end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    application_deadline: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    ects_credits: z.coerce.number().int().min(1).max(30),
+    max_participants: z.coerce.number().int().min(5).max(20),
+    study_levels: z.array(z.enum(STUDY_LEVELS)).min(1),
+    language_of_instruction: z.string().min(2).max(10),
+    language_level_min: z.enum(LANGUAGE_LEVELS),
+    // Step 4
+    green_travel: z.boolean(),
+    inclusion_support: z.boolean(),
+    eligibility_notes: z.string().trim().max(2000).optional().default(''),
+    how_to_apply_type: z.enum(HOW_TO_APPLY_TYPES),
+    how_to_apply_url: z.string().url().optional().or(z.literal('')),
+    contact_name: z.string().trim().min(2).max(120).optional().or(z.literal('')),
+    contact_email: z.string().email().optional().or(z.literal('')),
+  })
+  .refine((d) => d.physical_start_date < d.physical_end_date, {
+    message: 'Physical end date must be after the start date.',
+    path: ['physical_end_date'],
+  })
+  .refine((d) => d.application_deadline < d.physical_start_date, {
+    message: 'Deadline must be before the physical start date.',
+    path: ['application_deadline'],
+  })
+  .refine(
+    (d) =>
+      d.how_to_apply_type === 'url'
+        ? Boolean(d.how_to_apply_url)
+        : Boolean(d.contact_name) && Boolean(d.contact_email),
+    {
+      message: 'Provide either an application URL or coordinator contact details.',
+      path: ['how_to_apply_type'],
+    },
+  )
+export type FullBipValues = z.infer<typeof fullBipSchema>
