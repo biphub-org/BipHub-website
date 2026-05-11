@@ -38,7 +38,23 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // (3b) Already-authenticated: bounce off the auth pages.
+  // (3b) Admin-required: admin route group.
+  // Phase 3 addition: triple-layer guard layer 1 (per 03-RESEARCH.md Pattern 1).
+  // - Unauthenticated → /login?next=/admin
+  // - Authenticated but role !== 'admin' → / (avoid redirect loop into /login)
+  if (pathname.startsWith('/admin')) {
+    if (!claims) {
+      const loginUrl = new URL('/login', request.url)
+      loginUrl.searchParams.set('next', '/admin')
+      return NextResponse.redirect(loginUrl)
+    }
+    const role = (claims as { app_metadata?: { role?: string } }).app_metadata?.role
+    if (role !== 'admin') {
+      return NextResponse.redirect(new URL('/', request.url))
+    }
+  }
+
+  // (3c) Already-authenticated: bounce off the auth pages.
   // Note: matcher excludes /login and /register from middleware execution by default
   // (existing config), so this branch only fires if the matcher is later expanded.
   // Kept here for defense-in-depth and clarity if matcher changes in Phase 3+.
