@@ -16,17 +16,20 @@
 // the EU emblem; we use 11 to be visually distinct. See file header.
 const STAR_COUNT = 11 // NEVER change to the restricted count — see legal constraint above.
 
+// Pre-computed at module load time and rounded to 4 decimal places.
+// Math.cos/sin can differ by 1 ULP between Node.js and browser V8 versions,
+// causing React hydration mismatches when coordinates are computed inside render.
+const STARS = Array.from({ length: STAR_COUNT }, (_, i) => {
+  const angle = (2 * Math.PI * i) / STAR_COUNT - Math.PI / 2
+  const p = 1e4
+  return {
+    cx: Math.round((16 + 13 * Math.cos(angle)) * p) / p,
+    cy: Math.round((16 + 13 * Math.sin(angle)) * p) / p,
+  }
+})
+
 export function LogoMark({ className }: { className?: string }) {
-  const radius = 13
-  const center = 16
   const dotRadius = 1.25
-  const stars = Array.from({ length: STAR_COUNT }, (_, i) => {
-    const angle = (2 * Math.PI * i) / STAR_COUNT - Math.PI / 2
-    return {
-      cx: center + radius * Math.cos(angle),
-      cy: center + radius * Math.sin(angle),
-    }
-  })
 
   return (
     <svg
@@ -38,7 +41,7 @@ export function LogoMark({ className }: { className?: string }) {
       role="presentation"
     >
       <rect x={0} y={0} width={32} height={32} rx={8} className="fill-eu-blue" />
-      {stars.map((s, i) => (
+      {STARS.map((s, i) => (
         <circle
           key={i}
           cx={s.cx}
