@@ -43,6 +43,7 @@ Students can reliably discover BIPs by country, field of study, and dates, and u
 - **PDF export** — defer
 - **University photo uploads** — gradient placeholders for v1
 - **Official EU 12-star emblem** — restricted; palette only
+- **n8n / workflow-automation platform** — single external integration (Resend) doesn't justify a second deploy target; `revalidatePath()` already replaces webhooks; CLAUDE.md "one-command local dev" constraint would break. Revisit only if integration count grows to 3+ (e.g., Slack digests, AI moderation, coordinator outreach automation).
 
 ## Context
 

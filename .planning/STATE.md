@@ -126,7 +126,7 @@ None yet.
 
 | Category | Item | Status | Deferred At |
 |----------|------|--------|-------------|
-| *(none)* | | | |
+| Automation | Evaluate n8n for v2 outreach automation (coordinator seed outreach, multi-channel admin digests, AI moderation) — only if integration count grows beyond Resend | Deferred to v2 | 2026-05-11 |
 
 ## Session Continuity
 
