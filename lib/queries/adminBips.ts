@@ -18,6 +18,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getBipById } from '@/lib/queries/bipDetail'
 import type { BipDetail } from '@/lib/queries/bipDetail'
 import type { BipStatus } from '@/lib/utils/status'
+import type { BipDraftData } from '@/lib/store/bip-draft'
 
 export type AdminBip = {
   id: string
@@ -234,4 +235,162 @@ export async function getNextPendingBip(
     return null
   }
   return data ?? null
+}
+
+export type AdminBipForEdit = {
+  id: string
+  data: BipDraftData
+  updatedAt: string
+  hostUniversity: { id: string; name: string; country: string } | null
+  status: BipStatus
+  title: string
+  coordinatorName: string
+} | null
+
+/**
+ * Admin edit-mode query (ADMN-05, Plan 03-07).
+ *
+ * Mirrors `getCoordinatorBipById` but:
+ *   - Drops the `created_by` ownership filter (admin edits any BIP).
+ *   - Drops the draft|pending status whitelist (admin edits any status).
+ *   - Returns the additional metadata the AdminEditFooter needs
+ *     (title, coordinatorName, status) so the page doesn't need a
+ *     second roundtrip.
+ *
+ * Auth: getClaims() validates the JWT signature; non-admin callers
+ * get null on the role check (defense in depth — the (admin) layout
+ * already gates, but the contract is explicit here).
+ *
+ * Round-trip behaviour matches the coordinator query exactly:
+ *   - `how_to_apply_value` split back into url vs contact branches
+ *   - free-text partner `(unverified)` suffix stripped on read
+ */
+export async function getAdminBipForEdit(
+  id: string,
+): Promise<AdminBipForEdit> {
+  const supabase = await createClient()
+  const { data: authData, error: authError } = await supabase.auth.getClaims()
+  const claims = authData?.claims ?? null
+  if (authError || !claims?.sub) return null
+
+  const role = (claims as { app_metadata?: { role?: string } }).app_metadata?.role
+  if (role !== 'admin') return null
+
+  const { data, error } = await supabase
+    .from('bips')
+    .select(`
+      id, slug, status, updated_at,
+      title, isced_f_code, description, learning_outcomes,
+      virtual_component_description, virtual_timing, host_city,
+      physical_start_date, physical_end_date, application_deadline,
+      ects_credits, max_participants, study_levels,
+      language_of_instruction, language_level_min,
+      green_travel, inclusion_support, eligibility_notes,
+      how_to_apply_type, how_to_apply_value, contact_name, contact_email,
+      host_university:host_university_id ( id, name, country ),
+      coordinator:created_by ( full_name ),
+      partners:bip_partner_universities (
+        id, university_id, partner_name_raw, partner_country_raw, partner_erasmus_code_raw,
+        university:university_id ( id, name, country )
+      )
+    `)
+    .eq('id', id)
+    .maybeSingle()
+
+  if (error || !data) return null
+
+  const status = data.status as BipStatus
+  const isUrl = data.how_to_apply_type === 'url'
+
+  type EmbeddedUni = { id: string; name: string; country: string } | null
+  const hostUniversity: EmbeddedUni = Array.isArray(data.host_university)
+    ? (data.host_university[0] ?? null)
+    : ((data.host_university as EmbeddedUni) ?? null)
+
+  type EmbeddedCoordinator =
+    | { full_name: string | null }
+    | { full_name: string | null }[]
+    | null
+  const coordinatorRaw = data.coordinator as EmbeddedCoordinator
+  const coordinator = Array.isArray(coordinatorRaw)
+    ? (coordinatorRaw[0] ?? null)
+    : coordinatorRaw
+
+  type EmbeddedPartner = {
+    id: string
+    university_id: string | null
+    partner_name_raw: string | null
+    partner_country_raw: string | null
+    partner_erasmus_code_raw: string | null
+    university:
+      | { id: string; name: string; country: string }
+      | { id: string; name: string; country: string }[]
+      | null
+  }
+  const partnerRows = (data.partners ?? []) as EmbeddedPartner[]
+
+  const draft: BipDraftData = {
+    title: data.title ?? undefined,
+    isced_f_code: data.isced_f_code ?? undefined,
+    description: data.description ?? undefined,
+    learning_outcomes: data.learning_outcomes ?? undefined,
+    virtual_component_description:
+      data.virtual_component_description ?? undefined,
+    virtual_timing:
+      (data.virtual_timing as BipDraftData['virtual_timing']) ?? undefined,
+    host_city: data.host_city ?? undefined,
+    physical_start_date: data.physical_start_date ?? undefined,
+    physical_end_date: data.physical_end_date ?? undefined,
+    application_deadline: data.application_deadline ?? undefined,
+    ects_credits: data.ects_credits ?? undefined,
+    max_participants: data.max_participants ?? undefined,
+    study_levels:
+      (data.study_levels as BipDraftData['study_levels']) ?? undefined,
+    language_of_instruction: data.language_of_instruction ?? undefined,
+    language_level_min:
+      (data.language_level_min as BipDraftData['language_level_min']) ??
+      undefined,
+    green_travel: data.green_travel ?? false,
+    inclusion_support: data.inclusion_support ?? false,
+    eligibility_notes: data.eligibility_notes ?? undefined,
+    how_to_apply_type:
+      (data.how_to_apply_type as BipDraftData['how_to_apply_type']) ??
+      undefined,
+    how_to_apply_url: isUrl
+      ? (data.how_to_apply_value ?? undefined)
+      : undefined,
+    contact_name: data.contact_name ?? undefined,
+    contact_email: !isUrl ? (data.contact_email ?? undefined) : undefined,
+    partner_universities: partnerRows.map((p) => {
+      const uniRel = Array.isArray(p.university)
+        ? (p.university[0] ?? null)
+        : p.university
+      if (uniRel && p.university_id) {
+        return {
+          university_id: p.university_id,
+          name: uniRel.name,
+          country: uniRel.country,
+          isVerified: true,
+        }
+      }
+      const rawName = p.partner_name_raw ?? ''
+      const cleanName = rawName.replace(/\s*\(unverified\)\s*$/, '').trim()
+      return {
+        university_id: null,
+        name: cleanName,
+        country: p.partner_country_raw ?? '',
+        isVerified: false,
+      }
+    }),
+  }
+
+  return {
+    id: data.id,
+    data: draft,
+    updatedAt: data.updated_at,
+    hostUniversity,
+    status,
+    title: data.title ?? '',
+    coordinatorName: coordinator?.full_name ?? '',
+  }
 }
