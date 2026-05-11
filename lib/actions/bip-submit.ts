@@ -38,6 +38,7 @@
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
+import { sendEmail } from '@/lib/email/send'
 import { finalizeSlug } from '@/lib/utils/slug'
 import { step1Schema } from '@/lib/schemas/bip-wizard'
 import type { BipDraftData, Step3PartnerDraft } from '@/lib/store/bip-draft'
@@ -256,5 +257,69 @@ export async function submitBipAction(
   // Pending tab on the next render. Approved/rejected pages handle their own
   // revalidation in Phase 3.
   revalidatePath('/dashboard')
+
+  // ADMN-11: notify admin of new submission.
+  // Fire-and-forget per D-11 — if email fails we log but do NOT roll back
+  // the submission. The audit log row written by the 00010 trigger
+  // (draft→pending) IS the source of truth; email is a courtesy.
+  //
+  // Recipient is sourced from a server-side env var (ADMIN_NOTIFICATION_EMAIL)
+  // — the coordinator cannot influence it (T-03-05 mitigation). When unset,
+  // we log a warning and continue so dev environments without a configured
+  // admin inbox still submit cleanly.
+  const adminRecipient = process.env.ADMIN_NOTIFICATION_EMAIL
+  if (adminRecipient) {
+    try {
+      // Look up coordinator name + university name for the email body. This
+      // is a courtesy fetch — failure to read the profile must NOT block the
+      // submission (already committed above). On read failure we send the
+      // email with empty strings and the template renders sensible fallbacks
+      // ("Unknown (Unaffiliated)").
+      let coordinatorName = ''
+      let coordinatorUniversity = ''
+      const { data: profileRow } = await supabase
+        .from('profiles')
+        .select('full_name, university:university_id ( name )')
+        .eq('id', userId)
+        .maybeSingle<{
+          full_name: string | null
+          university: { name: string | null } | { name: string | null }[] | null
+        }>()
+      if (profileRow) {
+        coordinatorName = profileRow.full_name ?? ''
+        // PostgREST may return a single related row as an object or an array
+        // depending on cardinality inference; handle both shapes.
+        const u = profileRow.university
+        if (Array.isArray(u)) {
+          coordinatorUniversity = u[0]?.name ?? ''
+        } else {
+          coordinatorUniversity = u?.name ?? ''
+        }
+      }
+
+      await sendEmail(adminRecipient, {
+        template: 'admin-notification',
+        props: {
+          bipTitle: parsed.data.title,
+          bipId,
+          coordinatorName,
+          coordinatorUniversity,
+          submittedAt: new Date().toISOString(),
+        },
+      })
+    } catch (err) {
+      // D-11 fire-and-forget: email failure (network / Resend / SDK error)
+      // is non-blocking. The DB transition already committed.
+      console.error(
+        '[submitBipAction] admin notification email failed (non-blocking):',
+        err,
+      )
+    }
+  } else {
+    console.warn(
+      '[submitBipAction] ADMIN_NOTIFICATION_EMAIL unset — skipping admin notification email',
+    )
+  }
+
   return { success: true, bipId, slug: safeSlug }
 }
