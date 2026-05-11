@@ -1,5 +1,5 @@
 /**
- * Transactional email send wrapper (Phase 3 ADMN-09 / ADMN-10).
+ * Transactional email send wrapper (Phase 3 ADMN-09 / ADMN-10 / ADMN-11).
  *
  * Resend SDK in prod (RESEND_API_KEY set) or D-15 console fallback in dev.
  *
@@ -12,27 +12,49 @@
  * failure. Callers (Server Actions) MUST wrap in try/catch and NOT
  * re-throw — a Resend outage must not reverse a committed DB transaction.
  *
- * Source: 03-RESEARCH.md Pattern 5; 03-CONTEXT.md D-11, D-13, D-15.
+ * Subject resolution is per-call (resolveSubject) because the
+ * admin-notification template needs a dynamic subject derived from
+ * props.bipTitle: "New BIP pending review: {title}" (D-14).
+ *
+ * Source: 03-RESEARCH.md Pattern 5; 03-CONTEXT.md D-11, D-13, D-14, D-15.
  */
 import * as React from 'react'
 import { Resend } from 'resend'
 import { render } from '@react-email/components'
 import { ApprovalEmail, type ApprovalEmailProps } from './templates/ApprovalEmail'
 import { RejectionEmail, type RejectionEmailProps } from './templates/RejectionEmail'
-// AdminNotificationEmail import deferred to Plan 03-05.
+import {
+  AdminNotificationEmail,
+  type AdminNotificationEmailProps,
+} from './templates/AdminNotificationEmail'
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 
 export type EmailPayload =
   | { template: 'approval'; props: ApprovalEmailProps }
   | { template: 'rejection'; props: RejectionEmailProps }
-  // | { template: 'admin-notification'; props: AdminNotificationEmailProps }  // Plan 03-05
+  | { template: 'admin-notification'; props: AdminNotificationEmailProps }
 
-const SUBJECTS = {
-  approval: 'Your BIP is live on BipHub',
-  rejection: 'Update needed on your BIP submission',
-  // 'admin-notification': /* dynamic per-call */ '',                    // Plan 03-05
-} as const
+/**
+ * Compute the email subject. Approval + rejection use static strings;
+ * admin-notification injects the BIP title per D-14.
+ */
+function resolveSubject(payload: EmailPayload): string {
+  switch (payload.template) {
+    case 'approval':
+      return 'Your BIP is live on BipHub'
+    case 'rejection':
+      return 'Update needed on your BIP submission'
+    case 'admin-notification':
+      return `New BIP pending review: ${payload.props.bipTitle}`
+    default: {
+      const _exhaustive: never = payload
+      throw new Error(
+        `Unknown email template: ${String((_exhaustive as { template: string }).template)}`,
+      )
+    }
+  }
+}
 
 /**
  * Send a transactional email via Resend.
@@ -42,15 +64,15 @@ const SUBJECTS = {
  */
 export async function sendEmail(to: string, payload: EmailPayload): Promise<void> {
   let element: React.ReactElement
-  let subject: string
   switch (payload.template) {
     case 'approval':
       element = React.createElement(ApprovalEmail, payload.props)
-      subject = SUBJECTS.approval
       break
     case 'rejection':
       element = React.createElement(RejectionEmail, payload.props)
-      subject = SUBJECTS.rejection
+      break
+    case 'admin-notification':
+      element = React.createElement(AdminNotificationEmail, payload.props)
       break
     default: {
       const _exhaustive: never = payload
@@ -59,6 +81,7 @@ export async function sendEmail(to: string, payload: EmailPayload): Promise<void
       )
     }
   }
+  const subject = resolveSubject(payload)
   const html = await render(element)
 
   if (!resend) {
