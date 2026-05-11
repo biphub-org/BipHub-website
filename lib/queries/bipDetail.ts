@@ -103,6 +103,55 @@ export async function getBipBySlug(slug: string): Promise<BipDetail | null> {
 }
 
 /**
+ * Fetch a single BIP by id with all relations embedded in ONE query.
+ *
+ * Mirrors `getBipBySlug` field-for-field so BipBody / BipSidebar / BipHeader
+ * render against the same `BipDetail` shape. Used by Phase 3 admin review
+ * (Plan 03-03) and admin edit (Plan 03-07).
+ *
+ * Returns null when no row matches (PGRST116) or on any non-fatal error.
+ * Authorization is enforced by RLS:
+ *   - The admin route group guards `app_metadata.role === 'admin'` at the layout,
+ *     so the admin JWT triggers the `bips_select_own_or_approved` admin clause
+ *     and returns all rows regardless of status.
+ *   - For non-admin callers, RLS strips drafts/pending/rejected rows owned by
+ *     someone else, returning null effectively.
+ */
+export async function getBipById(id: string): Promise<BipDetail | null> {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('bips')
+    .select(`
+      id, slug, title, description, learning_outcomes,
+      virtual_component_description, virtual_timing,
+      physical_start_date, physical_end_date, host_city,
+      ects_credits, language_of_instruction, language_level_min,
+      study_levels, eligibility_notes,
+      how_to_apply_type, how_to_apply_value,
+      contact_name, contact_email, application_deadline,
+      green_travel, inclusion_support, is_seed, status, created_at, subject_area,
+      host_university:universities!host_university_id(id, name, country, city, erasmus_code),
+      partners:bip_partner_universities(
+        id, partner_name_raw, partner_country_raw, partner_erasmus_code_raw, university_id,
+        university:universities(name, country)
+      )
+    `)
+    .eq('id', id)
+    .maybeSingle()
+
+  if (error) {
+    if (error.code === 'PGRST116') return null
+    console.error('[getBipById] supabase error:', error.message)
+    return null
+  }
+
+  if (!data) return null
+
+  return data as unknown as BipDetail
+}
+
+/**
  * Returns all slugs where status='approved'.
  * Used by generateStaticParams to pre-render all published BIPs at build time.
  *

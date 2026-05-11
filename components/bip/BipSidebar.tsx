@@ -11,14 +11,29 @@ import { BookmarkHeartIsland } from '@/components/bip/BookmarkHeartIsland'
  *
  * Renders:
  *   - Deadline countdown chip (DeadlineBadge)
- *   - Apply CTA button (full sidebar width, BipApplyCta)
+ *   - Apply CTA button (full sidebar width, BipApplyCta)        ← public mode only
  *   - Key facts list (ECTS / Dates / Language / CEFR / City) — DETL-05
- *   - Action row: ShareButton + BookmarkHeartIsland
+ *   - Action row: ShareButton + BookmarkHeartIsland             ← public mode only
  *
  * Sticky offset: top-[88px] accounts for 68px StickyNav + 20px breathing room.
  * Hidden on mobile (hidden lg:block) — mobile uses BipMobileApplyBar.
+ *
+ * Mode (Plan 03-03):
+ *   - 'public' (default): unchanged Phase 1 behaviour.
+ *   - 'admin-review': suppresses the Apply CTA AND the Share/Bookmark
+ *     action row — admins viewing a pending submission must not be able
+ *     to apply or bookmark from inside the review surface.
  */
-export function BipSidebar({ bip }: { bip: BipDetail }) {
+export type BipSidebarMode = 'public' | 'admin-review'
+
+export function BipSidebar({
+  bip,
+  mode = 'public',
+}: {
+  bip: BipDetail
+  mode?: BipSidebarMode
+}) {
+  const isAdminReview = mode === 'admin-review'
   const url =
     typeof window !== 'undefined'
       ? `${window.location.origin}/bip/${bip.slug}`
@@ -39,10 +54,12 @@ export function BipSidebar({ bip }: { bip: BipDetail }) {
         {/* Deadline chip */}
         <DeadlineBadge deadline={bip.application_deadline} />
 
-        {/* Apply CTA — full sidebar width */}
-        <div className="mt-4">
-          <BipApplyCta bip={bip} fullWidth />
-        </div>
+        {/* Apply CTA — full sidebar width. Suppressed in admin-review mode. */}
+        {!isAdminReview && (
+          <div className="mt-4">
+            <BipApplyCta bip={bip} fullWidth />
+          </div>
+        )}
 
         {/* Key facts list */}
         <div className="mt-6 pt-6 border-t border-border">
@@ -78,11 +95,13 @@ export function BipSidebar({ bip }: { bip: BipDetail }) {
           </dl>
         </div>
 
-        {/* Action row: Share + Bookmark */}
-        <div className="mt-6 pt-6 border-t border-border flex items-center gap-2">
-          <ShareButton title={bip.title} url={url} />
-          <BookmarkHeartIsland slug={bip.slug} />
-        </div>
+        {/* Action row: Share + Bookmark. Suppressed in admin-review mode. */}
+        {!isAdminReview && (
+          <div className="mt-6 pt-6 border-t border-border flex items-center gap-2">
+            <ShareButton title={bip.title} url={url} />
+            <BookmarkHeartIsland slug={bip.slug} />
+          </div>
+        )}
       </div>
     </aside>
   )

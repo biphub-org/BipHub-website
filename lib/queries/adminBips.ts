@@ -15,6 +15,8 @@
  * `getAdminBipById`, `getAdminBips` (all-listings), and analytics.
  */
 import { createClient } from '@/lib/supabase/server'
+import { getBipById } from '@/lib/queries/bipDetail'
+import type { BipDetail } from '@/lib/queries/bipDetail'
 import type { BipStatus } from '@/lib/utils/status'
 
 export type AdminBip = {
@@ -123,6 +125,34 @@ export async function getAdminPendingBips(): Promise<AdminBip[]> {
     return []
   }
   return (data ?? []).map((row) => normalize(row as unknown as RawAdminBipRow))
+}
+
+/**
+ * Full BIP detail for admin review (Plan 03-03).
+ *
+ * Delegates to `getBipById` so BipBody / BipSidebar / BipHeader render
+ * against the same `BipDetail` shape as the public detail page. The
+ * admin RLS clause on `bips_select_own_or_approved` returns all rows
+ * when the JWT carries `app_metadata.role = 'admin'`, so no service-role
+ * bypass is required (CLAUDE.md never-do compliance).
+ *
+ * Auth: getClaims() validates the JWT signature; non-admin callers get
+ * null on the role check below — defense in depth even if the route
+ * group's layout guard is bypassed.
+ */
+export async function getAdminBipById(bipId: string): Promise<BipDetail | null> {
+  const supabase = await createClient()
+  const { data: authData, error: authError } = await supabase.auth.getClaims()
+  const claims = authData?.claims ?? null
+  if (authError || !claims?.sub) return null
+
+  // Role guard — RLS would also strip non-admin reads of pending/rejected/draft
+  // rows, but make the contract explicit here so future callers can't accidentally
+  // surface admin-only data on a public surface.
+  const role = (claims as { app_metadata?: { role?: string } }).app_metadata?.role
+  if (role !== 'admin') return null
+
+  return getBipById(bipId)
 }
 
 /**
