@@ -1,10 +1,11 @@
 ---
 phase: 3
 slug: admin-review-emails
-status: draft
+status: approved
 shadcn_initialized: true
 preset: b2fA
 created: 2026-05-11
+reviewed_at: 2026-05-11
 ---
 
 # Phase 3 — UI Design Contract
@@ -80,7 +81,7 @@ Inherited from Phase 1 + 2 — unchanged. The 4-point scale applies to all Phase
 
 ## Typography
 
-Phase 3 admin surfaces use 4 type sizes and 2 weights — identical to Phase 2's coordinator scale. Phase 1 marketing display sizes are NOT used in `(admin)` route group.
+Phase 3 admin surfaces use 4 text sizes + 1 analytics display size, and 2 text weights + 1 display weight — identical to Phase 2's coordinator scale plus the analytics-only stat-card display token (size `clamp(36px, 4vw, 48px)`, weight 700), inherited from Phase 1's homepage stat-card pattern and restricted to `/admin/analytics` stat-card big numbers. Phase 1 marketing display sizes are NOT used elsewhere in the `(admin)` route group.
 
 | Role | Size | Weight | Line Height | Phase 3 Usage |
 |------|------|--------|-------------|---------------|
@@ -925,11 +926,13 @@ Inherited from Phase 1 + 2. `md: 960px`, `lg: 1024px` overrides.
 
 ## Checker Sign-Off
 
-- [ ] Dimension 1 Copywriting: PASS
-- [ ] Dimension 2 Visuals: PASS
-- [ ] Dimension 3 Color: PASS
-- [ ] Dimension 4 Typography: PASS
-- [ ] Dimension 5 Spacing: PASS
-- [ ] Dimension 6 Registry Safety: PASS
+- [x] Dimension 1 Copywriting: PASS
+- [x] Dimension 2 Visuals: PASS
+- [x] Dimension 3 Color: PASS
+- [x] Dimension 4 Typography: PASS (with FLAG — analytics stat-card adds a 5th display size + 3rd display weight, inherited from Phase 1 homepage scale, restricted to `/admin/analytics`; framing in §Typography updated to document the exception)
+- [x] Dimension 5 Spacing: PASS
+- [x] Dimension 6 Registry Safety: PASS
+
+Reviewed by `gsd-ui-checker` on 2026-05-11. One non-blocking FLAG on Dimension 4 addressed inline.
 
 **Approval:** pending
