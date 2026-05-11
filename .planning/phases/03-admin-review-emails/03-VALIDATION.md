@@ -2,8 +2,8 @@
 phase: 3
 slug: admin-review-emails
 status: draft
-nyquist_compliant: false
-wave_0_complete: false
+nyquist_compliant: true
+wave_0_complete: false  # set true after Plan 03-00 ships
 created: 2026-05-12
 ---
 
@@ -38,16 +38,16 @@ created: 2026-05-12
 
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| 03-W0-01 | wave-0 | 0 | infrastructure | — | N/A | install | `npm install -D vitest @vitejs/plugin-react @testing-library/react jsdom vite-tsconfig-paths` | ❌ W0 | ⬜ pending |
-| 03-W0-02 | wave-0 | 0 | ADMN-03/04/08 | T-03-03 | rejected→approved blocked at app layer | unit | `npx vitest run tests/utils/status-transitions.test.ts` | ❌ W0 | ⬜ pending |
-| 03-W0-03 | wave-0 | 0 | ADMN-04 | T-03-04 | reject reason min 10 chars | unit | `npx vitest run tests/schemas/admin-bips.test.ts` | ❌ W0 | ⬜ pending |
-| 03-W0-04 | wave-0 | 0 | ADMN-09/10 | T-03-05 | console fallback when RESEND_API_KEY unset (D-15) | unit | `npx vitest run tests/email/send.test.ts` | ❌ W0 | ⬜ pending |
-| 03-W0-05 | wave-0 | 0 | ADMN-09 | T-03-06 | ApprovalEmail renders without note block when note undefined | unit | `npx vitest run tests/email/templates.test.ts` | ❌ W0 | ⬜ pending |
-| 03-XX-XX | TBD | TBD | ADMN-01 | T-03-01 | non-admin JWT redirected at middleware + layout | smoke (manual) | manual (Playwright Phase 4) | — | ⬜ pending |
-| 03-XX-XX | TBD | TBD | ADMN-07 | — | analytics excludes is_seed=true | integration (manual) | manual / SQL check | — | ⬜ pending |
-| 03-XX-XX | TBD | TBD | ADMN-05/06 | — | all-listings status filter + FTS | smoke (manual) | manual (Playwright Phase 4) | — | ⬜ pending |
-| 03-XX-XX | TBD | TBD | ADMN-08 | T-03-02 | `bips_update_own_editable` USING+WITH CHECK blocks direct rejected→pending | integration (manual SQL) | manual psql / Supabase Studio | — | ⬜ pending |
-| 03-XX-XX | TBD | TBD | ADMN-11 | — | revalidatePath busts ISR cache on approve/reject/admin-edit | smoke (manual) | manual browser test | — | ⬜ pending |
+| 03-00-T1 | 03-00 | 0 | infrastructure | — | N/A | install | `npx vitest --version` (after `npm install -D vitest @vitejs/plugin-react @testing-library/react jsdom vite-tsconfig-paths`) | ❌ W0 | ⬜ pending |
+| 03-01-T1 | 03-01 | 1 | ADMN-03/04/08 | T-03-03 | rejected→approved blocked at app layer; reject reason min 10 chars | unit | `npx vitest run tests/utils/status-transitions.test.ts tests/schemas/admin-bips.test.ts` | ❌ W0 | ⬜ pending |
+| 03-03-T1 | 03-03 | 3 | ADMN-09 | T-03-05/06 | console fallback when RESEND_API_KEY unset (D-15); ApprovalEmail renders without note block when note undefined; EC disclaimer present | unit | `npx vitest run tests/email/send.test.ts tests/email/templates.test.ts` | ❌ W0 | ⬜ pending |
+| 03-04-T1 | 03-04 | 4 | ADMN-10 | T-03-06 | RejectionEmail reason verbatim + gold callout + EC disclaimer | unit | `npx vitest run tests/email/templates.test.ts` | ❌ W0 | ⬜ pending |
+| 03-05-T1 | 03-05 | 5 | ADMN-11 | T-03-06 | AdminNotificationEmail + dynamic subject "New BIP pending review: {title}" | unit | `npx vitest run tests/email/` | ❌ W0 | ⬜ pending |
+| 03-02-T4 | 03-02 | 2 | ADMN-01 | T-03-01/08 | non-admin JWT redirected at middleware + layout (manual checkpoint) | smoke (manual) | Plan 03-02 Task 4 checkpoint (9 steps) | — | ⬜ pending |
+| 03-06-T4 | 03-06 | 5 | ADMN-07 | — | analytics excludes is_seed=true (manual SQL check) | integration (manual) | Plan 03-06 Task 4 checkpoint steps 9-11 | — | ⬜ pending |
+| 03-06-T4 | 03-06 | 5 | ADMN-05/06 | — | all-listings status filter + FTS (manual smoke) | smoke (manual) | Plan 03-06 Task 4 checkpoint steps 1-7 | — | ⬜ pending |
+| 03-01-T3 | 03-01 | 1 | ADMN-08 | T-03-02 | `bips_update_own_editable` USING+WITH CHECK blocks direct rejected→pending (manual SQL via psql) | integration (manual SQL) | `supabase db inspect db --schema public --table bips` post-push | — | ⬜ pending |
+| 03-04-T4 | 03-04 | 4 | ADMN-11/D-09 | T-03-11 | revalidatePath busts ISR cache on approve/reject/admin-edit (manual browser test) | smoke (manual) | Plans 03-03/04/07 Task 4 checkpoints; verify /bips updates within seconds | — | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -91,4 +91,4 @@ created: 2026-05-12
 - [ ] Feedback latency < 10s
 - [ ] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending
+**Approval:** planned by planner 2026-05-12 — pending Plan 03-00 + 03-01 execution to validate Wave 0 stubs

@@ -103,7 +103,27 @@ Plans:
   3. When a coordinator submits a new BIP, the admin receives a Resend notification email
   4. Admin approve and reject actions are recorded in a `bip_status_history` audit log; approved BIPs trigger `revalidatePath()` so `/bips` and `/bip/[slug]` reflect the change without a full redeploy
   5. Admin can view all listings filtered by status, edit any BIP listing, and see basic analytics (total BIPs, submissions per month, top countries)
-**Plans:** TBD
+**Plans:** 8 plans
+Plans:
+**Wave 1**
+- [ ] 03-00-PLAN.md — Wave 0: Vitest 4.x infra + 5 test stubs (ADMN-03/04/08/09/10 covered by Wave 0 sampling)
+- [ ] 03-01-PLAN.md — Schema foundation: migration 00010 (bip_status_history + RLS + trigger) + 00011 (bips_update_own_editable) + status-transitions.ts + admin-bips Zod schemas + [BLOCKING] supabase db push
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 03-02-PLAN.md — Admin chrome + pending queue: middleware admin gate, (admin)/layout.tsx, AdminSidebar, /admin RSC page, AdminBipCard, getAdminPendingBips/getNextPendingBip
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 03-03-PLAN.md — Approve flow end-to-end: Resend/react-email install, send.ts + tokens.ts + ApprovalEmail, BipSidebar mode=admin-review, AdminActionsPanel, ApproveBipModal, approveBipAction (audit + revalidate + email + auto-advance), review page
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [ ] 03-04-PLAN.md — Reject + resubmit slice: migration 00012 (bips_update_own_to_pending), RejectionEmail, RejectBipModal (RHF+Zod min-10), rejectBipAction, statusHistory.ts getLatestRejection, coordinatorBips rejection_reason wiring
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [ ] 03-05-PLAN.md — Admin new-submission notification: AdminNotificationEmail, submitBipAction sendEmail wiring, .env.example documentation
+- [ ] 03-06-PLAN.md — All-listings + analytics: /admin/bips with FTS + tabs + DropdownMenu (Edit/Review/Open public/Un-approve), getAdminBips, /admin/analytics with 3 stat cards (Total/Submissions month/Top 5 countries), getAdminAnalytics, revalidate=300
+
+**Wave 6** *(blocked on Wave 5 completion)*
+- [ ] 03-07-PLAN.md — Admin edit (wizard reuse): mode=admin prop on BipSubmissionWizard (banner + auto-save suppressed), adminUpdateBipAction (no status change, conditional revalidatePath, no email), AdminEditFooter, /admin/bips/[id]/edit page
 **UI hint:** yes
 
 **Key Deliverables:**
