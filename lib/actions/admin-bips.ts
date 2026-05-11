@@ -26,7 +26,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { ApproveBipSchema } from '@/lib/schemas/admin-bips'
+import { ApproveBipSchema, RejectBipSchema } from '@/lib/schemas/admin-bips'
 import { validateTransition } from '@/lib/utils/status-transitions'
 import { getNextPendingBip } from '@/lib/queries/adminBips'
 import { sendEmail } from '@/lib/email/send'
@@ -147,6 +147,140 @@ export async function approveBipAction(
   }
 
   // 9. Auto-advance (D-05)
+  const next = await getNextPendingBip(parsed.data.bipId)
+  if (next) {
+    redirect(`/admin/bips/${next.id}/review`)
+  }
+  redirect('/admin')
+}
+
+/**
+ * Reject a BIP (ADMN-04, ADMN-08, ADMN-10).
+ *
+ * Allowed sources: pending (standard reject) or approved (un-approve per D-06).
+ * The reason is REQUIRED (Zod min 10) and is rendered verbatim in:
+ *   1. the rejection email body (RejectionEmail "Reviewer feedback" callout),
+ *   2. the coordinator's dashboard card (via getLatestRejection / Plan task 3),
+ *   3. the bip_status_history.note column (audit trail, action_kind='reject').
+ *
+ * On success this function calls `redirect(...)` (NEVER returns normally).
+ * On failure it returns `{ error: string }` so the modal can surface the
+ * message to the admin. Same NEXT_REDIRECT semantics as approveBipAction.
+ */
+export async function rejectBipAction(
+  bipId: string,
+  reason: string,
+): Promise<ActionResult> {
+  // 1. Auth + role guard
+  const supabase = await createClient()
+  const { data: authData, error: authError } = await supabase.auth.getClaims()
+  const claims = authData?.claims ?? null
+  if (authError || !claims?.sub) {
+    return { error: 'Your session has expired. Please sign in again.' }
+  }
+  const role = (claims as { app_metadata?: { role?: string } }).app_metadata?.role
+  if (role !== 'admin') return { error: 'Forbidden.' }
+
+  // 2. Zod validate (server-side re-validation per D-11; T-03-04 mitigation)
+  const parsed = RejectBipSchema.safeParse({ bipId, reason })
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? 'Invalid input.' }
+  }
+
+  // 3. Read existing row (defense-in-depth — also needed for slug, title,
+  // and coordinator email; T-03-05 forces the recipient to come from the DB,
+  // not the request body)
+  const { data: existing, error: readError } = await supabase
+    .from('bips')
+    .select(
+      'id, slug, title, status, created_by, profiles:created_by ( contact_email, full_name )',
+    )
+    .eq('id', parsed.data.bipId)
+    .maybeSingle()
+  if (readError || !existing) return { error: 'BIP not found.' }
+
+  // 4. State machine guard (T-03-03) — only pending or approved sources allowed
+  try {
+    validateTransition(existing.status as BipStatus, 'rejected', 'admin')
+  } catch {
+    return { error: `Cannot reject from status ${existing.status}.` }
+  }
+
+  // Track whether this reject is an un-approve so we know to bust public ISR
+  const wasApproved = existing.status === 'approved'
+
+  // 5. UPDATE bips
+  const { error: updateError } = await supabase
+    .from('bips')
+    .update({ status: 'rejected', updated_at: new Date().toISOString() })
+    .eq('id', parsed.data.bipId)
+  if (updateError) {
+    console.error('[rejectBipAction] update error:', updateError.message)
+    return { error: 'Failed to reject. Please try again.' }
+  }
+
+  // 6. Audit log
+  // NOTE: the migration 00010 trigger does NOT log admin transitions
+  // (pending→approved, pending→rejected, approved→rejected). The Server
+  // Action is the canonical audit writer for the reject — note=reason so
+  // the coordinator dashboard (getLatestRejection) can render it back.
+  const { error: auditError } = await supabase
+    .from('bip_status_history')
+    .insert({
+      bip_id: parsed.data.bipId,
+      from_status: existing.status,
+      to_status: 'rejected',
+      actor_id: claims.sub,
+      note: parsed.data.reason,
+      action_kind: 'reject',
+    })
+  if (auditError) {
+    // Continue — the DB write succeeded. The trigger does not fire for
+    // admin transitions, so this is the canonical audit row; surface the
+    // error in logs but do NOT roll back the reject.
+    console.error('[rejectBipAction] audit insert failed:', auditError.message)
+  }
+
+  // 7. ISR cache bust
+  revalidatePath('/admin')
+  if (wasApproved) {
+    // Un-approve: the BIP was publicly listed — bust ISR so /bips and the
+    // public detail page reflect the un-approved status (T-03-11 mitigation).
+    revalidatePath('/bips')
+    revalidatePath(`/bip/${existing.slug}`)
+  }
+
+  // 8. Email send (fire-and-forget per D-11)
+  // PostgREST may return embedded relations as an object or a single-element array.
+  const profilesRaw = (existing as { profiles?: unknown }).profiles
+  const profiles = Array.isArray(profilesRaw)
+    ? (profilesRaw[0] as { contact_email?: string | null; full_name?: string | null } | undefined)
+    : (profilesRaw as { contact_email?: string | null; full_name?: string | null } | undefined)
+  const coordinatorEmail = profiles?.contact_email ?? null
+  if (coordinatorEmail) {
+    try {
+      await sendEmail(coordinatorEmail, {
+        template: 'rejection',
+        props: {
+          bipTitle: existing.title,
+          bipId: parsed.data.bipId,
+          reason: parsed.data.reason,
+          coordinatorName: profiles?.full_name ?? '',
+        },
+      })
+    } catch (err) {
+      // D-11: Resend outage must NOT roll back the DB writes.
+      console.error('[rejectBipAction] email send failed (non-blocking):', err)
+    }
+  } else {
+    console.warn(
+      '[rejectBipAction] coordinator has no contact_email on profile; skipping email.',
+    )
+  }
+
+  // 9. Auto-advance (D-05). If the source was 'approved' (un-approve), the
+  // queue may not include this BIP at all — next pending is unrelated, which
+  // is fine: the admin can keep working through the queue.
   const next = await getNextPendingBip(parsed.data.bipId)
   if (next) {
     redirect(`/admin/bips/${next.id}/review`)

@@ -2,23 +2,19 @@
 
 /**
  * AdminActionsPanel — sticky right-column panel on the admin review page
- * (Plan 03-03 / 03-UI-SPEC.md).
+ * (Plan 03-03 + Plan 03-04 / 03-UI-SPEC.md).
  *
  * Renders two CTAs:
- *   - Approve BIP (gold pill) — opens ApproveBipModal
- *   - Reject BIP (red outline) — stubbed with a sonner toast pointing to
- *     Plan 03-04; this is the deliberate vertical-slice seam noted in the
- *     plan's objective.
- *
- * The Approve button is disabled when currentStatus !== 'pending' (admins
- * can re-visit a review page after approving; the panel must reflect that).
+ *   - Approve BIP (gold pill) — opens ApproveBipModal, enabled when status=pending.
+ *   - Reject BIP (red outline) — opens RejectBipModal, enabled when status is
+ *     pending OR approved (D-06 allows admin un-approve via Reject).
  */
 
 import { useState } from 'react'
-import { toast } from 'sonner'
 import { Check, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ApproveBipModal } from './ApproveBipModal'
+import { RejectBipModal } from './RejectBipModal'
 import type { BipStatus } from '@/lib/utils/status'
 
 interface Props {
@@ -37,7 +33,10 @@ export function AdminActionsPanel({
   nextPendingId,
 }: Props) {
   const [approveOpen, setApproveOpen] = useState(false)
+  const [rejectOpen, setRejectOpen] = useState(false)
   const canApprove = currentStatus === 'pending'
+  // D-06: admin may un-approve an approved BIP via Reject.
+  const canReject = currentStatus === 'pending' || currentStatus === 'approved'
 
   return (
     <div className="bg-white border border-border rounded-md p-6 shadow-sm sticky top-20">
@@ -54,9 +53,8 @@ export function AdminActionsPanel({
         <Button
           variant="outline"
           className="w-full border-status-rejected text-status-rejected bg-white hover:bg-red-50 rounded-pill"
-          onClick={() =>
-            toast.info('Reject flow lands in the next plan (03-04).')
-          }
+          onClick={() => setRejectOpen(true)}
+          disabled={!canReject}
         >
           <X size={16} className="mr-2" aria-hidden />
           Reject BIP
@@ -66,14 +64,19 @@ export function AdminActionsPanel({
       <div className="mt-4 bg-bg-soft rounded-sm px-3 py-2">
         <p className="text-sm text-muted">
           Approving publishes the BIP. Rejecting returns it to the coordinator
-          with your feedback.
+          with your feedback. Approved BIPs can be un-approved via Reject.
         </p>
       </div>
 
-      {!canApprove ? (
+      {!canApprove && !canReject ? (
         <p className="mt-3 text-xs text-muted">
-          This BIP is no longer pending (current status:{' '}
-          <strong>{currentStatus}</strong>); the Approve action is disabled.
+          This BIP is no longer actionable (current status:{' '}
+          <strong>{currentStatus}</strong>).
+        </p>
+      ) : !canApprove ? (
+        <p className="mt-3 text-xs text-muted">
+          Current status: <strong>{currentStatus}</strong>. Approve is disabled;
+          Reject acts as un-approve.
         </p>
       ) : nextPendingId ? (
         <p className="mt-3 text-xs text-muted">
@@ -88,6 +91,13 @@ export function AdminActionsPanel({
       <ApproveBipModal
         open={approveOpen}
         onOpenChange={setApproveOpen}
+        bipId={bipId}
+        bipTitle={bipTitle}
+        coordinatorName={coordinatorName}
+      />
+      <RejectBipModal
+        open={rejectOpen}
+        onOpenChange={setRejectOpen}
         bipId={bipId}
         bipTitle={bipTitle}
         coordinatorName={coordinatorName}
