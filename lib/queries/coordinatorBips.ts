@@ -10,10 +10,14 @@
  * Auth: uses `getClaims()` (CLAUDE.md never-do compliance — never the
  * unvalidated session reader server-side).
  *
- * Phase 2 placeholder: `rejection_reason` is null because the schema does not
- * yet carry it. Phase 3 admin flow will populate from `bip_status_history`.
+ * Phase 3 (D-09): `rejection_reason` is populated from the latest matching
+ * row in `bip_status_history` (to_status='rejected', action_kind='reject',
+ * note=admin's reason). Fetched in a single batched query for the rejected
+ * BIPs after the main list query — keeps the dashboard render to two
+ * round-trips total (often one, if the coordinator has no rejected BIPs).
  */
 import { createClient } from '@/lib/supabase/server'
+import { getLatestRejectionsByBipIds } from './statusHistory'
 
 export type CoordinatorBipStatus = 'draft' | 'pending' | 'approved' | 'rejected'
 
@@ -54,7 +58,7 @@ export async function getCoordinatorBips(): Promise<CoordinatorBip[]> {
     return []
   }
 
-  return (data ?? []).map((row) => {
+  const rows: CoordinatorBip[] = (data ?? []).map((row) => {
     // PostgREST may return the embedded relation as a single object or a
     // single-element array depending on the FK shape. Normalize defensively.
     const hostUniversity = Array.isArray(row.host_university)
@@ -73,9 +77,23 @@ export async function getCoordinatorBips(): Promise<CoordinatorBip[]> {
       updated_at: row.updated_at,
       created_at: row.created_at,
       host_university: hostUniversity,
-      // Phase 2: rejection_reason not yet stored on bips. Phase 3 admin flow
-      // will populate this from the bip_status_history audit log.
+      // Populated below from bip_status_history for status='rejected' rows.
       rejection_reason: null,
     }
   })
+
+  // Phase 3 D-09: wire the latest rejection reason from bip_status_history.
+  // Only fetch when there is at least one rejected BIP — skip the round-trip
+  // entirely for coordinators with no rejections.
+  const rejectedIds = rows.filter((r) => r.status === 'rejected').map((r) => r.id)
+  if (rejectedIds.length > 0) {
+    const reasons = await getLatestRejectionsByBipIds(rejectedIds)
+    for (const row of rows) {
+      if (row.status === 'rejected') {
+        row.rejection_reason = reasons.get(row.id) ?? null
+      }
+    }
+  }
+
+  return rows
 }
