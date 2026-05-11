@@ -155,6 +155,57 @@ export async function getAdminBipById(bipId: string): Promise<BipDetail | null> 
   return getBipById(bipId)
 }
 
+export type AdminBipsFilter = {
+  status?: 'all' | 'draft' | 'pending' | 'approved' | 'rejected'
+  q?: string
+}
+
+/**
+ * All-listings admin query (D-19 / ADMN-06).
+ *
+ * Returns every BIP the admin RLS clause permits (i.e. all rows when
+ * the JWT carries `app_metadata.role = 'admin'`). Supports a status
+ * filter (matching the 5 status tabs) and a free-text search that
+ * reuses the Phase 1 `search_vector` tsvector + unaccent infrastructure
+ * (see `lib/filters/buildSupabaseQuery.ts`).
+ *
+ * Empty array on auth failure — defensive only; layout guard makes
+ * this branch unreachable in normal flow.
+ */
+export async function getAdminBips(
+  filter: AdminBipsFilter = {},
+): Promise<AdminBip[]> {
+  const supabase = await createClient()
+  const { data: authData, error: authError } = await supabase.auth.getClaims()
+  const claims = authData?.claims ?? null
+  if (authError || !claims?.sub) return []
+
+  let query = supabase
+    .from('bips')
+    .select(ADMIN_BIP_SELECT)
+    .order('updated_at', { ascending: false })
+
+  if (filter.status && filter.status !== 'all') {
+    query = query.eq('status', filter.status)
+  }
+
+  const q = filter.q?.trim()
+  if (q && q.length > 0) {
+    // Reuse search_vector + websearch parser from Phase 1 (BROW-09)
+    query = query.textSearch('search_vector', q, {
+      type: 'websearch',
+      config: 'english',
+    })
+  }
+
+  const { data, error } = await query
+  if (error) {
+    console.error('[getAdminBips] supabase error:', error.message)
+    return []
+  }
+  return (data ?? []).map((row) => normalize(row as unknown as RawAdminBipRow))
+}
+
 /**
  * Return the next pending BIP after the just-actioned one (D-05 auto-advance).
  * Excludes `excludeId` so the immediately-actioned BIP is not returned.
