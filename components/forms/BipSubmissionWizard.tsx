@@ -66,6 +66,19 @@ interface Props {
     onReload: () => void
     onOverwrite: () => void
   }) => React.ReactNode
+  /**
+   * Plan 03-07 (ADMN-05): when `'admin'`, the wizard:
+   *   - skips localStorage hydration (server-loaded `initialBip` is the
+   *     only source of truth — admin sessions must not collide with
+   *     a coordinator's locally-cached draft for a different BIP),
+   *   - suppresses the debounced auto-save (admin saves explicitly via
+   *     adminUpdateBipAction wired into the Step 5 footer),
+   *   - skips the SIGNED_OUT → persistToLocalStorage path (admin edits
+   *     are server-authoritative; nothing to recover client-side),
+   *   - renders a persistent blue banner reading the D-17 copy.
+   * Defaults to `'coordinator'` so Phase 2 callers are unchanged.
+   */
+  mode?: 'coordinator' | 'admin'
 }
 
 const STEPS = [
@@ -103,6 +116,7 @@ export function BipSubmissionWizard({
   initialUniversities,
   renderPreviewStep,
   renderConflictDialog,
+  mode = 'coordinator',
 }: Props) {
   const router = useRouter()
   const {
@@ -123,14 +137,26 @@ export function BipSubmissionWizard({
 
   const [conflictOpen, setConflictOpen] = useState(false)
 
-  // (a) Hydration: edit-mode pre-populates from DB; new mode reads localStorage.
+  // (a) Hydration:
+  //   - admin mode (Plan 03-07): hydrate from server only; NEVER read
+  //     localStorage so admin edits do not collide with coordinator drafts
+  //     cached under the same browser profile.
+  //   - coordinator edit mode: hydrate from DB (initialBip).
+  //   - coordinator new mode: hydrate from localStorage.
   useEffect(() => {
+    if (mode === 'admin') {
+      if (initialBip) hydrateFromServer(initialBip)
+      return
+    }
     if (initialBip) hydrateFromServer(initialBip)
     else hydrate()
-  }, [initialBip, hydrate, hydrateFromServer])
+  }, [initialBip, hydrate, hydrateFromServer, mode])
 
   // (b) Session-expiry recovery (SUBM-07).
+  // Admin mode (Plan 03-07): no localStorage persistence — admin edits are
+  // server-authoritative and a re-login lands the admin back on /admin.
   useEffect(() => {
+    if (mode === 'admin') return
     const supabase = createBrowserSupabase()
     const {
       data: { subscription },
@@ -148,7 +174,7 @@ export function BipSubmissionWizard({
       }
     })
     return () => subscription.unsubscribe()
-  }, [persistToLocalStorage])
+  }, [persistToLocalStorage, mode])
 
   // (c) Persist Server Action result back into the store.
   const performSave = useCallback(
@@ -196,8 +222,11 @@ export function BipSubmissionWizard({
   )
 
   // (d) 1.5s debounced auto-save on field blur (SUBM-02 / D-02).
+  // Admin mode (Plan 03-07): suppressed — admin saves explicitly via
+  // adminUpdateBipAction wired into the Step 5 AdminEditFooter.
   const debouncedAutoSave = useDebouncedCallback(
     (payload: Partial<BipDraftData>) => {
+      if (mode === 'admin') return
       void performSave(payload)
     },
     1500,
@@ -208,8 +237,15 @@ export function BipSubmissionWizard({
   }
 
   // (e) Save-and-continue: synchronous save then advance on success.
+  // Admin mode (Plan 03-07): admin uses adminUpdateBipAction explicitly on
+  // Step 5 — we merge into the store and advance without hitting the
+  // coordinator-only saveDraftAction (which would 403 under admin RLS).
   const saveAndContinue = async (stepData: Partial<BipDraftData>) => {
     mergeDraft(stepData)
+    if (mode === 'admin') {
+      handleStepChange(Math.min(currentStep + 1, 5))
+      return
+    }
     const result = await performSave({ ...draft, ...stepData })
     if (result.ok) handleStepChange(Math.min(currentStep + 1, 5))
   }
@@ -249,6 +285,17 @@ export function BipSubmissionWizard({
 
   return (
     <LazyMotion features={domAnimation}>
+      {/* Plan 03-07 (D-17) — admin-mode banner. The copy is locked verbatim. */}
+      {mode === 'admin' ? (
+        <div
+          className="bg-eu-blue-50 border border-eu-blue-100 rounded-md px-4 py-3 mx-auto mt-4 mb-2 max-w-[760px] flex items-center gap-3"
+          role="note"
+        >
+          <span className="text-sm font-semibold text-eu-blue">
+            Editing as admin — coordinator will not be notified.
+          </span>
+        </div>
+      ) : null}
       <div className="bg-white rounded-md shadow-md w-full max-w-[760px] mx-auto my-8">
         {/* Wizard header */}
         <div className="border-b border-border px-8 py-4 flex items-center justify-between gap-4">
@@ -286,7 +333,11 @@ export function BipSubmissionWizard({
               )
             })}
           </div>
-          <SaveStatusIndicator onRetry={() => void performSave(draft)} />
+          {mode === 'admin' ? (
+            <div className="w-[140px]" aria-hidden />
+          ) : (
+            <SaveStatusIndicator onRetry={() => void performSave(draft)} />
+          )}
         </div>
 
         {/* Wizard body */}
