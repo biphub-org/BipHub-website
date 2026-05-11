@@ -14,9 +14,14 @@
 import { describe, it, expect } from 'vitest'
 import { render } from '@react-email/components'
 import { ApprovalEmail, type ApprovalEmailProps } from '@/lib/email/templates/ApprovalEmail'
+import { RejectionEmail, type RejectionEmailProps } from '@/lib/email/templates/RejectionEmail'
 
 async function renderApproval(props: ApprovalEmailProps): Promise<string> {
   return render(<ApprovalEmail {...props} />)
+}
+
+async function renderRejection(props: RejectionEmailProps): Promise<string> {
+  return render(<RejectionEmail {...props} />)
 }
 
 describe('ApprovalEmail', () => {
@@ -69,12 +74,53 @@ describe('ApprovalEmail', () => {
   })
 })
 
-// RejectionEmail block — preserved from Plan 03-00 (filled in Plan 03-04)
+// RejectionEmail — filled in Plan 03-04 (ADMN-10 / D-14)
 describe('RejectionEmail', () => {
-  it.todo('renders reason verbatim in callout block')
-  it.todo('renders /dashboard/bips/[id]/edit CTA href')
-  it.todo('renders gold left-border on reason callout (per UI-SPEC)')
-  it.todo('renders EC disclaimer footer')
+  it('renders reason verbatim in callout block', async () => {
+    const html = await renderRejection({
+      bipTitle: 'Quantum BIP',
+      bipId: 'abc-123',
+      coordinatorName: 'Alice',
+      reason:
+        'The learning outcomes section needs more detail about assessment criteria.',
+    })
+    expect(html).toContain(
+      'The learning outcomes section needs more detail about assessment criteria.',
+    )
+  })
+
+  it('renders /dashboard/bips/[id]/edit CTA href', async () => {
+    const html = await renderRejection({
+      bipTitle: 'X',
+      bipId: 'unique-id-xyz',
+      coordinatorName: 'A',
+      reason: 'x'.repeat(20),
+    })
+    expect(html).toContain('https://biphub.eu/dashboard/bips/unique-id-xyz/edit')
+  })
+
+  it('renders gold left-border on reason callout (per UI-SPEC)', async () => {
+    const html = await renderRejection({
+      bipTitle: 'X',
+      bipId: 'x',
+      coordinatorName: 'A',
+      reason: 'x'.repeat(20),
+    })
+    // gold = #FFCC00 from EMAIL_TOKENS.euGold
+    expect(html.toLowerCase()).toContain('#ffcc00')
+    expect(html).toContain('4px solid')
+  })
+
+  it('renders EC disclaimer footer', async () => {
+    const html = await renderRejection({
+      bipTitle: 'X',
+      bipId: 'x',
+      coordinatorName: 'A',
+      reason: 'x'.repeat(20),
+    })
+    expect(html).toContain('Independent project')
+    expect(html).toContain('not affiliated with the European Commission')
+  })
 })
 
 // AdminNotificationEmail block — preserved from Plan 03-00 (filled in Plan 03-05)

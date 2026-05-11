@@ -18,18 +18,19 @@ import * as React from 'react'
 import { Resend } from 'resend'
 import { render } from '@react-email/components'
 import { ApprovalEmail, type ApprovalEmailProps } from './templates/ApprovalEmail'
-// RejectionEmail + AdminNotificationEmail imports deferred to Plans 03-04 and 03-05.
+import { RejectionEmail, type RejectionEmailProps } from './templates/RejectionEmail'
+// AdminNotificationEmail import deferred to Plan 03-05.
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 
 export type EmailPayload =
   | { template: 'approval'; props: ApprovalEmailProps }
-  // | { template: 'rejection'; props: RejectionEmailProps }            // Plan 03-04
+  | { template: 'rejection'; props: RejectionEmailProps }
   // | { template: 'admin-notification'; props: AdminNotificationEmailProps }  // Plan 03-05
 
 const SUBJECTS = {
   approval: 'Your BIP is live on BipHub',
-  // rejection: 'Update needed on your BIP submission',                  // Plan 03-04
+  rejection: 'Update needed on your BIP submission',
   // 'admin-notification': /* dynamic per-call */ '',                    // Plan 03-05
 } as const
 
@@ -42,17 +43,21 @@ const SUBJECTS = {
 export async function sendEmail(to: string, payload: EmailPayload): Promise<void> {
   let element: React.ReactElement
   let subject: string
-  // NOTE: as additional templates are added in Plans 03-04/03-05 this switch
-  // gains real cases; today it's effectively a one-arm match. The
-  // `assertNever`-style exhaustiveness guard is intentionally omitted
-  // because TS narrows a single-arm union to `never` after the case,
-  // which makes the dead branch a type error.
-  if (payload.template === 'approval') {
-    element = React.createElement(ApprovalEmail, payload.props)
-    subject = SUBJECTS.approval
-  } else {
-    const unknown = payload as { template: string }
-    throw new Error(`Unknown email template: ${unknown.template}`)
+  switch (payload.template) {
+    case 'approval':
+      element = React.createElement(ApprovalEmail, payload.props)
+      subject = SUBJECTS.approval
+      break
+    case 'rejection':
+      element = React.createElement(RejectionEmail, payload.props)
+      subject = SUBJECTS.rejection
+      break
+    default: {
+      const _exhaustive: never = payload
+      throw new Error(
+        `Unknown email template: ${String((_exhaustive as { template: string }).template)}`,
+      )
+    }
   }
   const html = await render(element)
 
