@@ -101,7 +101,7 @@
 - [x] **FOUN-02**: Homepage and `/bips` achieve Lighthouse > 90 on Performance, Accessibility, SEO; LCP < 1.5s on 4G mobile
 - [x] **FOUN-03**: Site meets WCAG AA: forms keyboard-navigable, ARIA labels present, Europe map has country `<select>` fallback for keyboard users
 - [x] **FOUN-04**: Inter font is self-hosted via `next/font` (no `fonts.googleapis.com` cross-origin request)
-- [ ] **FOUN-05**: Site shows a GDPR cookie consent banner before any analytics scripts load
+- [x] **FOUN-05**: Site shows a GDPR cookie consent banner before any analytics scripts load (satisfied by absence-of-trackers; Plan 04-02 documented via /privacy, Plan 04-04 documented the zero-analytics rule in CONTRIBUTING.md Section 4)
 - [ ] **FOUN-06**: Site has a privacy policy page covering data processing for EU users
 - [ ] **FOUN-07**: Coordinator can delete their account; approved BIPs are anonymized, drafts deleted (GDPR right to erasure)
 - [x] **FOUN-08**: Repository is open-source with MIT license, README, and CONTRIBUTING.md
@@ -229,7 +229,7 @@ Phase mappings derived from `.planning/research/SUMMARY.md` Recommended Phase Or
 | INFO-01 | Phase 4 | Pending |
 | INFO-02 | Phase 4 | Pending |
 | INFO-04 | Phase 4 | Pending |
-| FOUN-05 | Phase 4 | Pending |
+| FOUN-05 | Phase 4 | Complete |
 | FOUN-06 | Phase 4 | Pending |
 | FOUN-07 | Phase 4 | Pending |
 | FOUN-10 | Phase 4 | Pending |
