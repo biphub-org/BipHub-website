@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Plan 04-03 complete
+stopped_at: Plan 04-05 complete
 last_updated: "2026-05-14T00:00:00.000Z"
-last_activity: 2026-05-14 -- Plan 04-03 complete (static OG PNGs for / and /bips + scripts/og-template.html)
+last_activity: 2026-05-14 -- Plan 04-05 complete (coordinator account deletion: SECURITY DEFINER RPC + typed-email modal + post-deletion toast island)
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 30
-  completed_plans: 27
-  percent: 90
+  completed_plans: 28
+  percent: 93
 ---
 
 # Project State
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-05-08)
 ## Current Position
 
 Phase: 04 (polish-static-content-performance-hardening) — EXECUTING
-Plan: 5 of 7 (Plans 04-01, 04-02, 04-03, 04-04 complete; 04-05 pending in Wave 1; 04-06 Wave 2; 04-07 Wave 3)
+Plan: 5 of 7 complete (Plans 04-01, 04-02, 04-03, 04-04, 04-05 done; 04-06 next in Wave 2; 04-07 Wave 3)
 Status: Executing Phase 04
-Last activity: 2026-05-14 -- Plan 04-03 complete (static OG PNGs for / and /bips + scripts/og-template.html)
+Last activity: 2026-05-14 -- Plan 04-05 complete (coordinator account deletion: delete_my_account SECURITY DEFINER RPC + deleteAccountAction + /dashboard/settings Danger Zone + DeleteAccountDialog typed-email confirm + DashboardNav gear icon + AccountDeletedToastIsland on homepage)
 
 Progress: [██████████] 100%
 
@@ -119,6 +119,11 @@ Recent decisions affecting current work:
 - Plan 04-03: Static-OG strategy (D-17) — `/bip/[slug]` keeps its dynamic `opengraph-image.tsx` from Plan 01-07; `/` and `/bips` use hand-rendered 1200x630 PNGs committed to `/public`. Zero runtime OG cost on static routes. `metadataBase = new URL(NEXT_PUBLIC_SITE_URL || 'http://localhost:3000')` scoped per-page so relative `/og-*.png` URLs resolve in every environment.
 - Plan 04-03: PNG rendering uses headless Chrome (`chrome --headless --screenshot --window-size=1200,630 file://...`) on single-card HTML variants in `/tmp` rather than the plan's manual DevTools workflow — fully deterministic, no `puppeteer` dependency, and the manual fallback remains documented inside `scripts/og-template.html` for contributors without local Chrome.
 - Plan 04-03: LogoMark SVG embedded directly as raw markup in OG template (11 `<circle>` elements with pre-computed positions matching `components/home/LogoMark.tsx`) — keeps the HTML template self-contained and ensures the committed PNGs cannot drift from the React component's star count.
+- Plan 04-05: `delete_my_account()` Postgres RPC takes ZERO parameters and reads `auth.uid()` internally — cross-user deletion is structurally impossible (T-04-14). `set search_path = public, auth, pg_temp` defeats SECURITY DEFINER search-path injection (T-04-15). Anonymization step writes `contact_name='—'` (em-dash) and `contact_email=NULL` on approved BIPs; drafts/pending/rejected are hard-deleted; auth.users row is removed and FK cascades complete the chain (profiles ON DELETE CASCADE, bips.created_by + bip_status_history.actor_id ON DELETE SET NULL).
+- Plan 04-05: `lib/actions/account.ts` collects approved-BIP slugs BEFORE the RPC fires — once `created_by` becomes NULL we cannot filter the rows, so `revalidatePath('/bip/<slug>')` for each anonymized page must run with a pre-collected list. signOut happens AFTER the RPC succeeds so a failure path leaves the user signed in and the modal can toast the Postgres error (T-04-20).
+- Plan 04-05: `DialogTrigger asChild` is NOT supported by the project's @base-ui/react-backed Dialog primitive — use `<DialogTrigger render={<Button .../>} />` instead, matching the `DialogPrimitive.Close render={...}` pattern already used inside `DialogContent`.
+- Plan 04-05: `AccountDeletedToastIsland` calls `useSearchParams` so it must be wrapped in `<Suspense>` per Next.js 15; adding the island to `app/(public)/page.tsx` transitions `/` from static (○) to dynamic (ƒ) — documented as expected; Plan 04-06's Suspense audit owns the refinement.
+- Plan 04-05: Migration applied via `supabase migration up --local` (not `db push`), function existence verified via `docker exec supabase_db_BIP_project psql -U postgres -d postgres -c "\df public.delete_my_account"` (one row, void return, zero args); `npm run db:types` regenerated `lib/supabase/database.types.ts` with `delete_my_account: { Args: never; Returns: undefined }`.
 
 ### Pending Todos
 
@@ -140,6 +145,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-05-14T00:00:00.000Z
-Stopped at: Completed 04-03-PLAN.md
+Stopped at: Completed 04-05-PLAN.md
 Resume file: None
-Resume instructions: Run Plan 04-05 (account deletion) to finish Wave 1 of Phase 4, then proceed to Plan 04-06 (performance hardening) and Plan 04-07 (Playwright E2E).
+Resume instructions: Wave 1 of Phase 4 complete (04-01..04-05). Next: Plan 04-06 (performance hardening — bundle analyzer, Suspense audit including the now-dynamic homepage, Lighthouse baselines, image audit), then Plan 04-07 (Playwright E2E + a11y polish).
