@@ -331,6 +331,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      delete_my_account: { Args: never; Returns: undefined }
       immutable_unaccent: { Args: { "": string }; Returns: string }
       insert_university_if_not_exists: {
         Args: { p_country: string; p_erasmus_code?: string; p_name: string }
