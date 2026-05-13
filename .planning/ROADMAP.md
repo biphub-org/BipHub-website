@@ -151,7 +151,15 @@ Plans:
   3. A coordinator can delete their account: approved BIPs are anonymized, drafts are deleted, and the profile row is removed (GDPR right to erasure)
   4. Homepage and `/bips` achieve Lighthouse > 90 on Performance, Accessibility, and SEO; LCP < 1.5s on 4G mobile simulation
   5. Playwright E2E suite passes covering: auth flow, submission wizard, admin approve/reject, and map click-to-filter; the repo is runnable by any contributor via `supabase start` + `npm run dev` with a `CONTRIBUTING.md` explaining the EU emblem prohibition
-**Plans:** TBD
+**Plans:** 7 plans
+Plans:
+- [ ] 04-01-PLAN.md — `/what-is-a-bip` static explainer page with 5 sections + 8-item FAQ accordion + EC outbound link (INFO-01, INFO-02, INFO-04)
+- [ ] 04-02-PLAN.md — `/privacy` static policy page (8 sections, ~600-900 words) + footer link; documents the zero-analytics posture (FOUN-05, FOUN-06)
+- [ ] 04-03-PLAN.md — Static OG PNGs for `/` and `/bips` (1200×630) + scripts/og-template.html for regeneration; wires metadata.openGraph.images
+- [ ] 04-04-PLAN.md — Repo health: CONTRIBUTING.md (8 sections, EU emblem prohibition) + CODE_OF_CONDUCT.md (Contributor Covenant v2.1) + .env.example audit + .gitleaks.toml + .github/workflows/secret-scan.yml (FOUN-05 documented)
+- [ ] 04-05-PLAN.md — Account deletion vertical slice (FOUN-07): migration 00013 `delete_my_account()` SECURITY DEFINER RPC + [BLOCKING] supabase db push + deleteAccountAction + /dashboard/settings Danger Zone + DeleteAccountDialog (typed-email) + DashboardNav gear icon + post-deletion toast island
+- [ ] 04-06-PLAN.md — Performance hardening: @next/bundle-analyzer wired behind ANALYZE=true + 3 package.json scripts + 4 Suspense skeletons on /bips + image audit + 4 manual Lighthouse audits committed as screenshots (D-18..D-21, D-24)
+- [ ] 04-07-PLAN.md — Playwright E2E (FOUN-10) + a11y polish: playwright.config.ts + seed.e2e.sql (3 fixture users) + storage-state setup + 4 specs (auth, submission, admin-review, map-filter) + EDGE-CASES-DEFERRED.md + .github/workflows/e2e.yml + manual axe-DevTools sweep (D-27)
 **UI hint:** yes
 
 **Key Deliverables:**
@@ -179,4 +187,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. Discovery Foundation | 8/8 | Complete    | 2026-05-09 |
 | 2. Coordinator Auth + Submission | 0/7 | Not started | - |
 | 3. Admin Review + Email Notifications | 0/TBD | Not started | - |
-| 4. Polish + Static Content + Performance Hardening | 0/TBD | Not started | - |
+| 4. Polish + Static Content + Performance Hardening | 0/7 | Not started | - |
