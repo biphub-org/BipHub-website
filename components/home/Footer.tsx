@@ -56,6 +56,7 @@ export function Footer() {
               Project
             </h2>
             <ul className="mt-4 space-y-2 text-sm">
+              <li><Link href="/privacy" className="text-white/80 transition-colors hover:text-eu-gold">Privacy policy</Link></li>
               <li>
                 <a
                   href="https://github.com/biphub/biphub"
