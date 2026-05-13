@@ -151,11 +151,11 @@ Plans:
   3. A coordinator can delete their account: approved BIPs are anonymized, drafts are deleted, and the profile row is removed (GDPR right to erasure)
   4. Homepage and `/bips` achieve Lighthouse > 90 on Performance, Accessibility, and SEO; LCP < 1.5s on 4G mobile simulation
   5. Playwright E2E suite passes covering: auth flow, submission wizard, admin approve/reject, and map click-to-filter; the repo is runnable by any contributor via `supabase start` + `npm run dev` with a `CONTRIBUTING.md` explaining the EU emblem prohibition
-**Plans:** 3/7 plans complete
+**Plans:** 4/7 plans complete
 Plans:
 - [x] 04-01-PLAN.md — `/what-is-a-bip` static explainer page with 5 sections + 8-item FAQ accordion + EC outbound link (INFO-01, INFO-02, INFO-04) [completed 2026-05-13]
 - [x] 04-02-PLAN.md — `/privacy` static policy page (8 sections, ~600-900 words) + footer link; documents the zero-analytics posture (FOUN-05, FOUN-06) [completed 2026-05-14]
-- [ ] 04-03-PLAN.md — Static OG PNGs for `/` and `/bips` (1200×630) + scripts/og-template.html for regeneration; wires metadata.openGraph.images
+- [x] 04-03-PLAN.md — Static OG PNGs for `/` and `/bips` (1200×630) + scripts/og-template.html for regeneration; wires metadata.openGraph.images [completed 2026-05-14]
 - [x] 04-04-PLAN.md — Repo health: CONTRIBUTING.md (8 sections, EU emblem prohibition) + CODE_OF_CONDUCT.md (Contributor Covenant v2.1) + .env.example audit + .gitleaks.toml + .github/workflows/secret-scan.yml (FOUN-05 documented) [completed 2026-05-14]
 - [ ] 04-05-PLAN.md — Account deletion vertical slice (FOUN-07): migration 00013 `delete_my_account()` SECURITY DEFINER RPC + [BLOCKING] supabase db push + deleteAccountAction + /dashboard/settings Danger Zone + DeleteAccountDialog (typed-email) + DashboardNav gear icon + post-deletion toast island
 - [ ] 04-06-PLAN.md — Performance hardening: @next/bundle-analyzer wired behind ANALYZE=true + 3 package.json scripts + 4 Suspense skeletons on /bips + image audit + 4 manual Lighthouse audits committed as screenshots (D-18..D-21, D-24)
@@ -187,4 +187,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. Discovery Foundation | 8/8 | Complete    | 2026-05-09 |
 | 2. Coordinator Auth + Submission | 0/7 | Not started | - |
 | 3. Admin Review + Email Notifications | 0/TBD | Not started | - |
-| 4. Polish + Static Content + Performance Hardening | 3/7 | In Progress | - |
+| 4. Polish + Static Content + Performance Hardening | 4/7 | In Progress | - |

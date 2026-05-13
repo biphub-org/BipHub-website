@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Plan 04-04 complete
+stopped_at: Plan 04-03 complete
 last_updated: "2026-05-14T00:00:00.000Z"
-last_activity: 2026-05-14 -- Plan 04-04 complete (CONTRIBUTING + CoC + env audit + gitleaks CI)
+last_activity: 2026-05-14 -- Plan 04-03 complete (static OG PNGs for / and /bips + scripts/og-template.html)
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 30
-  completed_plans: 26
-  percent: 86
+  completed_plans: 27
+  percent: 90
 ---
 
 # Project State
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-05-08)
 ## Current Position
 
 Phase: 04 (polish-static-content-performance-hardening) — EXECUTING
-Plan: 5 of 7 (Plans 04-01, 04-02, 04-04 complete; 04-03 and 04-05 pending in Wave 1; 04-06 Wave 2; 04-07 Wave 3)
+Plan: 5 of 7 (Plans 04-01, 04-02, 04-03, 04-04 complete; 04-05 pending in Wave 1; 04-06 Wave 2; 04-07 Wave 3)
 Status: Executing Phase 04
-Last activity: 2026-05-14 -- Plan 04-04 complete (CONTRIBUTING + CoC + env audit + gitleaks CI)
+Last activity: 2026-05-14 -- Plan 04-03 complete (static OG PNGs for / and /bips + scripts/og-template.html)
 
 Progress: [██████████] 100%
 
@@ -116,6 +116,9 @@ Recent decisions affecting current work:
 - Plan 04-04: `.gitleaks.toml` allowlist is path-scoped only (no pattern-scoped) — forward-declares `supabase/seed.e2e.sql` (created in Plan 04-07) and covers `public/fonts/*.ttf`, all numbered migrations, `.env.example`. A real secret in `app/`, `lib/`, or `components/` still triggers.
 - Plan 04-04: secret-scan workflow runs gitleaks-action@v2 on PR + main push with `fetch-depth: 0` and minimum permissions; no `continue-on-error` so findings block the merge; no Husky / lefthook / pre-commit hooks per D-22.
 - Plan 04-04: WebFetch tool sanitised the Contributor Covenant body — pulled raw markdown from the EthicalSource/contributor_covenant `release` branch on GitHub via PowerShell `Invoke-WebRequest` and stripped Hugo `+++` frontmatter.
+- Plan 04-03: Static-OG strategy (D-17) — `/bip/[slug]` keeps its dynamic `opengraph-image.tsx` from Plan 01-07; `/` and `/bips` use hand-rendered 1200x630 PNGs committed to `/public`. Zero runtime OG cost on static routes. `metadataBase = new URL(NEXT_PUBLIC_SITE_URL || 'http://localhost:3000')` scoped per-page so relative `/og-*.png` URLs resolve in every environment.
+- Plan 04-03: PNG rendering uses headless Chrome (`chrome --headless --screenshot --window-size=1200,630 file://...`) on single-card HTML variants in `/tmp` rather than the plan's manual DevTools workflow — fully deterministic, no `puppeteer` dependency, and the manual fallback remains documented inside `scripts/og-template.html` for contributors without local Chrome.
+- Plan 04-03: LogoMark SVG embedded directly as raw markup in OG template (11 `<circle>` elements with pre-computed positions matching `components/home/LogoMark.tsx`) — keeps the HTML template self-contained and ensures the committed PNGs cannot drift from the React component's star count.
 
 ### Pending Todos
 
@@ -137,6 +140,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-05-14T00:00:00.000Z
-Stopped at: Completed 04-04-PLAN.md
+Stopped at: Completed 04-03-PLAN.md
 Resume file: None
-Resume instructions: Run Plan 04-03 (static OG PNGs) and Plan 04-05 (account deletion) to complete Wave 1 of Phase 4.
+Resume instructions: Run Plan 04-05 (account deletion) to finish Wave 1 of Phase 4, then proceed to Plan 04-06 (performance hardening) and Plan 04-07 (Playwright E2E).
