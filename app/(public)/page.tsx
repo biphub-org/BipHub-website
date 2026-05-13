@@ -15,6 +15,7 @@
  *   Pitfall 13: Choropleth tier fill classes are full string literals in lib/map/bins.ts.
  */
 
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import {
@@ -33,6 +34,10 @@ import { UniversityCTA } from '@/components/home/UniversityCTA'
 // EuropeMapWrapper is a 'use client' component that hosts the dynamic({ ssr: false }) import.
 // Next.js 15 requires ssr:false dynamic() to live in a client component boundary.
 import { EuropeMapWrapper } from '@/components/home/EuropeMapWrapper'
+// Plan 04-05 (FOUN-07): fires the post-deletion Sonner toast on /?deleted=1 and
+// strips the param from the URL. Wrapped in <Suspense> because useSearchParams
+// requires a Suspense boundary in Next.js 15.
+import { AccountDeletedToastIsland } from '@/components/home/AccountDeletedToastIsland'
 
 // 1-hour ISR: homepage data refreshes hourly without a full rebuild.
 // Coordinate submits (Plan 02+) revalidatePath('/') explicitly.
@@ -85,6 +90,13 @@ export default async function HomePage() {
 
   return (
     <>
+      {/* FOUN-07: post-deletion toast island — fires on /?deleted=1, then strips
+          the param. Renders null otherwise. Suspense is required because
+          useSearchParams must be wrapped in Next.js 15. */}
+      <Suspense fallback={null}>
+        <AccountDeletedToastIsland />
+      </Suspense>
+
       {/* DISC-01: Hero with gold underline accent */}
       <Hero />
 
