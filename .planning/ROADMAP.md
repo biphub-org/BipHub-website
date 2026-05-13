@@ -151,9 +151,9 @@ Plans:
   3. A coordinator can delete their account: approved BIPs are anonymized, drafts are deleted, and the profile row is removed (GDPR right to erasure)
   4. Homepage and `/bips` achieve Lighthouse > 90 on Performance, Accessibility, and SEO; LCP < 1.5s on 4G mobile simulation
   5. Playwright E2E suite passes covering: auth flow, submission wizard, admin approve/reject, and map click-to-filter; the repo is runnable by any contributor via `supabase start` + `npm run dev` with a `CONTRIBUTING.md` explaining the EU emblem prohibition
-**Plans:** 7 plans
+**Plans:** 1/7 plans complete
 Plans:
-- [ ] 04-01-PLAN.md — `/what-is-a-bip` static explainer page with 5 sections + 8-item FAQ accordion + EC outbound link (INFO-01, INFO-02, INFO-04)
+- [x] 04-01-PLAN.md — `/what-is-a-bip` static explainer page with 5 sections + 8-item FAQ accordion + EC outbound link (INFO-01, INFO-02, INFO-04) [completed 2026-05-13]
 - [ ] 04-02-PLAN.md — `/privacy` static policy page (8 sections, ~600-900 words) + footer link; documents the zero-analytics posture (FOUN-05, FOUN-06)
 - [ ] 04-03-PLAN.md — Static OG PNGs for `/` and `/bips` (1200×630) + scripts/og-template.html for regeneration; wires metadata.openGraph.images
 - [ ] 04-04-PLAN.md — Repo health: CONTRIBUTING.md (8 sections, EU emblem prohibition) + CODE_OF_CONDUCT.md (Contributor Covenant v2.1) + .env.example audit + .gitleaks.toml + .github/workflows/secret-scan.yml (FOUN-05 documented)
