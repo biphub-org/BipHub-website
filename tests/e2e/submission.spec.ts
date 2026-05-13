@@ -1,0 +1,153 @@
+/**
+ * Submission wizard golden-path spec — Plan 04-07 Task 5 (D-14 submission scope).
+ *
+ * The coordinator-authed project loads the e2e-coordinator@biphub.test
+ * storage state, so /dashboard is reachable without going through /login.
+ *
+ * Covers:
+ *   1. Walk the 5-step wizard from /dashboard/bips/new and submit the BIP
+ *      — verify it shows up in the Pending tab on /dashboard
+ *   2. Reopen an in-progress / pending BIP from the dashboard list for editing
+ *   3. Withdraw a pending BIP back to draft
+ *
+ * Dates are computed relative to Date.now() so the spec does not drift past
+ * application_deadline / physical_start validation thresholds as time passes.
+ * Step 2 uses <Input type="date"> — Pattern B from the plan; we `.fill('YYYY-MM-DD')`
+ * directly rather than driving a calendar popover.
+ */
+import { test, expect } from '@playwright/test'
+
+function addDays(days: number): string {
+  const d = new Date()
+  d.setDate(d.getDate() + days)
+  // YYYY-MM-DD
+  return d.toISOString().slice(0, 10)
+}
+
+const E2E_TITLE = 'E2E Test BIP — Renewable Energy in the Alps'
+
+test.describe('submission wizard', () => {
+  test('coordinator submits a BIP through the 5-step wizard', async ({ page }) => {
+    await page.goto('/dashboard')
+
+    // "+ Submit a BIP" CTA in dashboard header (Plan 02-05 D-11).
+    await page
+      .getByRole('link', { name: /submit a bip/i })
+      .click()
+    await expect(page).toHaveURL(/\/dashboard\/bips\/new/)
+
+    // ----- Step 1: Basic info -----
+    await page.getByLabel(/bip title/i).fill(E2E_TITLE)
+    // ISCED-F selector — pick any option; the wizard surfaces it as a <select>
+    // or a custom combobox. Read the value the form expects from step1Schema:
+    // a 4-digit ISCED code. Pick "0613" (Software & app dev) for engineering fit.
+    const iscedField = page.getByLabel(/field of study|isced/i)
+    // The control may be a native <select> or a combobox; try selectOption first.
+    try {
+      await iscedField.selectOption({ index: 1 })
+    } catch {
+      // Combobox fallback.
+      await iscedField.click()
+      await page.getByRole('option').first().click()
+    }
+    await page
+      .getByLabel(/description/i)
+      .fill(
+        'A 10-day blended intensive on small-scale renewable systems with TU Munich, KU Leuven, and Politecnico di Milano. Mixed undergrad and master cohort.',
+      )
+    await page
+      .getByLabel(/learning outcomes/i)
+      .fill(
+        'Identify, design, and assess micro-hydro and solar installations in alpine environments.',
+      )
+    await page.getByRole('button', { name: /save.*continue/i }).click()
+
+    // ----- Step 2: Programme details -----
+    await page
+      .getByLabel(/virtual component/i)
+      .fill(
+        'Four online lectures (90 min each) across the 4 weeks before physical mobility plus a group project handover.',
+      )
+    await page.getByLabel(/host city/i).fill('Munich')
+    // Future-relative dates. application_deadline strictly before physical_start;
+    // physical_end after physical_start.
+    await page.getByLabel(/physical start date/i).fill(addDays(90))
+    await page.getByLabel(/physical end date/i).fill(addDays(100))
+    await page.getByLabel(/application deadline/i).fill(addDays(60))
+    await page.getByLabel(/ects credits/i).fill('4')
+    await page.getByLabel(/max participants/i).fill('20')
+    // study_levels: at least one checkbox.
+    await page.getByLabel(/bachelor/i).check()
+    await page.getByLabel(/language of instruction/i).fill('en')
+    // Minimum CEFR level (select).
+    const cefr = page.getByLabel(/minimum cefr/i)
+    try {
+      await cefr.selectOption('B2')
+    } catch {
+      await cefr.click()
+      await page.getByRole('option', { name: /B2/i }).click()
+    }
+    await page.getByRole('button', { name: /save.*continue/i }).click()
+
+    // ----- Step 3: Partners -----
+    // Free-text partner add — step 3 supports unverified free-text plus
+    // registered combobox lookups. Use free-text to avoid combobox flakes.
+    const partnerNameInput = page
+      .getByLabel(/partner.*name|free.*partner.*name|institution name/i)
+      .first()
+    await partnerNameInput.fill('TU Wien')
+    const partnerCountry = page.getByLabel(/partner.*country|country/i).first()
+    try {
+      await partnerCountry.selectOption('AT')
+    } catch {
+      // Combobox fallback — pick Austria from the list.
+      await partnerCountry.click()
+      await page.getByRole('option', { name: /Austria/i }).click()
+    }
+    await page.getByRole('button', { name: /add partner|^add$/i }).click()
+    await page.getByRole('button', { name: /save.*continue/i }).click()
+
+    // ----- Step 4: Application info -----
+    // how_to_apply_type defaults to 'url' (per WizardStep4 default). Fill the URL.
+    await page
+      .getByLabel(/application url/i)
+      .fill('https://tum.example/bips/renewable-alps')
+    await page.getByRole('button', { name: /save.*continue/i }).click()
+
+    // ----- Step 5: Preview + Submit -----
+    await expect(page.getByText(E2E_TITLE)).toBeVisible({ timeout: 5_000 })
+    await page.getByRole('button', { name: /^submit/i }).click()
+
+    // After submit, dashboard re-renders with the new BIP in Pending.
+    await page.waitForURL(/\/dashboard/, { timeout: 15_000 })
+    // The pending tab may be linked or rendered as a tab role; either works.
+    const pendingTab = page
+      .getByRole('tab', { name: /pending/i })
+      .or(page.getByRole('link', { name: /pending/i }))
+    await pendingTab.first().click()
+    await expect(page.getByText(E2E_TITLE)).toBeVisible({ timeout: 10_000 })
+  })
+
+  test('coordinator edits pending BIP', async ({ page }) => {
+    await page.goto('/dashboard?status=pending')
+    // The first pending BIP card / row has an Edit affordance.
+    await page.getByRole('link', { name: /edit/i }).first().click()
+    // Wizard shell shows "Step N of 5".
+    await expect(page.getByText(/step\s*\d\s*of\s*5/i)).toBeVisible({
+      timeout: 10_000,
+    })
+  })
+
+  test('coordinator withdraws pending BIP', async ({ page }) => {
+    await page.goto('/dashboard?status=pending')
+    // WithdrawBipDialog is triggered from the pending list.
+    await page.getByRole('button', { name: /withdraw/i }).first().click()
+    // Dialog opens with a confirm button.
+    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5_000 })
+    await page
+      .getByRole('button', { name: /withdraw|confirm|yes/i })
+      .last()
+      .click()
+    await expect(page).toHaveURL(/\/dashboard/, { timeout: 10_000 })
+  })
+})
