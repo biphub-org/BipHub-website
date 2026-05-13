@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Discovery Foundation** - Students can find and explore BIPs against seeded data; core value is live and verifiable (completed 2026-05-09)
 - [ ] **Phase 2: Coordinator Auth + Submission** - University coordinators can register, submit BIPs, and manage their listings; the data pipeline becomes self-sustaining
 - [ ] **Phase 3: Admin Review + Email Notifications** - Admin closes the editorial loop; coordinators receive status emails; audit trail is in place
-- [ ] **Phase 4: Polish + Static Content + Performance Hardening** - Everything that exists works perfectly; Lighthouse > 90; GDPR-compliant; open-source-ready
+- [ ] **Phase 4: Polish + Static Content + Performance Hardening** - All 7 plans implementation-complete (2026-05-14); awaiting verify-phase + 2 manual gates (axe sweep, Lighthouse capture) before v1 launch
 
 ## Phase Details
 
@@ -159,7 +159,7 @@ Plans:
 - [x] 04-04-PLAN.md — Repo health: CONTRIBUTING.md (8 sections, EU emblem prohibition) + CODE_OF_CONDUCT.md (Contributor Covenant v2.1) + .env.example audit + .gitleaks.toml + .github/workflows/secret-scan.yml (FOUN-05 documented) [completed 2026-05-14]
 - [x] 04-05-PLAN.md — Account deletion vertical slice (FOUN-07): migration 00013 `delete_my_account()` SECURITY DEFINER RPC + deleteAccountAction + /dashboard/settings Danger Zone + DeleteAccountDialog (typed-email) + DashboardNav gear icon + post-deletion toast island [completed 2026-05-14]
 - [x] 04-06-PLAN.md — Performance hardening: @next/bundle-analyzer wired behind ANALYZE=true + 3 package.json scripts + 4 Suspense skeletons on /bips + image audit (clean) + Lighthouse capture protocol staged for manual run (D-18..D-21, D-24) [completed 2026-05-14]
-- [ ] 04-07-PLAN.md — Playwright E2E (FOUN-10) + a11y polish: playwright.config.ts + seed.e2e.sql (3 fixture users) + storage-state setup + 4 specs (auth, submission, admin-review, map-filter) + EDGE-CASES-DEFERRED.md + .github/workflows/e2e.yml + manual axe-DevTools sweep (D-27)
+- [x] 04-07-PLAN.md — Playwright E2E (FOUN-10) + a11y polish: playwright.config.ts + seed.e2e.sql (3 fixture users + 2 pending BIPs) + storage-state setup + 4 specs (auth, submission, admin-review, map-filter) + EDGE-CASES-DEFERRED.md (29 deferred cases) + .github/workflows/e2e.yml + axe-DevTools sweep procedure staged (manual run pending) [completed 2026-05-14]
 **UI hint:** yes
 
 **Key Deliverables:**

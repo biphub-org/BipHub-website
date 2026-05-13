@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Plan 04-06 complete
+status: ready-for-verification
+stopped_at: Plan 04-07 complete; Phase 4 ready for verify-phase
 last_updated: "2026-05-14T00:00:00.000Z"
-last_activity: 2026-05-14 -- Plan 04-06 complete (performance hardening: bundle analyzer + ANALYZE=true gate, 4 Suspense skeletons on /bips, image audit clean, Lighthouse capture protocol staged)
+last_activity: 2026-05-14 -- Plan 04-07 complete (Playwright E2E: 17 tests across 4 specs + setup; supabase/seed.e2e.sql env-gated 3 fixture users + 2 pending BIPs; .github/workflows/e2e.yml single-shard CI; tests/e2e/EDGE-CASES-DEFERRED.md 29 deferred items; axe-DevTools sweep procedure staged awaiting manual run); Phase 4 implementation-complete (7/7 plans)
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 30
-  completed_plans: 29
-  percent: 97
+  completed_plans: 30
+  percent: 100
 ---
 
 # Project State
@@ -25,12 +25,17 @@ See: .planning/PROJECT.md (updated 2026-05-08)
 
 ## Current Position
 
-Phase: 04 (polish-static-content-performance-hardening) — EXECUTING
-Plan: 6 of 7 complete (Plans 04-01..04-06 done; 04-07 next in Wave 3)
-Status: Executing Phase 04
-Last activity: 2026-05-14 -- Plan 04-06 complete (perf hardening: @next/bundle-analyzer + cross-env devDeps; build:analyze/test:e2e/test:e2e:ui scripts; next.config wrapped in withBundleAnalyzer behind ANALYZE=true; 4 stationary Suspense skeletons on /bips around BipFiltersSidebar/Drawer/SearchBar/SortControl/Pagination; image audit clean (0 raw <img>); Lighthouse capture protocol staged at lighthouse/README.md awaiting manual user run)
+Phase: 04 (polish-static-content-performance-hardening) — IMPLEMENTATION COMPLETE
+Plan: 7 of 7 complete (Plans 04-01..04-07 done)
+Status: Ready for verify-phase
+Last activity: 2026-05-14 -- Plan 04-07 complete (Playwright E2E + a11y polish: @playwright/test devDep + chromium browser; playwright.config.ts with single-shard locks D-16; supabase/seed.e2e.sql env-gated 3 fixture users + 2 pending BIPs; tests/e2e/setup.ts storage-state generator; 4 spec files with 14 tests covering auth/submission/admin-review/map-filter golden paths; tests/e2e/EDGE-CASES-DEFERRED.md (29 cases); .github/workflows/e2e.yml single-shard CI on PR + main; axe-DevTools sweep procedure staged at .planning/phases/04-.../axe/README.md awaiting manual user run)
 
 Progress: [██████████] 100%
+
+Outstanding manual gates before v1 launch:
+- Plan 04-06 D-20: 4 Lighthouse screenshots (capture protocol at .planning/phases/04-.../lighthouse/README.md)
+- Plan 04-07 D-27: axe-DevTools sweep across 13 routes (procedure at .planning/phases/04-.../axe/README.md)
+- Phase 4 verify-phase pass
 
 ## Performance Metrics
 
@@ -128,6 +133,13 @@ Recent decisions affecting current work:
 - Plan 04-06: BipFiltersSidebar accordion has 7 sections (country / field / language / dates / ects / status / level) — skeleton planner-spec said 6, audit revealed 7; planner authorized adjustment via read_first.
 - Plan 04-06: Per-consumer Suspense pattern locked — one boundary per useSearchParams hook on /bips (sidebar, drawer, search, sort, pagination = 5 boundaries). BipFilterChips intentionally not wrapped (state via filters prop, no useSearchParams). All skeletons RSC, aria-hidden, stationary (no animate-pulse, no spinner) — CLS-safe by design.
 - Plan 04-06: Lighthouse audit (D-20) deferred to manual user run; capture protocol checked in at `.planning/phases/04-.../lighthouse/README.md`; targets locked at FOUN-02 (Perf/A11y/SEO ≥ 90, LCP < 1.5s mobile 4G simulated).
+- Plan 04-07: storage-state JSONs gitignored — local Supabase JWT signing keys regenerate on every `supabase start` so committed fixtures would be stale per-machine; setup project regenerates them per test run (local + CI).
+- Plan 04-07: EuropeMap navigates with UPPERCASE ISO-2 country codes (verified in `components/home/EuropeMap.tsx::handleCountryClick` and `MapKeyboardFallback.tsx`, both reading `lib/countries.ts::code`). Plan example showed lowercase `country=de`; specs assert case-insensitively so both pass.
+- Plan 04-07: `supabase/seed.e2e.sql` matches migration 00003 schema (not the plan example's invented `partner_name_raw` / `country` / `semester` / `ects` / `application_link` columns). Real fields: `host_city`, `physical_start_date`, `physical_end_date`, `ects_credits`, `how_to_apply_type`/`value`, `host_university_id`. Patterned after `supabase/seed.sql` 20-BIP shape.
+- Plan 04-07: admin-review.spec.ts email assertion is OUTCOME-based — Server Action `console.log` output goes to dev-server stdout, not browser console, so `page.on('console')` cannot reliably capture the D-15 fallback log. Approve test asserts the BIP has left the pending queue; reject test asserts cross-context coordinator dashboard shows the rejection reason.
+- Plan 04-07: `e2e-coordinator-fresh@biphub.test` is destructively consumed by `auth.spec.ts`'s account-deletion test — NO other spec may depend on it. seed.e2e.sql header comments + EDGE-CASES-DEFERRED.md document this contract.
+- Plan 04-07: `.github/workflows/e2e.yml` deliberately does NOT set the transactional-email API key (literal token name avoided in the file to satisfy the grep-based acceptance criterion). D-15 console fallback inside `lib/email/send.ts` handles the test path.
+- Plan 04-07: Task 10 (axe-DevTools sweep) is `checkpoint:human-verify` — agent cannot run the browser extension headlessly. Procedure committed at `.planning/phases/04-.../axe/README.md`; user runs the sweep, captures 13 route screenshots, fixes any critical/serious findings inline, types "approved".
 
 ### Pending Todos
 
