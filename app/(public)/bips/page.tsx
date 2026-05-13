@@ -1,12 +1,17 @@
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { parseSearchParams, PAGE_SIZE } from '@/lib/filters/parseSearchParams'
 import { getBips } from '@/lib/queries/bips'
 import { BipFiltersSidebar } from '@/components/bip/BipFiltersSidebar'
+import { BipFiltersSidebarSkeleton } from '@/components/bip/BipFiltersSidebarSkeleton'
 import { BipFiltersDrawer } from '@/components/bip/BipFiltersDrawer'
 import { BipSearchBar } from '@/components/bip/BipSearchBar'
+import { BipSearchBarSkeleton } from '@/components/bip/BipSearchBarSkeleton'
 import { BipSortControl } from '@/components/bip/BipSortControl'
+import { BipSortControlSkeleton } from '@/components/bip/BipSortControlSkeleton'
 import { BipGrid } from '@/components/bip/BipGrid'
 import { BipPagination } from '@/components/bip/BipPagination'
+import { BipPaginationSkeleton } from '@/components/bip/BipPaginationSkeleton'
 import { BipsEmptyState } from '@/components/bip/BipsEmptyState'
 import { BipFilterChips } from '@/components/bip/BipFilterChips'
 
@@ -93,12 +98,17 @@ export default async function BipsPage(props: {
 
       <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
         <aside className="hidden lg:block">
-          <BipFiltersSidebar filters={filters} />
+          {/* D-18: Suspense around useSearchParams consumer; stationary skeleton avoids CLS */}
+          <Suspense fallback={<BipFiltersSidebarSkeleton />}>
+            <BipFiltersSidebar filters={filters} />
+          </Suspense>
         </aside>
 
         <div>
           <div className="flex flex-col gap-4 mb-6">
-            <BipSearchBar initialQ={filters.q ?? ''} />
+            <Suspense fallback={<BipSearchBarSkeleton />}>
+              <BipSearchBar initialQ={filters.q ?? ''} />
+            </Suspense>
             <div className="flex items-center justify-between gap-4">
               <p className="text-sm text-muted">
                 {total === 0
@@ -109,9 +119,14 @@ export default async function BipsPage(props: {
               </p>
               <div className="flex items-center gap-3">
                 <div className="lg:hidden">
-                  <BipFiltersDrawer filters={filters} totalResults={total} />
+                  {/* Drawer renders BipFiltersSidebar internally; reuse the sidebar skeleton */}
+                  <Suspense fallback={<BipFiltersSidebarSkeleton />}>
+                    <BipFiltersDrawer filters={filters} totalResults={total} />
+                  </Suspense>
                 </div>
-                <BipSortControl initialSort={filters.sort} />
+                <Suspense fallback={<BipSortControlSkeleton />}>
+                  <BipSortControl initialSort={filters.sort} />
+                </Suspense>
               </div>
             </div>
             {hasActiveFilters && <BipFilterChips filters={filters} />}
@@ -124,7 +139,9 @@ export default async function BipsPage(props: {
               <BipGrid bips={rows} />
               {totalPages > 1 && (
                 <div className="mt-12">
-                  <BipPagination currentPage={filters.page} totalPages={totalPages} />
+                  <Suspense fallback={<BipPaginationSkeleton />}>
+                    <BipPagination currentPage={filters.page} totalPages={totalPages} />
+                  </Suspense>
                 </div>
               )}
             </>
