@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { IconSettings } from '@tabler/icons-react'
 import { LogoMark } from '@/components/home/LogoMark'
 import { signOutAction } from '@/lib/actions/auth'
 
@@ -41,6 +42,13 @@ export function DashboardNav({ initials, fullName }: DashboardNavProps) {
               {fullName}
             </span>
           )}
+          <Link
+            href="/dashboard/settings"
+            aria-label="Settings"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted hover:text-ink hover:bg-bg-soft transition-colors"
+          >
+            <IconSettings className="h-5 w-5" aria-hidden />
+          </Link>
           <span
             aria-label={`Coordinator profile (${initials})`}
             className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-eu-blue/10 text-eu-blue text-sm font-semibold"
