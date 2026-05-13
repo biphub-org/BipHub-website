@@ -74,13 +74,19 @@ export default async function HomePage() {
       {/* DISC-05: Recent BIPs with ≥6 threshold gate */}
       <RecentBips totalApprovedCount={count} bips={recentBips} />
 
-      {/* DISC-06: How it works — 3 steps */}
-      <section id="how-it-works">
-        <HowItWorks />
+      {/* DISC-06 + DISC-07: Students "How it works" and Universities CTA shown
+          side-by-side on lg+; stacked on mobile. */}
+      <section
+        id="how-it-works"
+        className="border-t border-border bg-white py-24"
+      >
+        <div className="mx-auto max-w-[1200px] px-4 md:px-6">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
+            <HowItWorks />
+            <UniversityCTA sampleSlug={firstSampleSlug} />
+          </div>
+        </div>
       </section>
-
-      {/* DISC-07: Dark navy university CTA */}
-      <UniversityCTA sampleSlug={firstSampleSlug} />
     </>
   )
 }

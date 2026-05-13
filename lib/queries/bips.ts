@@ -39,7 +39,13 @@ export async function getBips(filters: BipFilterState): Promise<BipsQueryResult>
   const { data, error, count } = await applyFilters(query, filters)
 
   if (error) {
-    // Surface to error.tsx — never silently return empty results
+    // Dev: degrade gracefully when local Supabase is down (Docker not running)
+    // so the page still renders. Prod: throw so real outages surface in error.tsx
+    // and Sentry/logs instead of silently caching an empty page via ISR.
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('[getBips] query failed, returning empty result:', error)
+      return { rows: [], total: 0, totalCountries: 0 }
+    }
     throw error
   }
 
@@ -71,6 +77,12 @@ export async function countBips(filters: BipFilterState): Promise<number> {
   const supabase = await createClient()
   const query = supabase.from('bips').select('id', { count: 'exact', head: true })
   const { count, error } = await applyFilters(query, filters)
-  if (error) throw error
+  if (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('[countBips] query failed, returning 0:', error)
+      return 0
+    }
+    throw error
+  }
   return count ?? 0
 }

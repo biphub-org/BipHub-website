@@ -14,12 +14,14 @@
 import { useRef, useState, useEffect, useCallback } from 'react'
 import {
   LazyMotion,
+  MotionConfig,
   domAnimation,
   m,
   useReducedMotion,
 } from 'motion/react'
 import { useInView } from 'motion/react'
 import { Eyebrow } from './Eyebrow'
+import { BipGrowthChart } from './BipGrowthChart'
 
 interface Stats {
   bipsListed: number
@@ -62,54 +64,83 @@ export function StatsSection({ stats }: StatsSectionProps) {
 
   return (
     <LazyMotion features={domAnimation} strict>
-      <section
-        ref={sectionRef}
-        className="relative bg-eu-blue py-24"
-        style={{
-          backgroundImage:
-            'radial-gradient(circle at 90% 10%, rgba(255, 204, 0, 0.12) 0%, transparent 50%)',
-        }}
-      >
-        <div className="mx-auto max-w-[1200px] px-4 md:px-6">
-          {/* Section header */}
-          <div className="mb-14 text-center">
-            <Eyebrow className="mb-3 text-white [&>span:first-child]:bg-eu-gold">
-              <span className="text-white">By the numbers</span>
-            </Eyebrow>
-            <h2
-              className="font-bold text-white"
-              style={{
-                fontSize: 'clamp(30px, 4vw, 44px)',
-                lineHeight: '1.15',
-                letterSpacing: '-1px',
-              }}
-            >
-              A growing European network
-            </h2>
-            <p className="mt-3 text-[17px] text-white/70">
-              Live statistics from across the platform — updated as universities and students join.
-            </p>
-          </div>
+      <MotionConfig reducedMotion="user">
+        <section
+          ref={sectionRef}
+          className="relative bg-eu-blue py-24"
+          style={{
+            backgroundImage:
+              'radial-gradient(circle at 90% 10%, rgba(255, 204, 0, 0.12) 0%, transparent 50%)',
+          }}
+        >
+          {/* Slow ambient gold glow on the bottom-left of the band */}
+          <m.div
+            aria-hidden="true"
+            className="pointer-events-none absolute bottom-0 left-0 h-[420px] w-[420px]"
+            style={{
+              background:
+                'radial-gradient(circle at bottom left, rgba(255, 204, 0, 0.10) 0%, transparent 65%)',
+            }}
+            animate={{ opacity: [0.6, 1, 0.6] }}
+            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+          />
 
-          {/* Stat cards grid: 4 col desktop, 2 col tablet, 1 col mobile */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
-            {STAT_CONFIGS.map((cfg) => (
-              <StatCard
-                key={cfg.key}
-                value={stats[cfg.key]}
-                label={cfg.label}
-                delta={
-                  typeof cfg.delta === 'function'
-                    ? cfg.delta(stats[cfg.key])
-                    : cfg.delta
-                }
-                isInView={isInView}
-                prefersReducedMotion={prefersReducedMotion ?? false}
-              />
-            ))}
+          <div className="relative mx-auto max-w-[1200px] px-4 md:px-6">
+            {/* Section header */}
+            <m.div
+              className="mb-14 text-center"
+              initial={{ opacity: 0, y: 16 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <Eyebrow className="mb-3 text-white [&>span:first-child]:bg-eu-gold">
+                <span className="text-white">By the numbers</span>
+              </Eyebrow>
+              <h2
+                className="font-bold text-white"
+                style={{
+                  fontSize: 'clamp(30px, 4vw, 44px)',
+                  lineHeight: '1.15',
+                  letterSpacing: '-1px',
+                }}
+              >
+                A growing European network
+              </h2>
+              <p className="mt-3 text-[17px] text-white/70">
+                Live statistics from across the platform — updated as universities and students join.
+              </p>
+            </m.div>
+
+            {/* Stat cards grid: 4 col desktop, 2 col tablet, 1 col mobile */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
+              {STAT_CONFIGS.map((cfg) => (
+                <StatCard
+                  key={cfg.key}
+                  value={stats[cfg.key]}
+                  label={cfg.label}
+                  delta={
+                    typeof cfg.delta === 'function'
+                      ? cfg.delta(stats[cfg.key])
+                      : cfg.delta
+                  }
+                  isInView={isInView}
+                  prefersReducedMotion={prefersReducedMotion ?? false}
+                />
+              ))}
+            </div>
+
+            {/* Growth sparkline — MOCK data, replace with real series in Phase 4+ */}
+            <m.div
+              className="mt-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+            >
+              <BipGrowthChart />
+            </m.div>
           </div>
-        </div>
-      </section>
+        </section>
+      </MotionConfig>
     </LazyMotion>
   )
 }

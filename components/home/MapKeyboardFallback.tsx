@@ -13,13 +13,14 @@
 import { useRouter } from 'next/navigation'
 import { ERASMUS_COUNTRIES } from '@/lib/countries'
 
-// Only include the 29 countries that appear on the map
-// (EU-27 + IS + NO — excludes LI, MK, RS, TR per 01-05 plan interfaces)
+// 32 countries that appear on the map (EU-27 + IS + NO + MK + RS + TR).
+// LI is excluded — too small to render at 20M scale.
 const MAP_COUNTRIES = ERASMUS_COUNTRIES.filter((c) =>
   [
     'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE',
     'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE',
     'IS', 'NO',
+    'MK', 'RS', 'TR',
   ].includes(c.code),
 )
 

@@ -26,11 +26,28 @@ import {
 import { feature } from 'topojson-client'
 import type { Topology, Objects } from 'topojson-specification'
 import type { GeoJsonProperties } from 'geojson'
+import {
+  LazyMotion,
+  MotionConfig,
+  AnimatePresence,
+  domAnimation,
+  m,
+  useInView,
+  type Transition,
+  type Variants,
+} from 'motion/react'
 import { getTierForCount, TIERS } from '@/lib/map/bins'
 import { getCountryName, getCountryFlagEmoji } from '@/lib/countries'
 import { MapKeyboardFallback } from './MapKeyboardFallback'
 import { Eyebrow } from './Eyebrow'
 import { cn } from '@/lib/utils/cn'
+
+const EASE_OUT: Transition['ease'] = [0.16, 1, 0.3, 1]
+
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0 },
+}
 
 interface EuropeMapProps {
   countsByCountry: Record<string, number>
@@ -45,10 +62,13 @@ interface TooltipState {
   count: number
 }
 
-// Static EU projection config for @vnedyalk0v/react19-simple-maps
+// Static EU projection config for @vnedyalk0v/react19-simple-maps.
+// rotate center shifted east (15 → 20) to keep Turkey + the Balkans in frame
+// alongside Iceland on the west. scale tuned so the 32-country span fits the
+// viewBox below at the new container height.
 const MAP_PROJECTION_CONFIG: ProjectionConfig = {
-  rotate: [-15, -52, 0] as unknown as ProjectionConfig['rotate'],
-  scale: 700,
+  rotate: [-20, -52, 0] as unknown as ProjectionConfig['rotate'],
+  scale: 620,
 }
 
 export function EuropeMap({ countsByCountry }: EuropeMapProps) {
@@ -65,6 +85,8 @@ export function EuropeMap({ countsByCountry }: EuropeMapProps) {
     count: 0,
   })
   const mapContainerRef = useRef<HTMLDivElement>(null)
+  const cardRef = useRef<HTMLDivElement>(null)
+  const cardInView = useInView(cardRef, { once: true, amount: 0.2 })
 
   // Fetch /eu-countries.json at runtime — NOT imported into the bundle (Pitfall 11)
   useEffect(() => {
@@ -121,68 +143,103 @@ export function EuropeMap({ countsByCountry }: EuropeMapProps) {
   }
 
   return (
-    <div className="rounded-lg border border-border bg-white p-8 shadow-md">
-      {/* Section header */}
-      <div className="mb-6 text-center">
-        <Eyebrow className="mb-3">Browse by country</Eyebrow>
-        <h2
-          className="font-bold text-ink"
-          style={{
-            fontSize: 'clamp(30px, 4vw, 44px)',
-            lineHeight: '1.15',
-            letterSpacing: '-1px',
-          }}
+    <LazyMotion features={domAnimation} strict>
+      <MotionConfig reducedMotion="user">
+        <div
+          ref={cardRef}
+          className="rounded-lg border border-border bg-white p-8 shadow-md"
         >
-          Programs across Europe
-        </h2>
-        <p className="mt-3 text-[17px] text-muted">
-          Hover any country to preview availability. Click to filter the list by destination.
-        </p>
-      </div>
-
-      {/* Map container with tooltip */}
-      <div
-        ref={mapContainerRef}
-        className="relative"
-        role="application"
-        aria-label="Choropleth map of Erasmus+ countries by BIP count"
-      >
-        {/* Tooltip */}
-        {tooltip.visible && (
-          <div
-            role="tooltip"
-            aria-live="polite"
-            className="pointer-events-none absolute z-5 rounded-md bg-ink px-4 py-2.5 text-sm text-white shadow-lg"
-            style={{
-              left: tooltip.x,
-              top: tooltip.y,
-              transform: 'translate(-50%, -130%)',
-            }}
-          >
-            <strong className="block text-[14px] font-semibold">
-              {getCountryFlagEmoji(tooltip.countryCode)} {tooltip.countryName}
-            </strong>
-            <span className="text-eu-gold font-semibold">
-              {tooltip.count > 0
-                ? `${tooltip.count} BIPs available`
-                : '0 BIPs yet'}
-            </span>
-            {/* Tooltip arrow */}
-            <span
-              aria-hidden="true"
-              className="absolute left-1/2 top-full -translate-x-1/2 border-[6px] border-transparent border-t-ink"
-            />
+          {/* Section header */}
+          <div className="mb-6 text-center">
+            <m.div
+              variants={fadeUp}
+              initial="hidden"
+              animate={cardInView ? 'visible' : 'hidden'}
+              transition={{ duration: 0.6, ease: EASE_OUT }}
+            >
+              <Eyebrow className="mb-3 justify-center">Browse by country</Eyebrow>
+            </m.div>
+            <m.h2
+              className="font-bold text-ink"
+              style={{
+                fontSize: 'clamp(30px, 4vw, 44px)',
+                lineHeight: '1.15',
+                letterSpacing: '-1px',
+              }}
+              variants={fadeUp}
+              initial="hidden"
+              animate={cardInView ? 'visible' : 'hidden'}
+              transition={{ duration: 0.6, ease: EASE_OUT, delay: 0.1 }}
+            >
+              Programs across Europe
+            </m.h2>
+            <m.p
+              className="mt-3 text-[17px] text-muted"
+              variants={fadeUp}
+              initial="hidden"
+              animate={cardInView ? 'visible' : 'hidden'}
+              transition={{ duration: 0.6, ease: EASE_OUT, delay: 0.2 }}
+            >
+              Hover any country to preview availability. Click to filter the list by destination.
+            </m.p>
           </div>
-        )}
 
-        {/* SVG map */}
-        {geoData ? (
-          <div className="aspect-[16/10] max-h-[560px] w-full">
+          {/* Map container with tooltip */}
+          <div
+            ref={mapContainerRef}
+            className="relative"
+            role="application"
+            aria-label="Choropleth map of Erasmus+ countries by BIP count"
+          >
+            {/* Tooltip */}
+            <AnimatePresence>
+              {tooltip.visible && (
+                <m.div
+                  key="map-tooltip"
+                  role="tooltip"
+                  aria-live="polite"
+                  className="pointer-events-none absolute z-5 rounded-md bg-ink px-4 py-2.5 text-sm text-white shadow-lg"
+                  style={{
+                    left: tooltip.x,
+                    top: tooltip.y,
+                    transform: 'translate(-50%, -130%)',
+                    transformOrigin: 'center bottom',
+                  }}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.15, ease: 'easeOut' }}
+                >
+                  <strong className="block text-[14px] font-semibold">
+                    {getCountryFlagEmoji(tooltip.countryCode)} {tooltip.countryName}
+                  </strong>
+                  <span className="text-eu-gold font-semibold">
+                    {tooltip.count > 0
+                      ? `${tooltip.count} BIPs available`
+                      : '0 BIPs yet'}
+                  </span>
+                  {/* Tooltip arrow */}
+                  <span
+                    aria-hidden="true"
+                    className="absolute left-1/2 top-full -translate-x-1/2 border-[6px] border-transparent border-t-ink"
+                  />
+                </m.div>
+              )}
+            </AnimatePresence>
+
+            {/* SVG map */}
+            {geoData ? (
+              <m.div
+                className="aspect-[16/10] max-h-[680px] w-full"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, ease: EASE_OUT }}
+              >
             <ComposableMap
               projection="geoMercator"
               projectionConfig={MAP_PROJECTION_CONFIG}
               width={900}
-              height={520}
+              height={560}
               style={{ width: '100%', height: '100%' }}
             >
               <Geographies geography={geoData}>
@@ -223,31 +280,34 @@ export function EuropeMap({ countsByCountry }: EuropeMapProps) {
                 }
               </Geographies>
             </ComposableMap>
-          </div>
+          </m.div>
         ) : (
           /* Loading skeleton while TopoJSON fetches */
           <div
-            className="aspect-[16/10] max-h-[560px] w-full animate-pulse rounded-lg bg-bg-soft"
+            className="aspect-[16/10] max-h-[680px] w-full animate-pulse rounded-lg bg-bg-soft"
             role="progressbar"
             aria-label="Loading map…"
             aria-busy="true"
           />
         )}
-      </div>
+          </div>
 
-      {/* Map legend (5 swatches — tier-0 omitted per D-06) */}
-      <MapLegend />
+          {/* Map legend (5 swatches — tier-0 omitted per D-06) */}
+          <m.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={cardInView && geoData ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
+            transition={{ duration: 0.5, ease: EASE_OUT, delay: 0.3 }}
+          >
+            <MapLegend />
+          </m.div>
 
-      {/* Map info hint */}
-      <p className="mt-3 text-center text-[13px] text-muted">
-        Hover to preview · Click to filter the BIP list by country
-      </p>
-
-      {/* Keyboard fallback — always shown adjacent to SVG (D-08) */}
-      <div className="mt-6 border-t border-border pt-6">
-        <MapKeyboardFallback />
-      </div>
-    </div>
+          {/* Map info hint */}
+          <p className="mt-3 text-center text-[13px] text-muted">
+            Hover to preview · Click to filter the BIP list by country
+          </p>
+        </div>
+      </MotionConfig>
+    </LazyMotion>
   )
 }
 

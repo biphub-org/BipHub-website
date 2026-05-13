@@ -3,9 +3,14 @@
  * Run once: npm run build:topojson
  *
  * Source: https://gisco-services.ec.europa.eu/distribution/v2/nuts/geojson/NUTS_RG_20M_2024_4326_LEVL_0.geojson
- * Filter: 29 visible Erasmus+ countries (EU-27 + IS + NO).
- *   Excluded: LI (Liechtenstein, too small at 20M scale), MK, RS, TR (outside comfortable map bounds).
- * Output: TopoJSON ~50-80KB, properties.name = country name, feature.id = ISO alpha-2.
+ * Filter: 32 visible Erasmus+ programme countries (EU-27 + IS + NO + MK + RS + TR).
+ *   Excluded: LI (too small at 20M scale to render meaningfully).
+ *
+ * Code normalization: Eurostat uses 'EL' for Greece and 'UK' for the United Kingdom.
+ * We map EL → GR so the choropleth keys match ISO 3166-1 alpha-2 used everywhere else
+ * in the app. UK is not an Erasmus+ programme country so we don't include it.
+ *
+ * Output: TopoJSON ~60-100KB, properties.name = country name, feature.id = ISO alpha-2.
  */
 
 import { writeFileSync } from 'node:fs'
@@ -16,16 +21,28 @@ const GISCO_URL =
   'https://gisco-services.ec.europa.eu/distribution/v2/nuts/geojson/NUTS_RG_20M_2024_4326_LEVL_0.geojson'
 
 /**
- * Visible-on-map Erasmus+ countries (29).
- * MK, RS, TR are programme countries but fall outside the comfortable European
- * bounds for the homepage choropleth.
- * LI is too small at 20M scale to render meaningfully — show via tooltip only if needed later.
+ * Visible-on-map Erasmus+ countries (32). LI is too small at 20M scale to render
+ * meaningfully — show via tooltip only if needed later.
+ *
+ * Set contains ISO codes AND the Eurostat aliases (EL for Greece) so the filter
+ * accepts source rows; the normalize step below rewrites the feature id back to
+ * the ISO code that the rest of the app uses.
  */
 const VISIBLE_COUNTRIES = new Set([
-  'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE',
+  'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'EL', 'HU', 'IE',
   'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE',
   'IS', 'NO',
+  'MK', 'RS', 'TR',
 ])
+
+/**
+ * Eurostat → ISO 3166-1 alpha-2 normalization. The Eurostat NUTS dataset uses
+ * non-ISO codes for two members; rest of the app uses ISO alpha-2 keys.
+ */
+const ISO_ALIAS: Record<string, string> = {
+  EL: 'GR', // Greece
+  UK: 'GB', // United Kingdom (not Erasmus+, kept for safety)
+}
 
 interface GeoFeature {
   type: 'Feature'
@@ -64,20 +81,24 @@ async function main() {
         const code = f.properties.CNTR_CODE ?? f.id
         return VISIBLE_COUNTRIES.has(code)
       })
-      .map((f) => ({
-        ...f,
-        // Normalize id to ISO alpha-2 for downstream lookup keying
-        id: f.properties.CNTR_CODE ?? f.id,
-        properties: { name: f.properties.NAME_LATN ?? f.properties.CNTR_CODE ?? f.id },
-      })),
+      .map((f) => {
+        const sourceCode = f.properties.CNTR_CODE ?? f.id
+        const isoCode = ISO_ALIAS[sourceCode] ?? sourceCode
+        return {
+          ...f,
+          // Normalize id to ISO alpha-2 (EL → GR, UK → GB) for downstream lookup keying
+          id: isoCode,
+          properties: { name: f.properties.NAME_LATN ?? isoCode },
+        }
+      }),
   }
 
-  console.log(`Filtered to ${filtered.features.length} countries (expected 29)`)
+  console.log(`Filtered to ${filtered.features.length} countries (expected 32)`)
 
-  if (filtered.features.length < 25) {
+  if (filtered.features.length < 28) {
     throw new Error(
       `Unexpectedly few countries (${filtered.features.length}) — check GISCO data format.\n` +
-      `Expected ~29 visible Erasmus+ countries. Aborting to avoid writing bad TopoJSON.`,
+      `Expected ~32 visible Erasmus+ countries. Aborting to avoid writing bad TopoJSON.`,
     )
   }
 

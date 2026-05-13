@@ -10,6 +10,7 @@
  * Receives countsByField from the RSC parent as a prop — no client-side fetching.
  */
 
+import { useRef } from 'react'
 import Link from 'next/link'
 import {
   IconCpu,
@@ -21,9 +22,41 @@ import {
   IconLeaf,
   IconBook,
 } from '@tabler/icons-react'
+import {
+  LazyMotion,
+  MotionConfig,
+  domAnimation,
+  m,
+  useInView,
+  type Transition,
+  type Variants,
+} from 'motion/react'
 import { ISCED_FIELDS } from '@/lib/isced'
 import { cn } from '@/lib/utils/cn'
 import type { IscedFieldId } from '@/lib/isced'
+
+const EASE_OUT: Transition['ease'] = [0.16, 1, 0.3, 1]
+
+const headerVariants: Variants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0 },
+}
+
+const gridVariants: Variants = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.05, delayChildren: 0.15 },
+  },
+}
+
+const cardVariants: Variants = {
+  hidden: { opacity: 0, y: 14 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.45, ease: EASE_OUT },
+  },
+}
 
 /**
  * ISCED field → Tabler icon mapping.
@@ -46,43 +79,65 @@ interface CategoriesBarProps {
 }
 
 export function CategoriesBar({ countsByField }: CategoriesBarProps) {
-  return (
-    <section className="border-b border-border bg-white py-16">
-      <div className="mx-auto max-w-[1200px] px-4 md:px-6">
-        {/* Section header */}
-        <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-          <h3
-            className="text-[22px] font-bold text-ink"
-            style={{ letterSpacing: '-0.3px' }}
-          >
-            Browse by field of study
-          </h3>
-          <Link
-            href="/bips"
-            className="text-sm font-medium text-eu-blue hover:text-eu-blue-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-eu-blue focus-visible:ring-offset-2 rounded-sm"
-          >
-            All fields →
-          </Link>
-        </div>
+  const sectionRef = useRef<HTMLElement>(null)
+  const inView = useInView(sectionRef, { once: true, amount: 0.2 })
 
-        {/* 8-column grid desktop, 3-column mobile (per UI-SPEC + mockup) */}
-        <div className="grid grid-cols-3 gap-3 md:grid-cols-8">
-          {ISCED_FIELDS.map((field) => {
-            const Icon = ISCED_ICONS[field.id]
-            const count = countsByField[field.id] ?? 0
-            return (
-              <CategoryCard
-                key={field.id}
-                id={field.id}
-                label={field.label}
-                count={count}
-                Icon={Icon}
-              />
-            )
-          })}
-        </div>
-      </div>
-    </section>
+  return (
+    <LazyMotion features={domAnimation} strict>
+      <MotionConfig reducedMotion="user">
+        <section
+          ref={sectionRef}
+          className="border-b border-border bg-white py-16"
+        >
+          <div className="mx-auto max-w-[1200px] px-4 md:px-6">
+            {/* Section header */}
+            <m.div
+              className="mb-8 flex flex-wrap items-center justify-between gap-4"
+              variants={headerVariants}
+              initial="hidden"
+              animate={inView ? 'visible' : 'hidden'}
+              transition={{ duration: 0.5, ease: EASE_OUT }}
+            >
+              <h3
+                className="text-[22px] font-bold text-ink"
+                style={{ letterSpacing: '-0.3px' }}
+              >
+                Browse by field of study
+              </h3>
+              <Link
+                href="/bips"
+                className="text-sm font-medium text-eu-blue hover:text-eu-blue-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-eu-blue focus-visible:ring-offset-2 rounded-sm"
+              >
+                All fields →
+              </Link>
+            </m.div>
+
+            {/* 8-column grid desktop, 3-column mobile (per UI-SPEC + mockup) */}
+            <m.div
+              className="grid grid-cols-3 gap-3 md:grid-cols-8"
+              variants={gridVariants}
+              initial="hidden"
+              animate={inView ? 'visible' : 'hidden'}
+            >
+              {ISCED_FIELDS.map((field) => {
+                const Icon = ISCED_ICONS[field.id]
+                const count = countsByField[field.id] ?? 0
+                return (
+                  <m.div key={field.id} variants={cardVariants}>
+                    <CategoryCard
+                      id={field.id}
+                      label={field.label}
+                      count={count}
+                      Icon={Icon}
+                    />
+                  </m.div>
+                )
+              })}
+            </m.div>
+          </div>
+        </section>
+      </MotionConfig>
+    </LazyMotion>
   )
 }
 
@@ -98,30 +153,35 @@ function CategoryCard({ id, label, count, Icon }: CategoryCardProps) {
     <Link
       href={`/bips?field=${id}`}
       className={cn(
-        'group flex flex-col items-center gap-2 rounded-md border border-border p-4 text-center',
-        'transition-all duration-200 ease',
-        'hover:border-eu-blue hover:-translate-y-0.5 hover:shadow-md',
+        'group block h-full rounded-md border border-border p-4 text-center',
+        'transition-all duration-200 ease-out',
+        'hover:border-eu-blue hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,51,153,0.12)]',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-eu-blue focus-visible:ring-offset-2',
       )}
     >
-      {/* Icon square — flips blue to gold on hover */}
-      <div
-        className={cn(
-          'flex h-10 w-10 items-center justify-center rounded-md transition-colors duration-200',
-          'bg-eu-blue-50 text-eu-blue',
-          'group-hover:bg-eu-gold group-hover:text-ink',
-        )}
-      >
-        <Icon size={20} aria-hidden="true" />
+      <div className="flex flex-col items-center gap-2">
+        {/* Icon square — flips blue to gold + tiny rotate on hover */}
+        <div
+          className={cn(
+            'flex h-10 w-10 items-center justify-center rounded-md',
+            'bg-eu-blue-50 text-eu-blue',
+            'transition-[background-color,color,transform] duration-200 ease-out',
+            'group-hover:bg-eu-gold group-hover:text-ink group-hover:-rotate-6 group-hover:scale-110',
+          )}
+        >
+          <Icon size={20} aria-hidden="true" />
+        </div>
+
+        {/* Label */}
+        <span className="text-[13px] font-500 leading-tight text-ink-2 group-hover:text-ink transition-colors">
+          {label}
+        </span>
+
+        {/* Count */}
+        <span className="text-[12px] text-muted group-hover:text-eu-blue transition-colors">
+          {count}
+        </span>
       </div>
-
-      {/* Label */}
-      <span className="text-[13px] font-500 leading-tight text-ink-2 group-hover:text-ink transition-colors">
-        {label}
-      </span>
-
-      {/* Count */}
-      <span className="text-[12px] text-muted">{count}</span>
     </Link>
   )
 }
