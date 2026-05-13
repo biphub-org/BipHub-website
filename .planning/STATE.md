@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Plan 04-05 complete
+stopped_at: Plan 04-06 complete
 last_updated: "2026-05-14T00:00:00.000Z"
-last_activity: 2026-05-14 -- Plan 04-05 complete (coordinator account deletion: SECURITY DEFINER RPC + typed-email modal + post-deletion toast island)
+last_activity: 2026-05-14 -- Plan 04-06 complete (performance hardening: bundle analyzer + ANALYZE=true gate, 4 Suspense skeletons on /bips, image audit clean, Lighthouse capture protocol staged)
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 30
-  completed_plans: 28
-  percent: 93
+  completed_plans: 29
+  percent: 97
 ---
 
 # Project State
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-05-08)
 ## Current Position
 
 Phase: 04 (polish-static-content-performance-hardening) — EXECUTING
-Plan: 5 of 7 complete (Plans 04-01, 04-02, 04-03, 04-04, 04-05 done; 04-06 next in Wave 2; 04-07 Wave 3)
+Plan: 6 of 7 complete (Plans 04-01..04-06 done; 04-07 next in Wave 3)
 Status: Executing Phase 04
-Last activity: 2026-05-14 -- Plan 04-05 complete (coordinator account deletion: delete_my_account SECURITY DEFINER RPC + deleteAccountAction + /dashboard/settings Danger Zone + DeleteAccountDialog typed-email confirm + DashboardNav gear icon + AccountDeletedToastIsland on homepage)
+Last activity: 2026-05-14 -- Plan 04-06 complete (perf hardening: @next/bundle-analyzer + cross-env devDeps; build:analyze/test:e2e/test:e2e:ui scripts; next.config wrapped in withBundleAnalyzer behind ANALYZE=true; 4 stationary Suspense skeletons on /bips around BipFiltersSidebar/Drawer/SearchBar/SortControl/Pagination; image audit clean (0 raw <img>); Lighthouse capture protocol staged at lighthouse/README.md awaiting manual user run)
 
 Progress: [██████████] 100%
 
@@ -124,6 +124,10 @@ Recent decisions affecting current work:
 - Plan 04-05: `DialogTrigger asChild` is NOT supported by the project's @base-ui/react-backed Dialog primitive — use `<DialogTrigger render={<Button .../>} />` instead, matching the `DialogPrimitive.Close render={...}` pattern already used inside `DialogContent`.
 - Plan 04-05: `AccountDeletedToastIsland` calls `useSearchParams` so it must be wrapped in `<Suspense>` per Next.js 15; adding the island to `app/(public)/page.tsx` transitions `/` from static (○) to dynamic (ƒ) — documented as expected; Plan 04-06's Suspense audit owns the refinement.
 - Plan 04-05: Migration applied via `supabase migration up --local` (not `db push`), function existence verified via `docker exec supabase_db_BIP_project psql -U postgres -d postgres -c "\df public.delete_my_account"` (one row, void return, zero args); `npm run db:types` regenerated `lib/supabase/database.types.ts` with `delete_my_account: { Args: never; Returns: undefined }`.
+- Plan 04-06: `@next/bundle-analyzer` is a CJS-default-export package; `import bundleAnalyzer from '@next/bundle-analyzer'` works under TS `esModuleInterop`. `enabled` is gated via `process.env.ANALYZE === 'true'` (strict equality, NOT `!!`) — coercion would enable analyzer on any non-empty value including literal `"false"`. `cross-env` required for Windows shell compat — `ANALYZE=true next build` is unrecognized syntax in PowerShell/cmd.
+- Plan 04-06: BipFiltersSidebar accordion has 7 sections (country / field / language / dates / ects / status / level) — skeleton planner-spec said 6, audit revealed 7; planner authorized adjustment via read_first.
+- Plan 04-06: Per-consumer Suspense pattern locked — one boundary per useSearchParams hook on /bips (sidebar, drawer, search, sort, pagination = 5 boundaries). BipFilterChips intentionally not wrapped (state via filters prop, no useSearchParams). All skeletons RSC, aria-hidden, stationary (no animate-pulse, no spinner) — CLS-safe by design.
+- Plan 04-06: Lighthouse audit (D-20) deferred to manual user run; capture protocol checked in at `.planning/phases/04-.../lighthouse/README.md`; targets locked at FOUN-02 (Perf/A11y/SEO ≥ 90, LCP < 1.5s mobile 4G simulated).
 
 ### Pending Todos
 
@@ -145,6 +149,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-05-14T00:00:00.000Z
-Stopped at: Completed 04-05-PLAN.md
+Stopped at: Completed 04-06-PLAN.md
 Resume file: None
-Resume instructions: Wave 1 of Phase 4 complete (04-01..04-05). Next: Plan 04-06 (performance hardening — bundle analyzer, Suspense audit including the now-dynamic homepage, Lighthouse baselines, image audit), then Plan 04-07 (Playwright E2E + a11y polish).
+Resume instructions: Plans 04-01..04-06 complete. Next: Plan 04-07 (Playwright E2E + a11y polish — playwright.config.ts, seed.e2e.sql, storage-state setup, 4 specs, .github/workflows/e2e.yml, axe-DevTools sweep). Plan 04-06 left one manual followup: user must capture 4 Lighthouse screenshots (instructions at `.planning/phases/04-polish-static-content-performance-hardening/lighthouse/README.md`) to close D-20.
