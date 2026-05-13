@@ -1,0 +1,30 @@
+# gitleaks configuration for BipHub — Phase 4 D-22.
+#
+# Strategy: extend the default rules (the action uses gitleaks v8 defaults
+# for AWS, GitHub PATs, Slack tokens, generic high-entropy strings).
+# The allowlist below is path-scoped — a real leak in app/ or lib/ still
+# fires, even if the same string appears in an allowlisted fixture path.
+
+title = "BipHub gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Known-safe demo fixtures and font hashes"
+
+# Path-scoped allowlist: matches are suppressed ONLY when the offending
+# file path matches one of these regexes. The same string in any other
+# location still triggers a finding.
+paths = [
+  '''(^|/)supabase/seed\.sql$''',
+  '''(^|/)supabase/seed\.e2e\.sql$''',
+  '''(^|/)supabase/migrations/[0-9]{5}_.+\.sql$''',
+  '''(^|/)public/fonts/.*\.ttf$''',
+  '''(^|/)\.env\.example$''',
+]
+
+# We do NOT use pattern-scoped allowlists (regexes that match the secret
+# content itself, regardless of path). Per D-22 specifics: pattern-scoped
+# allowlists let a real secret slip past gitleaks if it happens to match
+# the demo-JWT shape.
