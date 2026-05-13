@@ -43,7 +43,7 @@ test.describe('map-to-filter integration', () => {
     // The fallback <select> is the labelled combobox "Filter by country".
     const select = page.getByLabel(/filter by country/i)
     await select.scrollIntoViewIfNeeded()
-    await select.selectOption({ label: /^Germany$/i })
+    await select.selectOption({ label: 'Germany' })
     await page.waitForURL(/\/bips\?country=de/i, { timeout: 5_000 })
   })
 
