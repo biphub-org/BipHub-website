@@ -1,0 +1,83 @@
+name: e2e
+
+# Playwright CI workflow — Plan 04-07 / D-16 / FOUN-10.
+#
+# Single shard, no flake retries (locked at the playwright.config.ts level).
+# The transactional-email API key is intentionally unset in this workflow —
+# that forces the D-15 console-log fallback in lib/email/send.ts so the
+# admin-review spec asserts on log output, not real upstream API calls.
+#
+# Failures BLOCK the merge — no `continue-on-error` anywhere.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  playwright:
+    name: Playwright
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Cache Supabase Docker images
+        uses: actions/cache@v4
+        with:
+          path: ~/.docker
+          key: ${{ runner.os }}-supabase-${{ hashFiles('supabase/config.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-supabase-
+
+      - name: npm install
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Start Supabase
+        run: supabase start
+
+      - name: Capture Supabase keys into env
+        run: |
+          echo "NEXT_PUBLIC_SUPABASE_URL=$(supabase status -o json | jq -r '.API_URL')" >> "$GITHUB_ENV"
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$(supabase status -o json | jq -r '.ANON_KEY')" >> "$GITHUB_ENV"
+          echo "SUPABASE_SERVICE_ROLE_KEY=$(supabase status -o json | jq -r '.SERVICE_ROLE_KEY')" >> "$GITHUB_ENV"
+          echo "NEXT_PUBLIC_SITE_URL=http://localhost:3000" >> "$GITHUB_ENV"
+
+      - name: Apply E2E fixture seed
+        run: |
+          psql "$(supabase status -o json | jq -r '.DB_URL')" -f supabase/seed.e2e.sql
+
+      - name: Run Playwright suite
+        run: npx playwright test
+        env:
+          CI: 'true'
+          # NOTE: the email-API key is intentionally NOT set here — D-15
+          # console fallback inside lib/email/send.ts handles the test path.
+
+      - name: Upload Playwright HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
