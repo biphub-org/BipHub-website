@@ -12,12 +12,38 @@ import { BipFilterChips } from '@/components/bip/BipFilterChips'
 
 // PITFALLS Pitfall 14 — canonical points to /bips REGARDLESS of query params
 // to prevent duplicate-content indexing of every filter combination.
+//
+// Plan 04-03 (D-17): static OG image at /public/og-bips.png. /bip/[slug]
+// keeps its dynamic opengraph-image.tsx; static pages get hand-rendered
+// PNGs so / and /bips have zero runtime OG cost.
+//
+// metadataBase resolves relative /og-bips.png into an absolute URL.
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+
 export async function generateMetadata(): Promise<Metadata> {
   return {
+    metadataBase: new URL(SITE_URL),
     title: 'Browse all BIPs · BipHub',
     description:
       'Browse Erasmus+ Blended Intensive Programs across Europe. Filter by country, field of study, language, dates, ECTS credits, and study level.',
     alternates: { canonical: 'https://biphub.eu/bips' },
+    openGraph: {
+      title: 'Browse all BIPs · BipHub',
+      description:
+        'Browse Erasmus+ Blended Intensive Programmes across Europe. Filter by country, field of study, language, dates, ECTS credits, and study level.',
+      url: '/bips',
+      siteName: 'BipHub',
+      images: [
+        {
+          url: '/og-bips.png',
+          width: 1200,
+          height: 630,
+          alt: 'Browse all BIPs on BipHub',
+        },
+      ],
+      type: 'website',
+    },
   }
 }
 

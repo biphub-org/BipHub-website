@@ -15,6 +15,7 @@
  *   Pitfall 13: Choropleth tier fill classes are full string literals in lib/map/bins.ts.
  */
 
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import {
   getApprovedBipCount,
@@ -36,6 +37,35 @@ import { EuropeMapWrapper } from '@/components/home/EuropeMapWrapper'
 // 1-hour ISR: homepage data refreshes hourly without a full rebuild.
 // Coordinate submits (Plan 02+) revalidatePath('/') explicitly.
 export const revalidate = 3600
+
+// Plan 04-03 (D-17): static OG image at /public/og-home.png. Dynamic
+// opengraph-image.tsx is scoped to /bip/[slug] only; static pages get
+// hand-rendered PNGs so / and /bips have zero runtime OG cost.
+//
+// metadataBase resolves the relative `/og-home.png` URL into an absolute
+// URL for og:image meta tags. Falls back to localhost in dev.
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+
+export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
+  openGraph: {
+    title: 'BipHub — The Erasmus+ BIP directory',
+    description:
+      'Free, open-source directory of Erasmus+ Blended Intensive Programmes across Europe.',
+    url: '/',
+    siteName: 'BipHub',
+    images: [
+      {
+        url: '/og-home.png',
+        width: 1200,
+        height: 630,
+        alt: 'BipHub — the Erasmus+ BIP directory',
+      },
+    ],
+    type: 'website',
+  },
+}
 
 export default async function HomePage() {
   const supabase = await createClient()
