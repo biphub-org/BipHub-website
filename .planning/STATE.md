@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Plan 04-01 complete
-last_updated: "2026-05-13T21:00:00.000Z"
-last_activity: 2026-05-13 -- Plan 04-01 complete (/what-is-a-bip static page)
+stopped_at: Plan 04-02 complete
+last_updated: "2026-05-14T00:00:00.000Z"
+last_activity: 2026-05-14 -- Plan 04-02 complete (/privacy static page + Footer link)
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 30
-  completed_plans: 24
-  percent: 80
+  completed_plans: 25
+  percent: 83
 ---
 
 # Project State
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-05-08)
 ## Current Position
 
 Phase: 04 (polish-static-content-performance-hardening) — EXECUTING
-Plan: 2 of 7 (Plan 04-01 complete)
+Plan: 3 of 7 (Plans 04-01, 04-02 complete)
 Status: Executing Phase 04
-Last activity: 2026-05-13 -- Plan 04-01 complete (/what-is-a-bip static page)
+Last activity: 2026-05-14 -- Plan 04-02 complete (/privacy static page + Footer link)
 
 Progress: [██████████] 100%
 
@@ -110,6 +110,8 @@ Recent decisions affecting current work:
 - Plan 01-07: BipApplyCta branches: closed (disabled button) | type=url (Link target=_blank) | type=contact (mailto anchor)
 - Plan 01-07: Partner display: registered partners show university.name (country); free-text raw partners append (unverified) suffix to partner_name_raw
 - Plan 01-07: getAllPublishedSlugs uses direct REST fetch (no createClient/cookies dependency) — avoids cookies() outside request scope during generateStaticParams at build time
+- Plan 04-02: /privacy is single-column max-w-[800px] (vs /what-is-a-bip's 2-column jump-link layout) — legal copy reads top-to-bottom; storage-surface enumeration pattern locked (Supabase Auth cookies + biphub:bookmarks + bip-draft + profiles + bips named explicitly)
+- Plan 04-02: No consent banner shipped — FOUN-05 satisfied by absence-of-trackers; the privacy page documents the zero-analytics posture and is the artefact that proves it. When future plans add anything consent-requiring (analytics, marketing pixels), /privacy must gain a banner AND a new storage-surface paragraph.
 
 ### Pending Todos
 
