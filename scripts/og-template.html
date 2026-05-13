@@ -1,0 +1,219 @@
+<!--
+  OG image regeneration template — Phase 4 Plan 04-03 (D-17).
+
+  To regenerate public/og-home.png and public/og-bips.png:
+  1. Open this file in Chrome: `chrome scripts/og-template.html`
+     (or: file:// path in Chrome).
+  2. Use DevTools "Capture node screenshot" on each .og-card div.
+     - Open DevTools (F12)
+     - Select the <div data-og="home"> element in the Elements panel
+     - Right-click the element -> "Capture node screenshot"
+     - Save as public/og-home.png
+     - Repeat for <div data-og="bips"> -> public/og-bips.png
+  3. Verify dimensions: each file MUST be exactly 1200x630 px.
+
+  The LogoMark SVG inside the cards uses 11 stars per CLAUDE.md prohibition
+  against the EU 12-star emblem. Star count MUST NOT equal 12, regardless
+  of arrangement.
+
+  Inter font is loaded from public/fonts/inter-bold.ttf and inter-semibold.ttf
+  (committed in Plan 01-07 under OFL 1.1). No Google Fonts request.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>BipHub OG templates</title>
+<style>
+  @font-face {
+    font-family: 'Inter';
+    src: url('../public/fonts/inter-bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'Inter';
+    src: url('../public/fonts/inter-semibold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #f0f0f0;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    padding: 40px;
+    color: #0a1735;
+  }
+  .label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0a1735;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .og-card {
+    width: 1200px;
+    height: 630px;
+    padding: 80px;
+    background: #0a1735;
+    color: #ffffff;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 40px;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  /* Subtle gold accent stripe along the left edge */
+  .og-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 8px;
+    height: 100%;
+    background: #FFCC00;
+  }
+  .og-card .eyebrow {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #FFCC00;
+    margin-bottom: 24px;
+  }
+  .og-card h1 {
+    font-size: 72px;
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    max-width: 900px;
+    color: #ffffff;
+  }
+  .og-card .sub {
+    font-size: 26px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.72);
+    margin-top: 24px;
+    max-width: 900px;
+    line-height: 1.35;
+  }
+  .og-card .logo {
+    position: absolute;
+    top: 80px;
+    right: 80px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .og-card .logo svg {
+    width: 64px;
+    height: 64px;
+    display: block;
+  }
+  .og-card .logo .wordmark {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #ffffff;
+  }
+  .og-card .footer {
+    position: absolute;
+    bottom: 80px;
+    left: 80px;
+    right: 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 32px;
+  }
+  .og-card .url {
+    font-size: 22px;
+    font-weight: 600;
+    color: #FFCC00;
+    letter-spacing: -0.3px;
+  }
+  .og-card .disclaimer {
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    text-align: right;
+    max-width: 520px;
+    line-height: 1.4;
+  }
+</style>
+</head>
+<body>
+
+<p class="label">og-home.png (1200 x 630)</p>
+<div class="og-card" data-og="home">
+  <div class="eyebrow">Erasmus+ BIP Directory</div>
+  <h1>Find your next Blended Intensive Programme.</h1>
+  <div class="sub">Free, open-source, independent. Browse BIPs across all 29 Erasmus+ countries.</div>
+
+  <div class="logo">
+    <!--
+      LogoMark — 11-star ring (NEVER 12; CLAUDE.md never-do).
+      Star positions match components/home/LogoMark.tsx (viewBox 0 0 32 32,
+      center 16,16, radius 13, starting angle -PI/2). 11 <circle> elements below.
+    -->
+    <svg viewBox="0 0 32 32" aria-hidden="true" role="presentation">
+      <rect x="0" y="0" width="32" height="32" rx="8" fill="#003399" />
+      <circle cx="16" cy="3" r="1.25" fill="#FFCC00" />
+      <circle cx="23.3473" cy="5.3854" r="1.25" fill="#FFCC00" />
+      <circle cx="27.8881" cy="11.6362" r="1.25" fill="#FFCC00" />
+      <circle cx="27.8881" cy="20.3638" r="1.25" fill="#FFCC00" />
+      <circle cx="23.3473" cy="26.6146" r="1.25" fill="#FFCC00" />
+      <circle cx="16" cy="29" r="1.25" fill="#FFCC00" />
+      <circle cx="8.6527" cy="26.6146" r="1.25" fill="#FFCC00" />
+      <circle cx="4.1119" cy="20.3638" r="1.25" fill="#FFCC00" />
+      <circle cx="4.1119" cy="11.6362" r="1.25" fill="#FFCC00" />
+      <circle cx="8.6527" cy="5.3854" r="1.25" fill="#FFCC00" />
+      <circle cx="12.5777" cy="2.3478" r="1.25" fill="#FFCC00" />
+      <text x="16" y="20" text-anchor="middle" fill="#ffffff" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="12">B</text>
+    </svg>
+    <span class="wordmark">BipHub</span>
+  </div>
+
+  <div class="footer">
+    <div class="url">biphub.eu</div>
+    <div class="disclaimer">Independent project — not affiliated with the European Commission</div>
+  </div>
+</div>
+
+<p class="label">og-bips.png (1200 x 630)</p>
+<div class="og-card" data-og="bips">
+  <div class="eyebrow">Browse</div>
+  <h1>Every Erasmus+ BIP in one place.</h1>
+  <div class="sub">Filter by country, field of study, language, dates, ECTS, and study level.</div>
+
+  <div class="logo">
+    <!--
+      LogoMark — 11-star ring (NEVER 12; CLAUDE.md never-do).
+      Mirrors the home card SVG verbatim.
+    -->
+    <svg viewBox="0 0 32 32" aria-hidden="true" role="presentation">
+      <rect x="0" y="0" width="32" height="32" rx="8" fill="#003399" />
+      <circle cx="16" cy="3" r="1.25" fill="#FFCC00" />
+      <circle cx="23.3473" cy="5.3854" r="1.25" fill="#FFCC00" />
+      <circle cx="27.8881" cy="11.6362" r="1.25" fill="#FFCC00" />
+      <circle cx="27.8881" cy="20.3638" r="1.25" fill="#FFCC00" />
+      <circle cx="23.3473" cy="26.6146" r="1.25" fill="#FFCC00" />
+      <circle cx="16" cy="29" r="1.25" fill="#FFCC00" />
+      <circle cx="8.6527" cy="26.6146" r="1.25" fill="#FFCC00" />
+      <circle cx="4.1119" cy="20.3638" r="1.25" fill="#FFCC00" />
+      <circle cx="4.1119" cy="11.6362" r="1.25" fill="#FFCC00" />
+      <circle cx="8.6527" cy="5.3854" r="1.25" fill="#FFCC00" />
+      <circle cx="12.5777" cy="2.3478" r="1.25" fill="#FFCC00" />
+      <text x="16" y="20" text-anchor="middle" fill="#ffffff" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="12">B</text>
+    </svg>
+    <span class="wordmark">BipHub</span>
+  </div>
+
+  <div class="footer">
+    <div class="url">biphub.eu/bips</div>
+    <div class="disclaimer">Independent project — not affiliated with the European Commission</div>
+  </div>
+</div>
+
+</body>
+</html>
