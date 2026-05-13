@@ -1,0 +1,52 @@
+# axe-DevTools manual a11y sweep — Plan 04-07 Task 10 (D-27)
+
+Status: **awaiting manual user run**. This task is a `checkpoint:human-verify`
+gate per the plan; it requires the axe-DevTools browser extension and a live
+local Supabase + dev server. Captured screenshots live in this directory once
+the sweep is complete.
+
+## How to run
+
+1. Install axe DevTools (Chrome / Edge): <https://www.deque.com/axe/devtools/>
+2. Start local Supabase, apply the demo + E2E seeds, and start the dev server:
+
+   ```bash
+   npm run db:reset            # demo seed (seed.sql) only
+   psql "$(supabase status -o json | jq -r '.DB_URL')" -f supabase/seed.e2e.sql
+   npm run dev
+   ```
+
+3. For each route below, open in Chrome → DevTools → axe DevTools tab → "Scan ALL of my page":
+
+   - `/` (homepage, anonymous)
+   - `/bips` (anonymous)
+   - `/bip/{any-slug}` (anonymous; BIP detail — pick any approved BIP from the seed)
+   - `/what-is-a-bip` (anonymous; Plan 04-01)
+   - `/privacy` (anonymous; Plan 04-02)
+   - `/login` (anonymous)
+   - `/register` (anonymous)
+   - `/reset-password` (anonymous)
+   - `/dashboard` (signed in as e2e-coordinator@biphub.test)
+   - `/dashboard/bips/new` (signed in; wizard)
+   - `/dashboard/settings` (signed in; Plan 04-05)
+   - `/admin` (signed in as e2e-admin@biphub.test)
+   - `/admin/bips/{id}/review` (signed in as e2e-admin)
+
+4. For each scan, capture a screenshot showing **0 critical / 0 serious** WCAG AA violations. Save as `{route-slug}.png` in this directory.
+5. Categorise findings:
+   - **Critical / Serious** → fix inline (small edits expected — aria-label on icon buttons, focus rings, contrast tweaks).
+   - **Moderate / Minor** → list in the plan SUMMARY for v1.1; don't block launch.
+6. Keyboard verification on every public route (Tab from page load):
+   - First Tab must move focus to the skip-to-content link.
+   - skip-to-content link visible on focus (existing CSS in `app/globals.css`).
+   - All interactive elements reachable via Tab; no focus traps; visible focus indicator on every element.
+7. EuropeMap-specific: Tab to the map; the keyboard fallback `<select>` ("Filter by country") must be the focused element; selecting "Germany" navigates to `/bips?country=DE`.
+
+## Exit criteria
+
+- 13 screenshots saved here (one per major route) showing **0 critical / 0 serious** violations.
+- Fixes (if any) committed as small inline edits prior to declaring D-27 satisfied.
+- Type "approved" in the GSD resume prompt once the sweep is clean; otherwise list outstanding findings.
+
+---
+*Procedure staged 2026-05-14 during Plan 04-07 execution. Manual sweep deferred to the user; SUMMARY.md surfaces this as an outstanding checkpoint.*
