@@ -92,12 +92,29 @@ export async function saveDraftAction(
   }
 
   // First INSERT — generate a draft slug to satisfy bips.slug NOT NULL.
+  // host_university_id is server-authoritative: it comes from the coordinator's
+  // profile-locked university, never from client input. The (dashboard) layout
+  // + bips/new page already gate on a complete profile, so this is normally
+  // guaranteed — the guard is defense-in-depth.
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('university_id')
+    .eq('id', userId)
+    .maybeSingle()
+  if (!profile?.university_id) {
+    return {
+      error: 'unknown',
+      message: 'No host university on your profile — complete onboarding first.',
+    }
+  }
+
   const draftSlug = generateDraftSlug(stepData.title ?? 'untitled')
   const { data, error } = await supabase
     .from('bips')
     .insert({
       ...persistable,
       created_by: userId,
+      host_university_id: profile.university_id,
       status: 'draft',
       slug: draftSlug,
       title: stepData.title ?? 'Untitled BIP',

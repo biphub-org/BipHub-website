@@ -165,6 +165,21 @@ export async function submitBipAction(
     .maybeSingle()
   const safeSlug = slugMatch ? `${finalSlug}-${bipId.slice(0, 8)}` : finalSlug
 
+  // host_university_id is server-authoritative — resolved from the
+  // coordinator's profile-locked university, never trusted from client input.
+  // Also self-heals any draft created before host_university_id was written
+  // on insert (saveDraftAction).
+  const { data: hostProfile } = await supabase
+    .from('profiles')
+    .select('university_id')
+    .eq('id', userId)
+    .maybeSingle()
+  if (!hostProfile?.university_id) {
+    return {
+      error: 'Your profile has no host university. Complete onboarding first.',
+    }
+  }
+
   // 1. Promote the BIP row to status='pending' and persist the canonical
   //    field set. RLS `bips_update_own_draft_or_pending` enforces the
   //    coordinator owns this row and that the status transition is allowed.
@@ -195,6 +210,7 @@ export async function submitBipAction(
     contact_name: parsed.data.contact_name || null,
     contact_email: parsed.data.contact_email || null,
     slug: safeSlug,
+    host_university_id: hostProfile.university_id,
     status: 'pending',
     updated_at: new Date().toISOString(),
   }
