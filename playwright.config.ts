@@ -61,9 +61,9 @@ export default defineConfig({
     },
     {
       name: 'public',
-      testMatch: /map-filter\.spec\.ts$/,
+      testMatch: /(map-filter|no-horizontal-overflow)\.spec\.ts$/,
       use: { ...devices['Desktop Chrome'] },
-      // no storageState — public route
+      // no storageState — public routes
     },
   ],
 

@@ -109,7 +109,7 @@ export default async function BipsPage(props: {
             <Suspense fallback={<BipSearchBarSkeleton />}>
               <BipSearchBar initialQ={filters.q ?? ''} />
             </Suspense>
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex flex-wrap items-center justify-between gap-4">
               <p className="text-sm text-muted">
                 {total === 0
                   ? '0 results'

@@ -67,7 +67,7 @@ export function StatsSection({ stats }: StatsSectionProps) {
       <MotionConfig reducedMotion="user">
         <section
           ref={sectionRef}
-          className="relative bg-eu-blue py-24"
+          className="relative overflow-hidden bg-eu-blue py-24"
           style={{
             backgroundImage:
               'radial-gradient(circle at 90% 10%, rgba(255, 204, 0, 0.12) 0%, transparent 50%)',
