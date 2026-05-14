@@ -64,7 +64,9 @@ test.describe('submission wizard', () => {
 
     // ----- Step 2: Programme details -----
     await page
-      .getByLabel(/virtual component/i)
+      // scope to the textarea — /virtual component/i also matches the
+      // "When does the virtual component happen?" <select> (virtual_timing)
+      .getByRole('textbox', { name: /virtual component/i })
       .fill(
         'Four online lectures (90 min each) across the 4 weeks before physical mobility plus a group project handover.',
       )
@@ -76,8 +78,9 @@ test.describe('submission wizard', () => {
     await page.getByLabel(/application deadline/i).fill(addDays(60))
     await page.getByLabel(/ects credits/i).fill('4')
     await page.getByLabel(/max participants/i).fill('20')
-    // study_levels: at least one checkbox.
-    await page.getByLabel(/bachelor/i).check()
+    // study_levels: at least one checkbox. getByRole('checkbox') — getByLabel
+    // also matches the hidden native <input> Base UI renders alongside.
+    await page.getByRole('checkbox', { name: /bachelor/i }).check()
     await page.getByLabel(/language of instruction/i).fill('en')
     // Minimum CEFR level (select).
     const cefr = page.getByLabel(/minimum cefr/i)
@@ -90,33 +93,30 @@ test.describe('submission wizard', () => {
     await page.getByRole('button', { name: /save.*continue/i }).click()
 
     // ----- Step 3: Partners -----
-    // Free-text partner add — step 3 supports unverified free-text plus
-    // registered combobox lookups. Use free-text to avoid combobox flakes.
-    const partnerNameInput = page
-      .getByLabel(/partner.*name|free.*partner.*name|institution name/i)
-      .first()
-    await partnerNameInput.fill('TU Wien')
-    const partnerCountry = page.getByLabel(/partner.*country|country/i).first()
-    try {
-      await partnerCountry.selectOption('AT')
-    } catch {
-      // Combobox fallback — pick Austria from the list.
-      await partnerCountry.click()
-      await page.getByRole('option', { name: /Austria/i }).click()
-    }
-    await page.getByRole('button', { name: /add partner|^add$/i }).click()
+    // The "Free-text partner" card is a bare placeholder Input + native
+    // <select> + an "Add as unverified" button (no FormLabels).
+    await page.getByPlaceholder(/universidade do porto/i).fill('TU Wien')
+    await page.locator('select').selectOption('AT')
+    await page.getByRole('button', { name: /add as unverified/i }).click()
     await page.getByRole('button', { name: /save.*continue/i }).click()
 
     // ----- Step 4: Application info -----
     // how_to_apply_type defaults to 'url' (per WizardStep4 default). Fill the URL.
+    // getByRole('textbox') — /application url/i also matches the "Application URL"
+    // radio option for how_to_apply_type.
     await page
-      .getByLabel(/application url/i)
+      .getByRole('textbox', { name: /application url/i })
       .fill('https://tum.example/bips/renewable-alps')
     await page.getByRole('button', { name: /save.*continue/i }).click()
 
     // ----- Step 5: Preview + Submit -----
-    await expect(page.getByText(E2E_TITLE)).toBeVisible({ timeout: 5_000 })
-    await page.getByRole('button', { name: /^submit/i }).click()
+    // The preview reuses <BipBody>/<BipSidebar>, which don't render the title
+    // (that's page chrome on the public route). Assert on the preview banner to
+    // confirm Step 5 rendered, then submit.
+    await expect(
+      page.getByText(/this is a preview of your bip/i),
+    ).toBeVisible({ timeout: 5_000 })
+    await page.getByRole('button', { name: /submit for review/i }).click()
 
     // After submit, dashboard re-renders with the new BIP in Pending.
     await page.waitForURL(/\/dashboard/, { timeout: 15_000 })
