@@ -114,9 +114,11 @@ test.describe('auth flow', () => {
     await page.getByRole('button', { name: /send reset link/i }).click()
     // Form replaced with "Check your email" card; success regardless of
     // whether the email exists (T-02-02-05 no-enumeration).
-    await expect(page.getByText(/check your email/i)).toBeVisible({
-      timeout: 5_000,
-    })
+    // Scope to the heading — /check your email/i also matches the body copy
+    // ("Check your email for a reset link…"), which trips Playwright strict mode.
+    await expect(
+      page.getByRole('heading', { name: /check your email/i }),
+    ).toBeVisible({ timeout: 5_000 })
     // D-15 console-log fallback fires server-side; real link extraction
     // deferred (see tests/e2e/EDGE-CASES-DEFERRED.md).
   })
