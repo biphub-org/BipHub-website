@@ -33,7 +33,7 @@ async function getCoordinatorForBip(bipId: string): Promise<CoordinatorRow | nul
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('bips')
-    .select('profiles:created_by ( full_name, contact_email )')
+    .select('profiles!created_by ( full_name, contact_email )')
     .eq('id', bipId)
     .maybeSingle()
   if (error || !data) return null

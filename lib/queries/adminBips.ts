@@ -99,7 +99,7 @@ const ADMIN_BIP_SELECT = `
   physical_start_date, physical_end_date,
   created_at, updated_at,
   host_university:host_university_id ( id, name, country ),
-  coordinator:created_by ( full_name, university:university_id ( name ) )
+  coordinator:profiles!created_by ( full_name, university:university_id ( name ) )
 `
 
 /**
@@ -288,7 +288,7 @@ export async function getAdminBipForEdit(
       green_travel, inclusion_support, eligibility_notes,
       how_to_apply_type, how_to_apply_value, contact_name, contact_email,
       host_university:host_university_id ( id, name, country ),
-      coordinator:created_by ( full_name ),
+      coordinator:profiles!created_by ( full_name ),
       partners:bip_partner_universities (
         id, university_id, partner_name_raw, partner_country_raw, partner_erasmus_code_raw,
         university:university_id ( id, name, country )

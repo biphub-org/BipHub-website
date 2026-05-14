@@ -71,7 +71,7 @@ export async function approveBipAction(
   const { data: existing, error: readError } = await supabase
     .from('bips')
     .select(
-      'id, slug, title, status, created_by, profiles:created_by ( contact_email, full_name )',
+      'id, slug, title, status, created_by, profiles!created_by ( contact_email, full_name )',
     )
     .eq('id', parsed.data.bipId)
     .maybeSingle()
@@ -195,7 +195,7 @@ export async function rejectBipAction(
   const { data: existing, error: readError } = await supabase
     .from('bips')
     .select(
-      'id, slug, title, status, created_by, profiles:created_by ( contact_email, full_name )',
+      'id, slug, title, status, created_by, profiles!created_by ( contact_email, full_name )',
     )
     .eq('id', parsed.data.bipId)
     .maybeSingle()
