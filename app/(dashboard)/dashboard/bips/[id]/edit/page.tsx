@@ -20,7 +20,6 @@ import { searchUniversitiesAction } from '@/lib/actions/universities'
 import { getCoordinatorBipById } from '@/lib/queries/coordinatorBipById'
 import { BipSubmissionWizard } from '@/components/forms/BipSubmissionWizard'
 import { WizardStep5Preview } from '@/components/forms/steps/WizardStep5Preview'
-import { TwoTabConflictDialog } from '@/components/forms/TwoTabConflictDialog'
 
 export default async function EditBipPage(props: {
   params: Promise<{ id: string }>
@@ -42,8 +41,7 @@ export default async function EditBipPage(props: {
         }}
         hostUniversity={host}
         initialUniversities={initialUniversities}
-        renderPreviewStep={() => <WizardStep5Preview hostUniversity={host} />}
-        renderConflictDialog={(props) => <TwoTabConflictDialog {...props} />}
+        previewStep={<WizardStep5Preview hostUniversity={host} />}
       />
     </section>
   )

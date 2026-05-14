@@ -27,7 +27,6 @@ import { searchUniversitiesAction } from '@/lib/actions/universities'
 import { getAdminBipForEdit } from '@/lib/queries/adminBips'
 import { BipSubmissionWizard } from '@/components/forms/BipSubmissionWizard'
 import { AdminEditFooter } from '@/components/admin/AdminEditFooter'
-import { TwoTabConflictDialog } from '@/components/forms/TwoTabConflictDialog'
 
 export const dynamic = 'force-dynamic'
 
@@ -52,15 +51,14 @@ export default async function AdminEditBipPage(props: {
         }}
         hostUniversity={host}
         initialUniversities={initialUniversities}
-        renderPreviewStep={() => (
+        previewStep={
           <AdminEditFooter
             bipId={record.id}
             bipTitle={record.title}
             coordinatorName={record.coordinatorName}
             currentStatus={record.status}
           />
-        )}
-        renderConflictDialog={(p) => <TwoTabConflictDialog {...p} />}
+        }
       />
     </section>
   )

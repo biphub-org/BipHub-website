@@ -3,11 +3,13 @@
 /**
  * BipSubmissionWizard — multi-step wizard shell (SUBM-01..SUBM-07).
  *
- * Plan 02-06 ships steps 1-4. Step 5 Preview, the Two-Tab Conflict Dialog, and
- * the page entry routes (`/dashboard/bips/new`, `/dashboard/bips/[id]/edit`)
- * land in Plan 02-07. The wizard exposes `renderPreviewStep` and
- * `renderConflictDialog` slots so 02-07 plugs them in without re-editing this
- * file.
+ * Plan 02-06 ships steps 1-4. Step 5 Preview and the page entry routes
+ * (`/dashboard/bips/new`, `/dashboard/bips/[id]/edit`) land in Plan 02-07.
+ * Step 5 content is injected via the `previewStep` element prop (dashboard
+ * pages pass <WizardStep5Preview>, the admin page <AdminEditFooter>) — a
+ * rendered element, NOT a function: RSC entry pages cannot pass function
+ * props to a Client Component. The Two-Tab Conflict Dialog is a Client
+ * Component the wizard renders directly.
  *
  * Save lifecycle:
  *   1. Step component owns its RHF + step schema. On every blurred change it
@@ -45,6 +47,7 @@ import { WizardStep1BasicInfo } from '@/components/forms/steps/WizardStep1BasicI
 import { WizardStep2ProgramDetails } from '@/components/forms/steps/WizardStep2ProgramDetails'
 import { WizardStep3Partners } from '@/components/forms/steps/WizardStep3Partners'
 import { WizardStep4ApplicationInfo } from '@/components/forms/steps/WizardStep4ApplicationInfo'
+import { TwoTabConflictDialog } from '@/components/forms/TwoTabConflictDialog'
 import type { UniversitySearchResult } from '@/lib/actions/universities'
 import { cn } from '@/lib/utils/cn'
 
@@ -55,17 +58,12 @@ interface Props {
   hostUniversity: { id: string; name: string; country: string }
   /** Pre-fetched university list seeded into Step 3's combobox. */
   initialUniversities: UniversitySearchResult[]
-  /** Plan 02-07 plugs in Step 5 Preview here. */
-  renderPreviewStep?: (props: {
-    onSubmitConfirmed: () => void
-    isSubmitting: boolean
-  }) => React.ReactNode
-  /** Plan 02-07 plugs in TwoTabConflictDialog here. */
-  renderConflictDialog?: (props: {
-    open: boolean
-    onReload: () => void
-    onOverwrite: () => void
-  }) => React.ReactNode
+  /**
+   * Step 5 content slot — a rendered element, NOT a function. RSC entry
+   * pages cannot pass function props to this Client Component. Dashboard
+   * pages pass <WizardStep5Preview>; the admin page passes <AdminEditFooter>.
+   */
+  previewStep?: React.ReactNode
   /**
    * Plan 03-07 (ADMN-05): when `'admin'`, the wizard:
    *   - skips localStorage hydration (server-loaded `initialBip` is the
@@ -114,8 +112,7 @@ export function BipSubmissionWizard({
   initialBip,
   hostUniversity,
   initialUniversities,
-  renderPreviewStep,
-  renderConflictDialog,
+  previewStep,
   mode = 'coordinator',
 }: Props) {
   const router = useRouter()
@@ -379,14 +376,7 @@ export function BipSubmissionWizard({
               />
             )}
             {currentStep === 5 &&
-              (renderPreviewStep ? (
-                renderPreviewStep({
-                  onSubmitConfirmed: () => {
-                    /* Plan 02-07 wires submitBipAction */
-                  },
-                  isSubmitting: false,
-                })
-              ) : (
+              (previewStep ?? (
                 <div className="rounded border border-border bg-bg-soft p-8 text-center text-sm text-muted">
                   Preview step requires Plan 02-07 integration.
                 </div>
@@ -416,11 +406,11 @@ export function BipSubmissionWizard({
         </div>
       </div>
 
-      {renderConflictDialog?.({
-        open: conflictOpen,
-        onReload: handleReload,
-        onOverwrite: handleOverwrite,
-      })}
+      <TwoTabConflictDialog
+        open={conflictOpen}
+        onReload={handleReload}
+        onOverwrite={handleOverwrite}
+      />
     </LazyMotion>
   )
 }

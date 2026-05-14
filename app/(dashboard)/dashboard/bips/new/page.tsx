@@ -10,7 +10,7 @@
  *   3. Pre-fetches `initialUniversities` (top-50 alphabetical) so Step 3's
  *      combobox can render without a roundtrip on first open.
  *   4. Mounts `<BipSubmissionWizard>` with no `initialBip` (new mode) and the
- *      Plan 02-07 render-prop slots wired in.
+ *      Step 5 preview element passed via the `previewStep` slot.
  *
  * Auth: uses `getClaims()` exclusively — never the unvalidated session reader
  * server-side (CLAUDE.md never-do).
@@ -20,7 +20,6 @@ import { createClient } from '@/lib/supabase/server'
 import { searchUniversitiesAction } from '@/lib/actions/universities'
 import { BipSubmissionWizard } from '@/components/forms/BipSubmissionWizard'
 import { WizardStep5Preview } from '@/components/forms/steps/WizardStep5Preview'
-import { TwoTabConflictDialog } from '@/components/forms/TwoTabConflictDialog'
 
 export default async function NewBipPage() {
   const supabase = await createClient()
@@ -53,8 +52,7 @@ export default async function NewBipPage() {
       <BipSubmissionWizard
         hostUniversity={host}
         initialUniversities={initialUniversities}
-        renderPreviewStep={() => <WizardStep5Preview hostUniversity={host} />}
-        renderConflictDialog={(props) => <TwoTabConflictDialog {...props} />}
+        previewStep={<WizardStep5Preview hostUniversity={host} />}
       />
     </section>
   )
