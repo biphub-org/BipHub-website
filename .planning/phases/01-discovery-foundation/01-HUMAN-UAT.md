@@ -1,14 +1,18 @@
 ---
-status: partial
+status: testing
 phase: 01-discovery-foundation
 source: [01-VERIFICATION.md]
 started: 2026-05-09T02:35:00Z
-updated: 2026-05-09T14:00:00Z
+updated: 2026-05-14T00:00:00Z
 ---
 
 ## Current Test
 
-[testing paused — 1 item outstanding: test 6 mobile layout deferred by user]
+number: 3
+name: Lighthouse > 90 + LCP < 1.5 s on 4G (FOUN-02)
+expected: |
+  Lighthouse Performance / Accessibility / SEO >= 90 on `/` and `/bips`, LCP under 1.5 s on simulated 4G.
+awaiting: user response
 
 ## Tests
 
