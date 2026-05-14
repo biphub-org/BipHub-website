@@ -44,11 +44,30 @@ export async function saveDraftAction(
   }
   const userId = claimsData.claims.sub
 
-  // Strip step-level shape that does not map to bips columns directly.
-  // partner_universities is a separate table written at submit time; if we
-  // also receive it here on auto-save, we drop it silently.
-  const { partner_universities: _ignored, ...persistable } = stepData
-  void _ignored
+  // Reshape the wizard's flat draft into bips columns:
+  //   - partner_universities: a separate table, written at submit time — dropped.
+  //   - how_to_apply_url: a form-only field. The bips column is
+  //     `how_to_apply_value` — one column holding the URL or the contact email,
+  //     discriminated by `how_to_apply_type`. Mirrors submitBipAction's transform;
+  //     without this the UPDATE fails ("Could not find the 'how_to_apply_url'
+  //     column") and Step 4 of the wizard can never save.
+  const {
+    partner_universities: _ignoredPartners,
+    how_to_apply_url,
+    ...rest
+  } = stepData
+  void _ignoredPartners
+
+  const howToApply =
+    'how_to_apply_url' in stepData || 'how_to_apply_type' in stepData
+      ? {
+          how_to_apply_value:
+            rest.how_to_apply_type === 'url'
+              ? (how_to_apply_url ?? null)
+              : (rest.contact_email ?? null),
+        }
+      : {}
+  const persistable = { ...rest, ...howToApply }
 
   if (bipId && lastKnownUpdatedAt) {
     // UPDATE with optimistic locking — only succeeds if updated_at matches.
@@ -62,7 +81,10 @@ export async function saveDraftAction(
       .select('id, updated_at')
       .maybeSingle()
 
-    if (error) return { error: 'unknown', message: error.message }
+    if (error) {
+      console.error('[saveDraftAction] update error:', error.message)
+      return { error: 'unknown', message: error.message }
+    }
     // 0 rows matched the lock → another tab beat us to the update.
     if (!data) return { error: 'conflict' }
 
@@ -83,6 +105,9 @@ export async function saveDraftAction(
     .select('id, updated_at')
     .single()
 
-  if (error) return { error: 'unknown', message: error.message }
+  if (error) {
+    console.error('[saveDraftAction] insert error:', error.message)
+    return { error: 'unknown', message: error.message }
+  }
   return { success: true, bipId: data.id, updatedAt: data.updated_at }
 }
