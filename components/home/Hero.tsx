@@ -52,44 +52,42 @@ const liftOnly: Variants = {
 }
 
 // Repulsion params.
-const INFLUENCE_RADIUS = 200 // px — distance within which a dot reacts to cursor
-const MAX_PUSH = 32 // px — how far a dot can be pushed at zero distance
-// Number of nearest neighbours each dot connects to when it becomes active.
-// Larger = denser web. 3 fans out a triangle/star around the cursor.
-const NEIGHBOURS_PER_DOT = 3
+const INFLUENCE_RADIUS = 170 // px — distance within which a dot reacts to cursor
+const MAX_PUSH = 28 // px — how far a dot can be pushed at zero distance
+const LINK_DISTANCE = 220 // px — pairs of dots farther apart than this never link
 
-// Fixed dot positions (percent of the section box). Sizes bumped to
-// 8/10/12 px so the field reads from a normal viewing distance.
+// Fixed dot positions (percent of the section box). Sizes bumped 1.5×
+// over the first iteration to read clearly on full-HD monitors.
 type Dot = { x: number; y: number; size: number; delay: number }
 const DOTS: ReadonlyArray<Dot> = [
-  { x: 5,  y: 12, size: 12, delay: 0.0 },
-  { x: 9,  y: 38, size: 8,  delay: 1.4 },
-  { x: 12, y: 70, size: 10, delay: 2.2 },
-  { x: 16, y: 22, size: 8,  delay: 0.6 },
-  { x: 20, y: 88, size: 12, delay: 1.0 },
-  { x: 24, y: 54, size: 10, delay: 2.8 },
-  { x: 30, y: 16, size: 8,  delay: 0.3 },
-  { x: 33, y: 78, size: 10, delay: 1.7 },
-  { x: 38, y: 40, size: 8,  delay: 2.4 },
-  { x: 42, y: 92, size: 8,  delay: 0.9 },
-  { x: 48, y: 6,  size: 10, delay: 1.5 },
-  { x: 52, y: 84, size: 8,  delay: 2.0 },
-  { x: 58, y: 14, size: 12, delay: 0.5 },
-  { x: 62, y: 50, size: 8,  delay: 2.6 },
-  { x: 66, y: 90, size: 10, delay: 1.1 },
-  { x: 70, y: 26, size: 8,  delay: 2.3 },
-  { x: 75, y: 70, size: 12, delay: 0.7 },
-  { x: 78, y: 40, size: 8,  delay: 1.9 },
-  { x: 82, y: 18, size: 10, delay: 0.2 },
-  { x: 85, y: 82, size: 8,  delay: 2.7 },
-  { x: 88, y: 50, size: 12, delay: 1.3 },
-  { x: 92, y: 30, size: 8,  delay: 2.5 },
-  { x: 94, y: 74, size: 10, delay: 0.4 },
-  { x: 96, y: 10, size: 8,  delay: 1.8 },
-  { x: 36, y: 60, size: 8,  delay: 3.0 },
-  { x: 64, y: 8,  size: 8,  delay: 0.8 },
-  { x: 14, y: 50, size: 10, delay: 2.1 },
-  { x: 86, y: 64, size: 8,  delay: 1.2 },
+  { x: 5,  y: 12, size: 6, delay: 0.0 },
+  { x: 9,  y: 38, size: 3, delay: 1.4 },
+  { x: 12, y: 70, size: 5, delay: 2.2 },
+  { x: 16, y: 22, size: 3, delay: 0.6 },
+  { x: 20, y: 88, size: 6, delay: 1.0 },
+  { x: 24, y: 54, size: 5, delay: 2.8 },
+  { x: 30, y: 16, size: 3, delay: 0.3 },
+  { x: 33, y: 78, size: 5, delay: 1.7 },
+  { x: 38, y: 40, size: 3, delay: 2.4 },
+  { x: 42, y: 92, size: 3, delay: 0.9 },
+  { x: 48, y: 6,  size: 5, delay: 1.5 },
+  { x: 52, y: 84, size: 3, delay: 2.0 },
+  { x: 58, y: 14, size: 6, delay: 0.5 },
+  { x: 62, y: 50, size: 3, delay: 2.6 },
+  { x: 66, y: 90, size: 5, delay: 1.1 },
+  { x: 70, y: 26, size: 3, delay: 2.3 },
+  { x: 75, y: 70, size: 6, delay: 0.7 },
+  { x: 78, y: 40, size: 3, delay: 1.9 },
+  { x: 82, y: 18, size: 5, delay: 0.2 },
+  { x: 85, y: 82, size: 3, delay: 2.7 },
+  { x: 88, y: 50, size: 6, delay: 1.3 },
+  { x: 92, y: 30, size: 3, delay: 2.5 },
+  { x: 94, y: 74, size: 5, delay: 0.4 },
+  { x: 96, y: 10, size: 3, delay: 1.8 },
+  { x: 36, y: 60, size: 3, delay: 3.0 },
+  { x: 64, y: 8,  size: 3, delay: 0.8 },
+  { x: 14, y: 50, size: 5, delay: 2.1 },
+  { x: 86, y: 64, size: 3, delay: 1.2 },
 ] as const
 
 export function Hero() {
@@ -340,25 +338,6 @@ function DotField({ pointer, sectionRef }: DotFieldProps) {
     }))
   }, [box])
 
-  // Precompute, for each dot, the indices of its N nearest neighbours in the
-  // base layout. This is what every active dot connects to when the cursor
-  // approaches — neighbours do NOT have to be inside the influence radius
-  // themselves, so a single cursor hover always fans out lines.
-  const neighbourIdx = useMemo(() => {
-    if (placed.length === 0) return [] as ReadonlyArray<ReadonlyArray<number>>
-    return placed.map((a, i) => {
-      const distances = placed
-        .map((b, j) => ({
-          j,
-          dist: Math.hypot(a.px - b.px, a.py - b.py),
-        }))
-        .filter((row) => row.j !== i)
-        .sort((p, q) => p.dist - q.dist)
-        .slice(0, NEIGHBOURS_PER_DOT)
-      return distances.map((row) => row.j)
-    })
-  }, [placed])
-
   // For each dot, precompute the push it should currently receive AND its
   // post-push pixel position. The constellation-line layer below needs the
   // post-push coords so lines visibly attach to the moved dot.
@@ -385,30 +364,29 @@ function DotField({ pointer, sectionRef }: DotFieldProps) {
     })
   }, [placed, pointer.x, pointer.y, pointer.active])
 
-  // Constellation lines: for every active dot A, draw a line from A to each
-  // of its N nearest neighbours. Neighbours don't need to be active — even
-  // a single cursor hover produces a visible fan. Line alpha tracks A's
-  // intensity so the web fades in/out smoothly as the cursor approaches.
-  // Dedup pairs so we don't draw A→B and B→A as two strokes.
+  // Constellation pairs: connect any two dots that are both currently active
+  // (within the cursor's influence radius) AND closer than LINK_DISTANCE to
+  // each other. The cursor effectively "lights up" a local web of links.
   const links = useMemo(() => {
-    const seen = new Set<string>()
     const out: Array<{ x1: number; y1: number; x2: number; y2: number; alpha: number }> = []
     for (let i = 0; i < computed.length; i++) {
       const a = computed[i]
       if (!a.inRange) continue
-      for (const j of neighbourIdx[i] ?? []) {
-        const key = i < j ? `${i}:${j}` : `${j}:${i}`
-        if (seen.has(key)) continue
-        seen.add(key)
+      for (let j = i + 1; j < computed.length; j++) {
         const b = computed[j]
-        // If both endpoints are active, take the brighter intensity; else
-        // just use the active endpoint's intensity.
-        const alpha = Math.max(a.intensity, b.intensity)
+        if (!b.inRange) continue
+        const dx = a.finalX - b.finalX
+        const dy = a.finalY - b.finalY
+        const dist = Math.sqrt(dx * dx + dy * dy)
+        if (dist > LINK_DISTANCE) continue
+        // Line strength = min of endpoint intensities × distance falloff
+        const distFactor = 1 - dist / LINK_DISTANCE
+        const alpha = Math.min(a.intensity, b.intensity) * distFactor
         out.push({ x1: a.finalX, y1: a.finalY, x2: b.finalX, y2: b.finalY, alpha })
       }
     }
     return out
-  }, [computed, neighbourIdx])
+  }, [computed])
 
   return (
     <div aria-hidden="true" className="pointer-events-none absolute inset-0">
@@ -430,8 +408,8 @@ function DotField({ pointer, sectionRef }: DotFieldProps) {
               x2={ln.x2}
               y2={ln.y2}
               stroke="#FFCC00"
-              strokeOpacity={Math.min(ln.alpha * 1.1, 0.85)}
-              strokeWidth={1.5}
+              strokeOpacity={ln.alpha * 0.75}
+              strokeWidth={1}
               strokeLinecap="round"
             />
           ))}
@@ -441,8 +419,8 @@ function DotField({ pointer, sectionRef }: DotFieldProps) {
       {/* The dots themselves */}
       {computed.map((c, i) => {
         const { d, inRange, intensity, pushX, pushY } = c
-        const scale = 1 + intensity * 1.4
-        const opacity = inRange ? 1 : 0.9
+        const scale = 1 + intensity * 1.3
+        const opacity = inRange ? 1 : 0.75
 
         return (
           <m.span
@@ -456,13 +434,13 @@ function DotField({ pointer, sectionRef }: DotFieldProps) {
               transform: `translate(${pushX}px, ${pushY}px) scale(${scale})`,
               opacity,
               boxShadow: inRange
-                ? '0 0 24px rgba(255, 204, 0, 1)'
-                : '0 0 16px rgba(255, 204, 0, 0.8)',
+                ? '0 0 18px rgba(255, 204, 0, 0.95)'
+                : '0 0 10px rgba(255, 204, 0, 0.65)',
               transition:
                 'transform 200ms ease-out, opacity 200ms ease-out, box-shadow 200ms ease-out',
             }}
             // Subtle idle twinkle while the dot is NOT being pushed.
-            animate={inRange ? undefined : { opacity: [0.7, 1, 0.7] }}
+            animate={inRange ? undefined : { opacity: [0.55, 0.95, 0.55] }}
             transition={
               inRange
                 ? undefined
