@@ -33,6 +33,7 @@ import {
 } from 'motion/react'
 import { ISCED_FIELDS } from '@/lib/isced'
 import { cn } from '@/lib/utils/cn'
+import { Eyebrow } from './Eyebrow'
 import type { IscedFieldId } from '@/lib/isced'
 
 const EASE_OUT: Transition['ease'] = [0.16, 1, 0.3, 1]
@@ -87,26 +88,41 @@ export function CategoriesBar({ countsByField }: CategoriesBarProps) {
       <MotionConfig reducedMotion="user">
         <section
           ref={sectionRef}
-          className="border-b border-border bg-white py-16"
+          className="relative overflow-hidden border-b border-border bg-white py-20 md:py-24"
+          style={{
+            // Faint blue dot grid — the inverse of the dark hero's white grid.
+            // Reads as "textured surface" not "decorated."
+            backgroundImage:
+              'radial-gradient(rgba(0, 51, 153, 0.05) 1px, transparent 1px)',
+            backgroundSize: '24px 24px',
+          }}
         >
-          <div className="mx-auto max-w-[1200px] px-4 md:px-6">
-            {/* Section header */}
+          <div className="relative mx-auto max-w-[1200px] px-4 md:px-6">
+            {/* Section header — promoted from a tiny h3 to a full eyebrow +
+                clamp title so it matches the rhythm of every other section. */}
             <m.div
-              className="mb-8 flex flex-wrap items-center justify-between gap-4"
+              className="mb-10 flex flex-wrap items-end justify-between gap-4"
               variants={headerVariants}
               initial="hidden"
               animate={inView ? 'visible' : 'hidden'}
               transition={{ duration: 0.5, ease: EASE_OUT }}
             >
-              <h3
-                className="text-[22px] font-bold text-ink"
-                style={{ letterSpacing: '-0.3px' }}
-              >
-                Browse by field of study
-              </h3>
+              <div>
+                <Eyebrow className="mb-3">By field of study</Eyebrow>
+                <h2
+                  className="font-bold text-ink"
+                  style={{
+                    fontSize: 'clamp(28px, 3.4vw, 38px)',
+                    lineHeight: '1.15',
+                    letterSpacing: '-0.8px',
+                  }}
+                >
+                  Find programmes in your discipline
+                </h2>
+              </div>
               <Link
                 href="/bips"
-                className="text-sm font-medium text-eu-blue hover:text-eu-blue-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-eu-blue focus-visible:ring-offset-2 rounded-sm"
+                className="text-sm font-semibold text-eu-blue hover:text-eu-blue-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-eu-blue focus-visible:ring-offset-2 rounded-sm"
               >
                 All fields →
               </Link>

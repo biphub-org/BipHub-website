@@ -104,8 +104,18 @@ export default async function HomePage() {
       {/* DISC-02: Browse-by-country — choropleth on desktop, top-countries pill grid on mobile.
           The map is hidden below md because 29 microscopic countries + no touch hover doesn't
           serve discovery, and skipping the 1.2 MB chunk on mobile is a real LCP win. */}
-      <section id="by-country" className="bg-bg-soft py-16 border-t border-b border-border md:py-24">
-        <div className="mx-auto max-w-[1200px] px-4 md:px-6">
+      <section
+        id="by-country"
+        className="relative overflow-hidden bg-bg-soft py-16 border-t border-b border-border md:py-24"
+        style={{
+          // Faint blue dot grid — ties the three light sections (this, the
+          // categories bar, and recent bips) together as one aesthetic family.
+          backgroundImage:
+            'radial-gradient(rgba(0, 51, 153, 0.05) 1px, transparent 1px)',
+          backgroundSize: '24px 24px',
+        }}
+      >
+        <div className="relative mx-auto max-w-[1200px] px-4 md:px-6">
           <div className="hidden md:block">
             <EuropeMapWrapper countsByCountry={countsByCountry} />
           </div>

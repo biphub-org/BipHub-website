@@ -63,9 +63,16 @@ export function RecentBipsAnimated({
       <MotionConfig reducedMotion="user">
         <section
           ref={sectionRef}
-          className="py-24 bg-white border-t border-border"
+          className="relative overflow-hidden py-24 bg-white border-t border-border"
+          style={{
+            // Same faint blue dot grid as CategoriesBar — ties the light
+            // sections together and echoes the dark hero's white dot field.
+            backgroundImage:
+              'radial-gradient(rgba(0, 51, 153, 0.05) 1px, transparent 1px)',
+            backgroundSize: '24px 24px',
+          }}
         >
-          <div className="mx-auto max-w-[1200px] px-4 md:px-6">
+          <div className="relative mx-auto max-w-[1200px] px-4 md:px-6">
             {/* Section header */}
             <m.div
               className="mb-14 text-center"
