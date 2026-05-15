@@ -52,6 +52,11 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 
+# Loose screenshots dropped in the repo root by Win+Shift+S / Snipping Tool.
+# Screenshots that belong in docs live in .planning/phases/** or public/.
+Screenshot*.png
+screenshot*.png
+
 # Supabase
 supabase/.branches
 supabase/.temp/
