@@ -71,10 +71,15 @@ export function StatsSection({ stats }: StatsSectionProps) {
       <MotionConfig reducedMotion="user">
         <section
           ref={sectionRef}
-          className="relative overflow-hidden bg-eu-blue py-24"
+          className="relative overflow-hidden py-24"
           style={{
-            backgroundImage:
-              'radial-gradient(circle at 90% 10%, rgba(255, 204, 0, 0.12) 0%, transparent 50%)',
+            // Same ink palette as the hero, so the two dark bands feel like
+            // one aesthetic family with light beats in between.
+            backgroundColor: '#0a1735',
+            backgroundImage: [
+              'radial-gradient(ellipse 65% 50% at 50% 0%, rgba(0, 51, 153, 0.55) 0%, transparent 60%)',
+              'radial-gradient(ellipse 50% 45% at 92% 100%, rgba(255, 204, 0, 0.18) 0%, transparent 65%)',
+            ].join(', '),
           }}
         >
           {/* Slow ambient gold glow on the bottom-left of the band */}
@@ -83,11 +88,45 @@ export function StatsSection({ stats }: StatsSectionProps) {
             className="pointer-events-none absolute bottom-0 left-0 h-[420px] w-[420px]"
             style={{
               background:
-                'radial-gradient(circle at bottom left, rgba(255, 204, 0, 0.10) 0%, transparent 65%)',
+                'radial-gradient(circle at bottom left, rgba(255, 204, 0, 0.12) 0%, transparent 65%)',
             }}
             animate={{ opacity: [0.6, 1, 0.6] }}
             transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
           />
+
+          {/* Sparse twinkling gold dots — same DNA as the hero field but
+              static (no cursor interaction; this section isn't the hook).
+              Fixed positions, slow staggered pulse. */}
+          {[
+            { left: '8%', top: '20%', size: 4, delay: 0.0 },
+            { left: '18%', top: '78%', size: 6, delay: 1.4 },
+            { left: '32%', top: '32%', size: 4, delay: 0.6 },
+            { left: '46%', top: '88%', size: 4, delay: 2.0 },
+            { left: '70%', top: '24%', size: 5, delay: 1.0 },
+            { left: '82%', top: '70%', size: 4, delay: 2.6 },
+            { left: '92%', top: '34%', size: 6, delay: 0.3 },
+            { left: '60%', top: '12%', size: 4, delay: 1.7 },
+          ].map((s, i) => (
+            <m.span
+              key={i}
+              aria-hidden="true"
+              className="pointer-events-none absolute rounded-full bg-eu-gold"
+              style={{
+                left: s.left,
+                top: s.top,
+                width: s.size,
+                height: s.size,
+                boxShadow: '0 0 10px rgba(255, 204, 0, 0.75)',
+              }}
+              animate={{ opacity: [0.4, 1, 0.4] }}
+              transition={{
+                duration: 3.6,
+                repeat: Infinity,
+                ease: 'easeInOut',
+                delay: s.delay,
+              }}
+            />
+          ))}
 
           <div className="relative mx-auto max-w-[1200px] px-4 md:px-6">
             {/* Section header */}
@@ -182,7 +221,7 @@ function StatCard({ value, label, delta, isInView, prefersReducedMotion }: StatC
 
   return (
     <m.div
-      className="rounded-lg border border-white/12 bg-white/6 p-7 px-6 backdrop-blur"
+      className="rounded-lg border border-white/15 bg-white/5 p-7 px-6 backdrop-blur-sm"
       initial={{ opacity: 0, y: 20 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
