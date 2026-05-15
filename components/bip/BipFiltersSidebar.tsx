@@ -16,7 +16,6 @@ import {
   STUDY_LEVELS,
   type BipFilterState,
 } from '@/lib/filters/parseSearchParams'
-import { cn } from '@/lib/utils/cn'
 
 const LANGS = [
   { code: 'en', label: 'English' },
@@ -82,32 +81,35 @@ export function BipFiltersSidebar({ filters }: { filters: BipFilterState }) {
         )}
       </div>
 
-      <Accordion multiple defaultValue={['country']}>
+      <Accordion multiple>
         <AccordionItem value="country">
           <AccordionTrigger>Country</AccordionTrigger>
           <AccordionContent>
-            <div className="flex flex-wrap gap-2">
-              {ERASMUS_COUNTRIES.map((c) => {
-                const active = filters.country?.includes(c.code.toLowerCase())
-                return (
-                  <button
-                    key={c.code}
-                    onClick={() =>
-                      toggleArray('country', c.code.toLowerCase(), filters.country)
-                    }
-                    aria-pressed={active}
-                    className={cn(
-                      'px-3 py-1 text-xs rounded-pill border transition-colors',
-                      active
-                        ? 'bg-eu-blue text-white border-eu-blue'
-                        : 'bg-white text-ink border-border hover:border-eu-blue',
-                    )}
-                  >
-                    {c.name}
-                  </button>
-                )
-              })}
-            </div>
+            <ul className="space-y-2 max-h-[320px] overflow-y-auto pr-1">
+              {[...ERASMUS_COUNTRIES]
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((c) => (
+                  <li key={c.code}>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={
+                          filters.country?.includes(c.code.toLowerCase()) ?? false
+                        }
+                        onChange={() =>
+                          toggleArray(
+                            'country',
+                            c.code.toLowerCase(),
+                            filters.country,
+                          )
+                        }
+                        className="w-4 h-4 accent-eu-blue"
+                      />
+                      <span className="text-sm">{c.name}</span>
+                    </label>
+                  </li>
+                ))}
+            </ul>
           </AccordionContent>
         </AccordionItem>
 

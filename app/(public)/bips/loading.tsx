@@ -5,7 +5,7 @@ export default function BipsLoading() {
     <div className="container mx-auto max-w-[1200px] px-4 lg:px-6 py-12 lg:py-16">
       <Skeleton className="h-10 w-64 mb-3" />
       <Skeleton className="h-5 w-96 mb-8" />
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-8">
         <aside className="hidden lg:block space-y-3">
           {Array.from({ length: 7 }).map((_, i) => (
             <Skeleton key={i} className="h-12 w-full" />

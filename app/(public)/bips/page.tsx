@@ -96,7 +96,7 @@ export default async function BipsPage(props: {
         </p>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-8">
         <aside className="hidden lg:block">
           {/* D-18: Suspense around useSearchParams consumer; stationary skeleton avoids CLS */}
           <Suspense fallback={<BipFiltersSidebarSkeleton />}>
