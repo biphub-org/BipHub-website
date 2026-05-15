@@ -25,16 +25,29 @@ export async function GET(request: Request) {
   const code = searchParams.get('code')
   const type = searchParams.get('type')
 
-  if (code) {
-    const supabase = await createClient()
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
-    if (!error) {
-      const destination =
-        type === 'recovery'
-          ? `${SITE_URL}/reset-password/update`
-          : `${SITE_URL}/onboarding`
-      return NextResponse.redirect(destination)
-    }
+  if (!code) {
+    console.error('[auth/callback] no code in querystring')
+    return NextResponse.redirect(`${SITE_URL}/login?error=verification_failed&reason=no_code`)
   }
-  return NextResponse.redirect(`${SITE_URL}/login?error=verification_failed`)
+
+  const supabase = await createClient()
+  const { error } = await supabase.auth.exchangeCodeForSession(code)
+  if (error) {
+    // Surface the real Supabase error to Vercel logs + a sanitized hint to the URL.
+    // Most common: missing code_verifier cookie (signup happened in a different
+    // browser/profile than the one that clicked the email link).
+    console.error('[auth/callback] exchangeCodeForSession failed:', {
+      status: error.status,
+      name: error.name,
+      message: error.message,
+    })
+    const reason = encodeURIComponent(error.message ?? 'exchange_failed').slice(0, 120)
+    return NextResponse.redirect(`${SITE_URL}/login?error=verification_failed&reason=${reason}`)
+  }
+
+  const destination =
+    type === 'recovery'
+      ? `${SITE_URL}/reset-password/update`
+      : `${SITE_URL}/onboarding`
+  return NextResponse.redirect(destination)
 }
