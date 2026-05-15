@@ -190,30 +190,35 @@ function HeroInner() {
       />
 
       <div className="relative mx-auto max-w-[820px] px-4 text-center md:px-6">
-        {/* Pill tag with pulsing "New" badge */}
+        {/* Pill tag with pulsing "New" badge. The outer div is the shimmer
+            trail: a conic-gradient at 1px thickness rotates a gold blob
+            around the pill border. The inner div masks everything except
+            that 1px ring with the section bg color. */}
         <m.div
-          className="mb-7 inline-flex items-center gap-2.5 rounded-pill border border-white/15 bg-white/5 px-4 py-1.5 backdrop-blur-sm"
+          className="mb-7 inline-block rounded-pill p-px pill-shimmer"
           variants={fadeUp}
           initial="hidden"
           animate="visible"
           transition={{ duration: 0.6, ease: EASE_OUT }}
         >
-          <m.span
-            className="rounded-pill bg-eu-gold px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.3px] text-ink"
-            animate={{
-              boxShadow: [
-                '0 0 0 0 rgba(255, 204, 0, 0.45)',
-                '0 0 0 8px rgba(255, 204, 0, 0)',
-                '0 0 0 0 rgba(255, 204, 0, 0)',
-              ],
-            }}
-            transition={{ duration: 2.4, repeat: Infinity, ease: 'easeOut' }}
-          >
-            New
-          </m.span>
-          <span className="text-[13px] font-medium text-white/80">
-            Free, open-source database for Erasmus+ BIPs
-          </span>
+          <div className="inline-flex items-center gap-2.5 rounded-pill bg-[#0a1735] px-4 py-1.5">
+            <m.span
+              className="rounded-pill bg-eu-gold px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.3px] text-ink"
+              animate={{
+                boxShadow: [
+                  '0 0 0 0 rgba(255, 204, 0, 0.45)',
+                  '0 0 0 8px rgba(255, 204, 0, 0)',
+                  '0 0 0 0 rgba(255, 204, 0, 0)',
+                ],
+              }}
+              transition={{ duration: 2.4, repeat: Infinity, ease: 'easeOut' }}
+            >
+              New
+            </m.span>
+            <span className="text-[13px] font-medium text-white/80">
+              Free, open-source database for Erasmus+ BIPs
+            </span>
+          </div>
         </m.div>
 
         {/* H1 — LCP-safe: opacity stays 1, only translates */}
