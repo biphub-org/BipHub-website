@@ -40,26 +40,16 @@ export function BipHeader({ bip }: { bip: BipDetail }) {
         )}
       </div>
 
-      {/* Subtitle: host university · host city, [flag] country */}
+      {/* Subtitle: [flag] host university · host city, country */}
       {host && (
-        <p className="flex flex-wrap items-center gap-x-1 text-base text-muted mb-4">
+        <p className="flex flex-wrap items-center gap-x-2 text-base text-muted mb-4">
+          {host.country && <CountryFlag code={host.country} width={20} />}
           <span>{host.name}</span>
           {(bip.host_city || countryName) && (
-            <>
-              <span aria-hidden="true">·</span>
-              {bip.host_city && (
-                <span>
-                  {bip.host_city}
-                  {countryName ? ',' : ''}
-                </span>
-              )}
-              {countryName && (
-                <span className="inline-flex items-center gap-1.5">
-                  {host.country && <CountryFlag code={host.country} width={18} />}
-                  <span>{countryName}</span>
-                </span>
-              )}
-            </>
+            <span>
+              {' · '}
+              {[bip.host_city, countryName].filter(Boolean).join(', ')}
+            </span>
           )}
         </p>
       )}
