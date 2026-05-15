@@ -3,7 +3,7 @@
 /**
  * MapKeyboardFallback — D-08 + UI-SPEC line 215.
  *
- * A visually shown <select> listing all 29 visible Erasmus+ countries.
+ * A visually shown <select> listing all 33 Erasmus+ programme countries.
  * On change, navigates to /bips?country=XX.
  *
  * This is ALWAYS rendered adjacent to the SVG, not screen-reader-only (WCAG requirement).
@@ -13,16 +13,7 @@
 import { useRouter } from 'next/navigation'
 import { ERASMUS_COUNTRIES } from '@/lib/countries'
 
-// 32 countries that appear on the map (EU-27 + IS + NO + MK + RS + TR).
-// LI is excluded — too small to render at 20M scale.
-const MAP_COUNTRIES = ERASMUS_COUNTRIES.filter((c) =>
-  [
-    'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE',
-    'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE',
-    'IS', 'NO',
-    'MK', 'RS', 'TR',
-  ].includes(c.code),
-)
+const MAP_COUNTRIES = ERASMUS_COUNTRIES
 
 export function MapKeyboardFallback() {
   const router = useRouter()

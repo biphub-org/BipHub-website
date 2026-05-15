@@ -3,8 +3,9 @@
  * Run once: npm run build:topojson
  *
  * Source: https://gisco-services.ec.europa.eu/distribution/v2/nuts/geojson/NUTS_RG_20M_2024_4326_LEVL_0.geojson
- * Filter: 32 visible Erasmus+ programme countries (EU-27 + IS + NO + MK + RS + TR).
- *   Excluded: LI (too small at 20M scale to render meaningfully).
+ * Filter: all 33 Erasmus+ programme countries (EU-27 + IS + LI + NO + MK + RS + TR).
+ *   Note: LI is tiny at 20M scale (~160 km²) but rendered for completeness so every
+ *   programme country has a hover/click target on the map.
  *
  * Code normalization: Eurostat uses 'EL' for Greece and 'UK' for the United Kingdom.
  * We map EL → GR so the choropleth keys match ISO 3166-1 alpha-2 used everywhere else
@@ -21,8 +22,8 @@ const GISCO_URL =
   'https://gisco-services.ec.europa.eu/distribution/v2/nuts/geojson/NUTS_RG_20M_2024_4326_LEVL_0.geojson'
 
 /**
- * Visible-on-map Erasmus+ countries (32). LI is too small at 20M scale to render
- * meaningfully — show via tooltip only if needed later.
+ * Visible-on-map Erasmus+ countries (33). LI is tiny at 20M scale but included
+ * so every programme country has a clickable target.
  *
  * Set contains ISO codes AND the Eurostat aliases (EL for Greece) so the filter
  * accepts source rows; the normalize step below rewrites the feature id back to
@@ -31,7 +32,7 @@ const GISCO_URL =
 const VISIBLE_COUNTRIES = new Set([
   'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'EL', 'HU', 'IE',
   'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE',
-  'IS', 'NO',
+  'IS', 'LI', 'NO',
   'MK', 'RS', 'TR',
 ])
 
@@ -93,12 +94,12 @@ async function main() {
       }),
   }
 
-  console.log(`Filtered to ${filtered.features.length} countries (expected 32)`)
+  console.log(`Filtered to ${filtered.features.length} countries (expected 33)`)
 
-  if (filtered.features.length < 28) {
+  if (filtered.features.length < 29) {
     throw new Error(
       `Unexpectedly few countries (${filtered.features.length}) — check GISCO data format.\n` +
-      `Expected ~32 visible Erasmus+ countries. Aborting to avoid writing bad TopoJSON.`,
+      `Expected ~33 visible Erasmus+ countries. Aborting to avoid writing bad TopoJSON.`,
     )
   }
 
