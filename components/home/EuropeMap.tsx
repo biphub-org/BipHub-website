@@ -9,10 +9,10 @@
  * 3. Renders a choropleth using @vnedyalk0v/react19-simple-maps.
  * 4. Applies 6 fixed tier fill classes via getTierForCount (Pitfall 13 — full literals).
  * 5. Shows tooltip on hover, navigates to /bips?country=XX on click.
- * 6. Renders MapLegend (5 swatches, tier-0 omitted) + MapKeyboardFallback below SVG.
+ * 6. Renders MapLegend (5 swatches, tier-0 omitted) below the SVG.
  *
- * Failure mode: if fetch('/eu-countries.json') fails, shows keyboard fallback only
- * with "Map unavailable — pick a country below." (UI-SPEC line 296).
+ * Failure mode: if fetch('/eu-countries.json') fails, shows a "Map unavailable"
+ * message with a link to /bips so users still have a path forward.
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react'
@@ -37,8 +37,8 @@ import {
   type Variants,
 } from 'motion/react'
 import { getTierForCount, TIERS } from '@/lib/map/bins'
+import Link from 'next/link'
 import { getCountryName, getCountryFlagEmoji } from '@/lib/countries'
-import { MapKeyboardFallback } from './MapKeyboardFallback'
 import { Eyebrow } from './Eyebrow'
 import { cn } from '@/lib/utils/cn'
 
@@ -130,14 +130,19 @@ export function EuropeMap({ countsByCountry }: EuropeMapProps) {
     setTooltip((prev) => ({ ...prev, visible: false }))
   }, [])
 
-  // Failure mode — show keyboard fallback only
+  // Failure mode — TopoJSON fetch failed; offer a path to the full listing.
   if (fetchError) {
     return (
-      <div className="rounded-lg border border-border bg-white p-8 shadow-md">
-        <p className="mb-4 text-center text-sm text-muted">
-          Map unavailable — pick a country below.
+      <div className="rounded-lg border border-border bg-white p-8 shadow-md text-center">
+        <p className="mb-4 text-sm text-muted">
+          Map unavailable. Browse the full list to filter by country.
         </p>
-        <MapKeyboardFallback />
+        <Link
+          href="/bips"
+          className="inline-flex items-center justify-center rounded-full bg-eu-blue px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-eu-blue-dark"
+        >
+          Browse all BIPs
+        </Link>
       </div>
     )
   }
@@ -305,14 +310,6 @@ export function EuropeMap({ countsByCountry }: EuropeMapProps) {
           <p className="mt-3 text-center text-[13px] text-muted">
             Hover to preview · Click to filter the BIP list by country
           </p>
-
-          {/* Keyboard-accessible country picker — ALWAYS rendered below the
-              SVG (FOUN-03 / D-08). Previously this only appeared in the
-              fetchError branch, so keyboard + screen-reader users had no way
-              to filter by country whenever the map loaded successfully. */}
-          <div className="mt-6 border-t border-border pt-4">
-            <MapKeyboardFallback />
-          </div>
         </div>
       </MotionConfig>
     </LazyMotion>

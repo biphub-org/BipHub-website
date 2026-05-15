@@ -1,15 +1,14 @@
 /**
- * Map → filter integration spec — Plan 04-07 Task 7 (D-14 map-filter scope +
- * FOUN-03 keyboard fallback).
+ * Map → filter integration spec — Plan 04-07 Task 7 (D-14 map-filter scope).
  *
  * Public-route spec (no storageState). Asserts that homepage map interactions
  * navigate to `/bips?country=<ISO-2>` and the listing reflects the filter.
  *
  * NOTE on country code casing: the plan example showed `country=de` (lower)
- * but the actual implementation in components/home/EuropeMap.tsx and
- * MapKeyboardFallback.tsx both navigate with uppercase ISO-2 codes (e.g.
- * `DE`), matching the country.code field in lib/countries.ts. We assert
- * case-insensitively so the spec is robust either way.
+ * but the actual implementation in components/home/EuropeMap.tsx navigates
+ * with uppercase ISO-2 codes (e.g. `DE`), matching the country.code field in
+ * lib/countries.ts. We assert case-insensitively so the spec is robust
+ * either way.
  */
 import { test, expect } from '@playwright/test'
 
@@ -37,18 +36,6 @@ test.describe('map-to-filter integration', () => {
     await expect(page.getByText(/germany/i).first()).toBeVisible({
       timeout: 5_000,
     })
-  })
-
-  test('keyboard select fallback filters by country', async ({ page }) => {
-    await page.goto('/')
-    // The fallback <select> lives inside EuropeMap, which is
-    // IntersectionObserver-gated — scroll #by-country into view first so the
-    // map (and its keyboard-fallback select) mount.
-    await page.locator('#by-country').scrollIntoViewIfNeeded()
-    const select = page.getByLabel(/filter by country/i)
-    await select.scrollIntoViewIfNeeded()
-    await select.selectOption({ label: 'Germany' })
-    await page.waitForURL(/\/bips\?country=de/i, { timeout: 5_000 })
   })
 
   test('clearing the country filter returns to /bips', async ({ page }) => {
