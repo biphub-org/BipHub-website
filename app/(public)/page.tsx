@@ -34,6 +34,7 @@ import { UniversityCTA } from '@/components/home/UniversityCTA'
 // EuropeMapWrapper is a 'use client' component that hosts the dynamic({ ssr: false }) import.
 // Next.js 15 requires ssr:false dynamic() to live in a client component boundary.
 import { EuropeMapWrapper } from '@/components/home/EuropeMapWrapper'
+import { TopCountriesMobile } from '@/components/home/TopCountriesMobile'
 // Plan 04-05 (FOUN-07): fires the post-deletion Sonner toast on /?deleted=1 and
 // strips the param from the URL. Wrapped in <Suspense> because useSearchParams
 // requires a Suspense boundary in Next.js 15.
@@ -100,10 +101,17 @@ export default async function HomePage() {
       {/* DISC-01: Hero with gold underline accent */}
       <Hero />
 
-      {/* DISC-02: Interactive Europe choropleth map (ssr:false via EuropeMapWrapper client boundary) */}
+      {/* DISC-02: Browse-by-country — choropleth on desktop, top-countries pill grid on mobile.
+          The map is hidden below md because 29 microscopic countries + no touch hover doesn't
+          serve discovery, and skipping the 1.2 MB chunk on mobile is a real LCP win. */}
       <section id="by-country" className="bg-bg-soft py-16 border-t border-b border-border md:py-24">
         <div className="mx-auto max-w-[1200px] px-4 md:px-6">
-          <EuropeMapWrapper countsByCountry={countsByCountry} />
+          <div className="hidden md:block">
+            <EuropeMapWrapper countsByCountry={countsByCountry} />
+          </div>
+          <div className="md:hidden">
+            <TopCountriesMobile countsByCountry={countsByCountry} />
+          </div>
         </div>
       </section>
 
