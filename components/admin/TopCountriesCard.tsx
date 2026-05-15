@@ -7,11 +7,11 @@
  */
 
 import { Globe } from 'lucide-react'
+import { CountryFlag } from '@/components/ui/country-flag'
 
 interface CountryEntry {
   country: string
   code: string
-  flag: string | null
   count: number
 }
 
@@ -38,9 +38,10 @@ export function TopCountriesCard({ entries, description }: Props) {
               key={entry.code}
               className="flex items-center justify-between text-sm"
             >
-              <span className="truncate font-semibold text-ink">
-                {idx + 1}. {entry.flag ? `${entry.flag} ` : ''}
-                {entry.country}
+              <span className="flex min-w-0 items-center gap-2 truncate font-semibold text-ink">
+                <span>{idx + 1}.</span>
+                <CountryFlag code={entry.code} width={18} />
+                <span className="truncate">{entry.country}</span>
               </span>
               <span className="text-muted">
                 {entry.count} BIP{entry.count === 1 ? '' : 's'}

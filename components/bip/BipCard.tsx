@@ -21,9 +21,10 @@ import {
   IconLanguage,
 } from '@tabler/icons-react'
 import type { BipWithRelations } from '@/lib/types/bip'
-import { getCountryFlagEmoji, getCountryName } from '@/lib/countries'
+import { getCountryName } from '@/lib/countries'
 import { ISCED_FIELD_BY_ID } from '@/lib/isced'
 import { BookmarkHeartIsland } from './BookmarkHeartIsland'
+import { CountryFlag } from '@/components/ui/country-flag'
 import { cn } from '@/lib/utils/cn'
 
 /** 3 gradient variants for the card header — keyed by bip.id mod 3 */
@@ -40,7 +41,6 @@ interface BipCardProps {
 export function BipCard({ bip }: BipCardProps) {
   const gradientClass = GRADIENT_VARIANTS[hashId(bip.id) % 3]
   const country = bip.host_university?.country ?? ''
-  const flagEmoji = country ? getCountryFlagEmoji(country) : ''
   const countryName = country ? getCountryName(country) : ''
   const fieldLabel = bip.subject_area
     ? (ISCED_FIELD_BY_ID[bip.subject_area as keyof typeof ISCED_FIELD_BY_ID]?.label ?? bip.subject_area)
@@ -70,11 +70,12 @@ export function BipCard({ bip }: BipCardProps) {
         {country && (
           <span
             className={cn(
-              'absolute left-3 top-3 flex items-center gap-1 rounded-pill px-2.5 py-1',
+              'absolute left-3 top-3 flex items-center gap-1.5 rounded-pill px-2.5 py-1',
               'bg-white/90 text-[11px] font-semibold text-ink backdrop-blur-sm',
             )}
           >
-            {flagEmoji} {countryName}
+            <CountryFlag code={country} width={16} />
+            {countryName}
           </span>
         )}
 

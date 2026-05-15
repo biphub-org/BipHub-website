@@ -22,11 +22,7 @@
  *   for v1's <500-BIP scale per `.planning/research/SUMMARY.md`.
  */
 import { createClient } from '@/lib/supabase/server'
-import {
-  ERASMUS_COUNTRIES,
-  getCountryName,
-  getCountryFlagEmoji,
-} from '@/lib/countries'
+import { ERASMUS_COUNTRIES, getCountryName } from '@/lib/countries'
 
 export type AdminAnalytics = {
   totalBips: number
@@ -34,7 +30,6 @@ export type AdminAnalytics = {
   topCountries: Array<{
     country: string
     code: string
-    flag: string | null
     count: number
   }>
 }
@@ -45,12 +40,11 @@ function startOfMonthIso(): string {
   return start.toISOString()
 }
 
-function lookupCountry(code: string): { name: string; flag: string | null } {
+function lookupCountry(code: string): { name: string } {
   const upper = code.toUpperCase()
   const known = ERASMUS_COUNTRIES.find((c) => c.code === upper)
   return {
     name: known?.name ?? getCountryName(upper),
-    flag: getCountryFlagEmoji(upper) || null,
   }
 }
 
@@ -105,8 +99,8 @@ export async function getAdminAnalytics(): Promise<AdminAnalytics> {
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5)
       .map(([code, count]) => {
-        const { name, flag } = lookupCountry(code)
-        return { country: name, code, flag, count }
+        const { name } = lookupCountry(code)
+        return { country: name, code, count }
       })
   } else if (countryError) {
     console.error('[getAdminAnalytics] top-countries error:', countryError.message)

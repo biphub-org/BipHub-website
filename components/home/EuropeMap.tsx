@@ -38,7 +38,8 @@ import {
 } from 'motion/react'
 import { getTierForCount, TIERS } from '@/lib/map/bins'
 import Link from 'next/link'
-import { getCountryName, getCountryFlagEmoji } from '@/lib/countries'
+import { getCountryName } from '@/lib/countries'
+import { CountryFlag } from '@/components/ui/country-flag'
 import { Eyebrow } from './Eyebrow'
 import { cn } from '@/lib/utils/cn'
 
@@ -215,8 +216,9 @@ export function EuropeMap({ countsByCountry }: EuropeMapProps) {
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.15, ease: 'easeOut' }}
                 >
-                  <strong className="block text-[14px] font-semibold">
-                    {getCountryFlagEmoji(tooltip.countryCode)} {tooltip.countryName}
+                  <strong className="flex items-center gap-1.5 text-[14px] font-semibold">
+                    <CountryFlag code={tooltip.countryCode} width={18} />
+                    {tooltip.countryName}
                   </strong>
                   <span className="text-eu-gold font-semibold">
                     {tooltip.count > 0
