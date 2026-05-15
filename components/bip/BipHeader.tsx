@@ -1,5 +1,6 @@
 import { getCountryName } from '@/lib/countries'
 import type { BipDetail } from '@/lib/queries/bipDetail'
+import { CountryFlag } from '@/components/ui/country-flag'
 import { cn } from '@/lib/utils/cn'
 
 /**
@@ -39,14 +40,25 @@ export function BipHeader({ bip }: { bip: BipDetail }) {
         )}
       </div>
 
-      {/* Subtitle: host university · host city, country */}
+      {/* Subtitle: host university · host city, [flag] country */}
       {host && (
-        <p className="text-base text-muted mb-4">
-          {host.name}
+        <p className="flex flex-wrap items-center gap-x-1 text-base text-muted mb-4">
+          <span>{host.name}</span>
           {(bip.host_city || countryName) && (
             <>
-              {' · '}
-              {[bip.host_city, countryName].filter(Boolean).join(', ')}
+              <span aria-hidden="true">·</span>
+              {bip.host_city && (
+                <span>
+                  {bip.host_city}
+                  {countryName ? ',' : ''}
+                </span>
+              )}
+              {countryName && (
+                <span className="inline-flex items-center gap-1.5">
+                  {host.country && <CountryFlag code={host.country} width={18} />}
+                  <span>{countryName}</span>
+                </span>
+              )}
             </>
           )}
         </p>
