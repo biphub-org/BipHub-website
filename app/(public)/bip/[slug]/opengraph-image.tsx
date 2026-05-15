@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { getBipBySlug } from '@/lib/queries/bipDetail'
-import { getCountryName, isErasmusCountry } from '@/lib/countries'
+import { getCountryName } from '@/lib/countries'
 
 /**
  * Per-BIP OpenGraph image — 1200×630 PNG rendered by Satori (next/og).
@@ -21,8 +21,8 @@ import { getCountryName, isErasmusCountry } from '@/lib/countries'
  *   - "BipHub" wordmark top-left
  *   - Left column: BIP title (max 90 chars) + university + city/country
  *   - Gold accent bar under city line (CONTEXT.md "Specifics" recommendation)
- *   - Right column: country flag SVG (read from public/flags/ at request time;
- *     embedded as a base64 data URI because Satori renders <img> via URI/buffer)
+ *   - Right column: country name set large in white (Satori does not yet
+ *     support SVG <img> and Inter has no flag-emoji glyphs, so text it is)
  *   - Bottom-left: ECTS chip (gold pill)
  *   - Bottom-right: biphub.eu domain
  */
@@ -85,21 +85,6 @@ export default async function Image({
   const host = bip.host_university
   const countryName = host?.country ? getCountryName(host.country) : ''
   const cityLine = [bip.host_city ?? host?.city, countryName].filter(Boolean).join(', ')
-
-  // Country flag SVG → base64 data URI. The Unicode emoji approach renders as
-  // letter pairs in Inter (no flag glyph coverage), so we ship the SVG instead.
-  // Failing gracefully (e.g. unknown country, file missing) just drops the flag.
-  let flagDataUri: string | null = null
-  if (host?.country && isErasmusCountry(host.country)) {
-    try {
-      const svg = await readFile(
-        join(process.cwd(), 'public', 'flags', `${host.country.toUpperCase()}.svg`),
-      )
-      flagDataUri = `data:image/svg+xml;base64,${svg.toString('base64')}`
-    } catch {
-      flagDataUri = null
-    }
-  }
 
   return new ImageResponse(
     (
@@ -191,24 +176,30 @@ export default async function Image({
           />
         </div>
 
-        {/* Right column: country flag SVG (read from public/flags/ at request time) */}
+        {/* Right column: country name set large (Satori doesn't render SVG <img>
+            and Inter has no flag-emoji glyphs — so text fills the slot instead). */}
         <div
           style={{
             display: 'flex',
+            flexDirection: 'column',
             width: '40%',
             alignItems: 'center',
             justifyContent: 'center',
+            textAlign: 'center',
           }}
         >
-          {flagDataUri && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={flagDataUri}
-              alt=""
-              width={300}
-              height={200}
-              style={{ borderRadius: 12, boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}
-            />
+          {countryName && (
+            <div
+              style={{
+                fontSize: 72,
+                fontWeight: 700,
+                color: 'rgba(255,255,255,0.95)',
+                letterSpacing: '-1.5px',
+                lineHeight: 1.05,
+              }}
+            >
+              {countryName}
+            </div>
           )}
         </div>
 
