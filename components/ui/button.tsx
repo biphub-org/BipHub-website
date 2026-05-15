@@ -75,6 +75,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <Comp
         ref={ref}
+        // Browser extensions (Bitdefender TrafficLight, password managers, form
+        // fillers) inject `fdprocessedid` on every <button> after SSR but
+        // before hydration. Silence the dev warning so the console isn't
+        // drowned; real users without that extension never see a mismatch.
+        suppressHydrationWarning
         className={cn(
           'inline-flex items-center justify-center font-semibold whitespace-nowrap rounded-pill',
           'transition-all duration-200 ease-out disabled:pointer-events-none disabled:opacity-50',

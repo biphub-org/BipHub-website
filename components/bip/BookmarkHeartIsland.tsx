@@ -39,6 +39,11 @@ export function BookmarkHeartIsland({ slug }: BookmarkHeartIslandProps) {
   return (
     <button
       type="button"
+      // Some browser extensions (Bitdefender TrafficLight, form-filler password
+      // managers) inject `fdprocessedid` on every <button> after SSR but before
+      // hydration. Real users without that extension never see a mismatch; we
+      // silence the dev warning so it doesn't drown the console.
+      suppressHydrationWarning
       aria-label={filled ? 'Remove from bookmarks' : 'Add to bookmarks'}
       aria-pressed={filled}
       onClick={(e) => {
