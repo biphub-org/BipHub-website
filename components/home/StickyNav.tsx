@@ -32,9 +32,8 @@ import {
 
 const NAV_LINKS = [
   { href: '/bips', label: 'Browse BIPs' },
-  { href: '/#by-country', label: 'By country' },
-  { href: '/#how-it-works', label: 'How it works' },
   { href: '/what-is-a-bip', label: 'What is a BIP?' },
+  { href: '/guides', label: 'Guides' },
 ] as const
 
 interface StickyNavProps {
@@ -60,9 +59,7 @@ export function StickyNav({ hasClaims = false, initials = null }: StickyNavProps
         <ul className="hidden items-center gap-6 md:flex">
           {NAV_LINKS.map((link) => {
             const active =
-              link.href.startsWith('/#')
-                ? false
-                : pathname === link.href || pathname.startsWith(link.href + '/')
+              pathname === link.href || pathname.startsWith(link.href + '/')
             return (
               <li key={link.href}>
                 <Link

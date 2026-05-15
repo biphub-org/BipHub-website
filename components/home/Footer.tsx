@@ -36,6 +36,7 @@ export function Footer() {
             <ul className="mt-4 space-y-2 text-sm">
               <li><Link href="/bips" className="text-white/80 transition-colors hover:text-eu-gold">Browse BIPs</Link></li>
               <li><Link href="/what-is-a-bip" className="text-white/80 transition-colors hover:text-eu-gold">What is a BIP?</Link></li>
+              <li><Link href="/guides" className="text-white/80 transition-colors hover:text-eu-gold">Guides</Link></li>
             </ul>
           </div>
 
@@ -47,6 +48,7 @@ export function Footer() {
             <ul className="mt-4 space-y-2 text-sm">
               <li><Link href="/register" className="text-white/80 transition-colors hover:text-eu-gold">List your BIP</Link></li>
               <li><Link href="/login" className="text-white/80 transition-colors hover:text-eu-gold">Sign in</Link></li>
+              <li><Link href="/guides/for-coordinators" className="text-white/80 transition-colors hover:text-eu-gold">Coordinator guide</Link></li>
             </ul>
           </div>
 
@@ -56,7 +58,9 @@ export function Footer() {
               Project
             </h2>
             <ul className="mt-4 space-y-2 text-sm">
+              <li><Link href="/about" className="text-white/80 transition-colors hover:text-eu-gold">About</Link></li>
               <li><Link href="/privacy" className="text-white/80 transition-colors hover:text-eu-gold">Privacy policy</Link></li>
+              <li><Link href="/terms" className="text-white/80 transition-colors hover:text-eu-gold">Terms of service</Link></li>
               <li>
                 <a
                   href="https://github.com/biphub/biphub"
