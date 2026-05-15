@@ -42,25 +42,53 @@ export function Hero() {
   return (
     <LazyMotion features={domAnimation} strict>
       <MotionConfig reducedMotion="user">
-        <section className="relative overflow-hidden bg-bg-hero border-b border-border pt-24 pb-20">
-          {/* Floating radial accent — top blue blob */}
+        <section
+          className="relative overflow-hidden border-b border-border pt-24 pb-20"
+          style={{
+            // Layered background, painted bottom-up:
+            //   1. soft warm base
+            //   2. blue mesh radiating from top-center
+            //   3. gold mesh radiating from bottom-right
+            //   4. 24px dot grid in faint EU blue for texture
+            backgroundColor: '#f7f9fd',
+            backgroundImage: [
+              'radial-gradient(ellipse 80% 55% at 50% 0%, rgba(0, 51, 153, 0.11) 0%, transparent 60%)',
+              'radial-gradient(ellipse 55% 45% at 92% 100%, rgba(255, 204, 0, 0.14) 0%, transparent 60%)',
+              'radial-gradient(rgba(0, 51, 153, 0.08) 1px, transparent 1px)',
+            ].join(', '),
+            backgroundSize: 'auto, auto, 24px 24px',
+            backgroundPosition: '0 0, 0 0, 0 0',
+          }}
+        >
+          {/* Soft white fade at the bottom 1/3 so the dot grid doesn't fight
+              the content baseline against the next section. */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3"
+            style={{
+              background:
+                'linear-gradient(to bottom, transparent 0%, #ffffff 100%)',
+            }}
+          />
+
+          {/* Floating animated accent — top blue blob, drifts vertically */}
           <m.div
             aria-hidden="true"
             className="pointer-events-none absolute left-1/2 top-[-200px] h-[1000px] w-[1000px] -translate-x-1/2 rounded-full"
             style={{
               background:
-                'radial-gradient(circle, rgba(0, 51, 153, 0.06) 0%, transparent 60%)',
+                'radial-gradient(circle, rgba(0, 51, 153, 0.07) 0%, transparent 60%)',
             }}
             animate={{ y: [0, 14, 0] }}
             transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
           />
-          {/* Floating radial accent — bottom-right gold blob */}
+          {/* Floating animated accent — bottom-right gold blob */}
           <m.div
             aria-hidden="true"
             className="pointer-events-none absolute bottom-[-100px] right-[-100px] h-[400px] w-[400px]"
             style={{
               background:
-                'radial-gradient(circle, rgba(255, 204, 0, 0.08) 0%, transparent 70%)',
+                'radial-gradient(circle, rgba(255, 204, 0, 0.10) 0%, transparent 70%)',
             }}
             animate={{ y: [0, -18, 0], x: [0, 8, 0] }}
             transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut' }}
