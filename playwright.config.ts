@@ -12,6 +12,16 @@
  */
 import { defineConfig, devices } from '@playwright/test'
 
+// Load .env.local so the Playwright test process has the same Supabase env the
+// dev server reads — auth.spec.ts calls the Supabase admin API directly via
+// process.env.NEXT_PUBLIC_SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY. CI injects
+// these through $GITHUB_ENV instead, so .env.local is absent there — ignore it.
+try {
+  process.loadEnvFile('.env.local')
+} catch {
+  // .env.local not present (CI) — env comes from the runner environment.
+}
+
 const PORT = 3000
 const BASE_URL = `http://localhost:${PORT}`
 
@@ -68,10 +78,15 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: 'npm run dev',
+    // Run the suite against a PRODUCTION build, not `next dev`. `next dev`
+    // compiles each route on first hit (multi-second cold-compile), which made
+    // first-navigation assertions flaky across the suite (submission wizard,
+    // onboarding, the map). A prebuilt `next start` server has every route
+    // ready — fast and stable — and is closer to what actually ships.
+    command: 'npm run build && npm run start',
     url: BASE_URL,
     reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
+    timeout: 240_000,
     env: {
       // E2E mode: blank Resend key triggers console-log fallback (D-15).
       RESEND_API_KEY: '',
