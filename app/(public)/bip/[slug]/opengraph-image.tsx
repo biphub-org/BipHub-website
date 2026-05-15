@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { getBipBySlug } from '@/lib/queries/bipDetail'
-import { getCountryFlagEmoji, getCountryName } from '@/lib/countries'
+import { getCountryName, isErasmusCountry } from '@/lib/countries'
 
 /**
  * Per-BIP OpenGraph image — 1200×630 PNG rendered by Satori (next/og).
@@ -21,7 +21,8 @@ import { getCountryFlagEmoji, getCountryName } from '@/lib/countries'
  *   - "BipHub" wordmark top-left
  *   - Left column: BIP title (max 90 chars) + university + city/country
  *   - Gold accent bar under city line (CONTEXT.md "Specifics" recommendation)
- *   - Right column: country flag emoji (140px)
+ *   - Right column: country flag SVG (read from public/flags/ at request time;
+ *     embedded as a base64 data URI because Satori renders <img> via URI/buffer)
  *   - Bottom-left: ECTS chip (gold pill)
  *   - Bottom-right: biphub.eu domain
  */
@@ -82,9 +83,23 @@ export default async function Image({
   }
 
   const host = bip.host_university
-  const flag = host?.country ? getCountryFlagEmoji(host.country) : ''
   const countryName = host?.country ? getCountryName(host.country) : ''
   const cityLine = [bip.host_city ?? host?.city, countryName].filter(Boolean).join(', ')
+
+  // Country flag SVG → base64 data URI. The Unicode emoji approach renders as
+  // letter pairs in Inter (no flag glyph coverage), so we ship the SVG instead.
+  // Failing gracefully (e.g. unknown country, file missing) just drops the flag.
+  let flagDataUri: string | null = null
+  if (host?.country && isErasmusCountry(host.country)) {
+    try {
+      const svg = await readFile(
+        join(process.cwd(), 'public', 'flags', `${host.country.toUpperCase()}.svg`),
+      )
+      flagDataUri = `data:image/svg+xml;base64,${svg.toString('base64')}`
+    } catch {
+      flagDataUri = null
+    }
+  }
 
   return new ImageResponse(
     (
@@ -176,17 +191,25 @@ export default async function Image({
           />
         </div>
 
-        {/* Right column: country flag emoji */}
+        {/* Right column: country flag SVG (read from public/flags/ at request time) */}
         <div
           style={{
             display: 'flex',
             width: '40%',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: 140,
           }}
         >
-          {flag}
+          {flagDataUri && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={flagDataUri}
+              alt=""
+              width={300}
+              height={200}
+              style={{ borderRadius: 12, boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}
+            />
+          )}
         </div>
 
         {/* Bottom-left: ECTS gold chip */}
