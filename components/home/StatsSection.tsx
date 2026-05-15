@@ -34,16 +34,20 @@ interface StatsSectionProps {
   stats: Stats
 }
 
+// Subtitle copy under each stat card. These are intentionally NOT real deltas —
+// computing a real "new this month" delta needs additional queries (`created_at`
+// filter on universities), and faking it with the total count ("+19 this month"
+// when 19 is the total) was actively misleading.
 const STAT_CONFIGS = [
   {
     key: 'bipsListed' as const,
     label: 'BIPs listed',
-    delta: 'Growing fast',
+    delta: 'Across Europe',
   },
   {
     key: 'universities' as const,
     label: 'Universities',
-    delta: (n: number) => `+${n} this month`,
+    delta: 'Hosts and partners',
   },
   {
     key: 'countries' as const,
@@ -53,7 +57,7 @@ const STAT_CONFIGS = [
   {
     key: 'openApplications' as const,
     label: 'Open applications',
-    delta: 'Deadline within 60 days',
+    delta: 'Accepting students now',
   },
 ]
 
@@ -118,11 +122,7 @@ export function StatsSection({ stats }: StatsSectionProps) {
                   key={cfg.key}
                   value={stats[cfg.key]}
                   label={cfg.label}
-                  delta={
-                    typeof cfg.delta === 'function'
-                      ? cfg.delta(stats[cfg.key])
-                      : cfg.delta
-                  }
+                  delta={cfg.delta}
                   isInView={isInView}
                   prefersReducedMotion={prefersReducedMotion ?? false}
                 />

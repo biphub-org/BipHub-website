@@ -143,7 +143,7 @@ export function Hero() {
                 Browse all BIPs
               </Link>
               <Link
-                href="/login"
+                href="/register"
                 className={cn(
                   'inline-flex h-12 items-center justify-center gap-2 rounded-pill px-7 text-base font-semibold whitespace-nowrap',
                   'bg-transparent text-ink border border-border transition-all duration-200 ease-out',
@@ -163,8 +163,8 @@ export function Hero() {
               animate="visible"
               transition={{ duration: 0.6, ease: EASE_OUT, delay: 0.45 }}
             >
-              <TrustItem label="Erasmus+ verified" />
-              <TrustItem label="Fully funded" />
+              <TrustItem label="33 programme countries" />
+              <TrustItem label="Fully funded by Erasmus+" />
               <TrustItem label="Open source" />
             </m.div>
 
