@@ -27,7 +27,11 @@ import {
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
 
 // AUTH-03: sign in with email + password. Validates server-side then signs in.
-// On success, redirects to /dashboard (Next.js redirect throws — never returns).
+// On success, redirects to /dashboard (or /onboarding when the profile is
+// incomplete, or /admin when the role is admin) — Next.js redirect throws,
+// never returns. Routing decision is made here so the browser doesn't bounce
+// through /dashboard's layout before being re-redirected, which previously
+// caused a visible white screen between server navigations (Plan 02-02 D-05).
 export async function signInAction(formData: FormData): Promise<{ error?: string }> {
   const parsed = loginSchema.safeParse({
     email: formData.get('email'),
@@ -54,6 +58,30 @@ export async function signInAction(formData: FormData): Promise<{ error?: string
     }
     return { error: 'Something went wrong. Please try again.' }
   }
+
+  // Pick the final destination here so we skip the /dashboard → /onboarding
+  // redirect bounce, which previously left the browser blank between two
+  // server navigations. Mirrors the same profile-complete check that
+  // (dashboard)/layout.tsx runs.
+  const { data: claimsData } = await supabase.auth.getClaims()
+  const claims = claimsData?.claims
+
+  if (claims?.sub) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name, university_id, contact_email, erasmus_code')
+      .eq('id', claims.sub)
+      .maybeSingle()
+
+    const isComplete = Boolean(
+      profile?.full_name &&
+        profile?.university_id &&
+        profile?.contact_email &&
+        profile?.erasmus_code,
+    )
+    redirect(isComplete ? '/dashboard' : '/onboarding')
+  }
+
   redirect('/dashboard')
 }
 
