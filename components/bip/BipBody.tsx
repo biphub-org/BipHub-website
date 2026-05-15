@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { getCountryName } from '@/lib/countries'
 import type { BipDetail } from '@/lib/queries/bipDetail'
+import { CountryFlag } from '@/components/ui/country-flag'
 import { cn } from '@/lib/utils/cn'
 
 /**
@@ -109,14 +110,14 @@ export function BipBody({ bip }: { bip: BipDetail }) {
             {partners.map((partner) => {
               if (partner.university) {
                 // Registered partner with FK
-                const partnerCountry = partner.university.country
-                  ? getCountryName(partner.university.country)
-                  : null
+                const code = partner.university.country
+                const partnerCountry = code ? getCountryName(code) : null
                 return (
                   <span
                     key={partner.id}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-pill bg-eu-blue-50 text-eu-blue text-sm font-semibold"
                   >
+                    {code && <CountryFlag code={code} width={16} />}
                     {partner.university.name}
                     {partnerCountry && ` (${partnerCountry})`}
                   </span>
@@ -125,14 +126,14 @@ export function BipBody({ bip }: { bip: BipDetail }) {
 
               // Free-text raw partner — show with "(unverified)" subscript (UI-SPEC line 276)
               if (partner.partner_name_raw) {
-                const rawCountry = partner.partner_country_raw
-                  ? getCountryName(partner.partner_country_raw)
-                  : null
+                const code = partner.partner_country_raw
+                const rawCountry = code ? getCountryName(code) : null
                 return (
                   <span
                     key={partner.id}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-pill bg-eu-blue-50 text-eu-blue text-sm font-semibold"
                   >
+                    {code && <CountryFlag code={code} width={16} />}
                     {partner.partner_name_raw}
                     {rawCountry && ` (${rawCountry})`}
                     <span className="text-xs font-normal text-muted ml-0.5">(unverified)</span>
