@@ -305,6 +305,14 @@ export function EuropeMap({ countsByCountry }: EuropeMapProps) {
           <p className="mt-3 text-center text-[13px] text-muted">
             Hover to preview · Click to filter the BIP list by country
           </p>
+
+          {/* Keyboard-accessible country picker — ALWAYS rendered below the
+              SVG (FOUN-03 / D-08). Previously this only appeared in the
+              fetchError branch, so keyboard + screen-reader users had no way
+              to filter by country whenever the map loaded successfully. */}
+          <div className="mt-6 border-t border-border pt-4">
+            <MapKeyboardFallback />
+          </div>
         </div>
       </MotionConfig>
     </LazyMotion>
