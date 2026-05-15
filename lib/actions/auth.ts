@@ -113,6 +113,38 @@ export async function signUpAction(formData: FormData): Promise<{ error?: string
   redirect('/verify-email?email=' + encodeURIComponent(parsed.data.email))
 }
 
+// Resend the signup verification email for users who didn't receive (or lost) the
+// first one. Validates the email server-side so the button on /verify-email can't
+// be repurposed to spam arbitrary addresses. Mirrors signUpAction's emailRedirectTo
+// so the PKCE callback lands the same way.
+//
+// T-02-02-05 (user-enumeration): always return { success: true } even when Supabase
+// reports an error, so a bad-actor probing this endpoint can't tell whether an
+// email is registered. We still log internally.
+//
+// Supabase rate-limits verification emails (2/hour on the built-in mailer); if
+// that's the underlying error, the user will simply not receive a new email but
+// the UI message stays generic.
+export async function resendVerificationAction(
+  formData: FormData,
+): Promise<{ error?: string; success?: true }> {
+  const email = String(formData.get('email') ?? '').trim().toLowerCase()
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { error: 'Enter a valid email address.' }
+  }
+
+  const supabase = await createClient()
+  const { error } = await supabase.auth.resend({
+    type: 'signup',
+    email,
+    options: { emailRedirectTo: `${SITE_URL}/auth/callback` },
+  })
+  if (error) {
+    console.error('[resendVerificationAction] supabase error:', error.message)
+  }
+  return { success: true }
+}
+
 // AUTH-04: sign out from any page. revalidatePath('/', 'layout') busts the
 // (public) layout's getClaims cache so the next render reflects the signed-out state.
 export async function signOutAction(): Promise<void> {
