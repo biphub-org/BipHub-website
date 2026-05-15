@@ -50,7 +50,10 @@ test.describe('auth flow', () => {
     }
 
     const userListResp = await request.get(
-      `${supabaseUrl}/auth/v1/admin/users?filter=email eq.${NEW_USER.email}`,
+      // GoTrue's admin `filter` param is a plain substring search — NOT
+      // PostgREST `eq.` syntax. Pass the email as the search term, then match
+      // the exact row in the results (the throwaway email is unique per run).
+      `${supabaseUrl}/auth/v1/admin/users?filter=${encodeURIComponent(NEW_USER.email)}`,
       {
         headers: {
           apikey: serviceRoleKey,
@@ -59,8 +62,10 @@ test.describe('auth flow', () => {
       },
     )
     expect(userListResp.ok()).toBeTruthy()
-    const userList = (await userListResp.json()) as { users?: Array<{ id: string }> }
-    const userId = userList.users?.[0]?.id
+    const userList = (await userListResp.json()) as {
+      users?: Array<{ id: string; email: string }>
+    }
+    const userId = userList.users?.find((u) => u.email === NEW_USER.email)?.id
     expect(userId).toBeTruthy()
     const confirmResp = await request.put(
       `${supabaseUrl}/auth/v1/admin/users/${userId}`,
@@ -129,30 +134,27 @@ test.describe('auth flow', () => {
     // deletion is the explicit purpose of this test. (See seed.e2e.sql.)
     const accountEmail = 'e2e-coordinator-fresh@biphub.test'
 
-    // Sign in. The fresh user has no profile row → lands on /onboarding.
+    // Sign in. The fresh user has no profile row → always lands on /onboarding.
     await page.goto('/login')
     await page.getByLabel(/email/i).fill(accountEmail)
     await page.getByLabel(/password/i).fill('Fresh!Test1')
     await page.getByRole('button', { name: /sign in/i }).click()
-    await page.waitForURL(/\/(dashboard|onboarding)/, { timeout: 10_000 })
+    await page.waitForURL(/\/onboarding/, { timeout: 10_000 })
 
-    // Settings page requires a profile-complete coordinator — the fresh
-    // user hits the (dashboard) layout's profile-complete gate which
-    // bounces back to /onboarding. Complete the onboarding form first.
-    if (/\/onboarding/.test(page.url())) {
-      await page.getByLabel(/full name/i).fill('E2E Fresh Coordinator')
-      // UniversityCombobox: open and pick the first option.
-      await page.getByLabel(/university/i).click()
-      // Wait for the combobox panel and pick TUM (always present from seed.sql).
-      await page.getByRole('option').first().click()
-      // Erasmus code is optional in some shapes; fill if visible.
-      const erasmusInput = page.getByLabel(/erasmus.*code/i)
-      if (await erasmusInput.isVisible().catch(() => false)) {
-        await erasmusInput.fill('TEST FRESH01')
-      }
-      await page.getByRole('button', { name: /save|continue|finish/i }).click()
-      await page.waitForURL(/\/dashboard/, { timeout: 10_000 })
-    }
+    // Settings sits behind the (dashboard) layout's profile-complete gate, so
+    // complete onboarding first. Locators match components/dashboard/
+    // OnboardingForm.tsx + UniversityCombobox.tsx.
+    await page.getByLabel(/full name/i).fill('E2E Fresh Coordinator')
+    // UniversityCombobox is a role="combobox" trigger button — opening it shows
+    // the pre-fetched universities immediately (no typing needed); pick the first.
+    await page
+      .getByRole('combobox', { name: /search by university/i })
+      .click()
+    await page.getByRole('option').first().click()
+    // Picking a university auto-fills Country; Erasmus code is still required.
+    await page.getByLabel(/erasmus code/i).fill('TEST FRESH01')
+    await page.getByRole('button', { name: /complete profile/i }).click()
+    await page.waitForURL(/\/dashboard/, { timeout: 10_000 })
 
     await page.goto('/dashboard/settings')
     await expect(

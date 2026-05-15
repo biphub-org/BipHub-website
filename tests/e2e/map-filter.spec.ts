@@ -18,9 +18,10 @@ test.describe('map-to-filter integration', () => {
     page,
   }) => {
     await page.goto('/')
-    // EuropeMap (components/home/EuropeMap.tsx) renders the choropleth
-    // role="application" with aria-label.
-    // Wait for it to hydrate (Phase 1 D-05: dynamic + ssr:false).
+    // EuropeMapWrapper is IntersectionObserver-gated (defers the 1.2MB d3-geo
+    // chunk for perf) — scroll the #by-country section into view to trigger
+    // the dynamic import, then wait for the choropleth to hydrate.
+    await page.locator('#by-country').scrollIntoViewIfNeeded()
     await page
       .getByRole('application', { name: /choropleth map/i })
       .waitFor({ state: 'visible', timeout: 15_000 })
@@ -40,7 +41,10 @@ test.describe('map-to-filter integration', () => {
 
   test('keyboard select fallback filters by country', async ({ page }) => {
     await page.goto('/')
-    // The fallback <select> is the labelled combobox "Filter by country".
+    // The fallback <select> lives inside EuropeMap, which is
+    // IntersectionObserver-gated — scroll #by-country into view first so the
+    // map (and its keyboard-fallback select) mount.
+    await page.locator('#by-country').scrollIntoViewIfNeeded()
     const select = page.getByLabel(/filter by country/i)
     await select.scrollIntoViewIfNeeded()
     await select.selectOption({ label: 'Germany' })
