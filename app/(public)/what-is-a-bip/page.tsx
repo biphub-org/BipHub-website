@@ -144,9 +144,15 @@ export default function WhatIsABipPage() {
             {HERO_STATS.map((s) => (
               <div
                 key={s.label}
-                className="rounded-lg border border-white/15 bg-white/5 p-5 backdrop-blur-sm"
+                className="group relative overflow-hidden rounded-lg border border-white/15 bg-white/5 p-5 backdrop-blur-sm transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-eu-gold/40 hover:bg-white/[0.08] hover:shadow-[0_8px_24px_rgba(0,0,0,0.25)]"
               >
-                <div className="flex items-baseline gap-1.5">
+                {/* Soft gold halo on hover */}
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-eu-gold/0 opacity-0 blur-2xl transition-all duration-500 group-hover:bg-eu-gold/20 group-hover:opacity-100"
+                />
+
+                <div className="relative flex items-baseline gap-1.5">
                   <span
                     className="font-bold text-white"
                     style={{
@@ -161,7 +167,7 @@ export default function WhatIsABipPage() {
                     {s.unit}
                   </span>
                 </div>
-                <div className="mt-2 text-[13px] font-medium text-white/70">
+                <div className="relative mt-2 text-[13px] font-medium text-white/70 transition-colors duration-300 group-hover:text-white/90">
                   {s.label}
                 </div>
               </div>
@@ -172,7 +178,7 @@ export default function WhatIsABipPage() {
 
       {/* === Article body === */}
       <div className="container mx-auto max-w-[1200px] px-4 lg:px-6 py-16 lg:py-24">
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[200px_1fr]">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[220px_1fr]">
           {/* Desktop-only jump-link sidebar with active-section tracking */}
           <aside className="hidden lg:block">
             <PageSidebar sections={SECTIONS} />
