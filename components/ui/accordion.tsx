@@ -32,6 +32,11 @@ function AccordionTrigger({
     <AccordionPrimitive.Header className="flex">
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
+        // Some browser extensions (Bitdefender TrafficLight, password
+        // managers) inject `fdprocessedid` on every <button> after SSR but
+        // before hydration. Silence the warning at the wrapper level so it
+        // covers all accordion triggers (filters sidebar, FAQ, etc.).
+        suppressHydrationWarning
         className={cn(
           "group/accordion-trigger relative flex flex-1 items-start justify-between rounded-lg border border-transparent py-2.5 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:after:border-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground",
           className

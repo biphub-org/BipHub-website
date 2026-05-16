@@ -5,10 +5,20 @@ import { useDebouncedCallback } from 'use-debounce'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { IconSearch, IconX } from '@tabler/icons-react'
 
-export function BipSearchBar({ initialQ }: { initialQ: string }) {
+type Variant = 'inline' | 'hero'
+
+interface BipSearchBarProps {
+  initialQ: string
+  /** Visual variant. `hero` is the pill-shaped, larger input designed to sit
+   *  on a dark hero band as the page's centerpiece. Defaults to `inline`. */
+  variant?: Variant
+}
+
+export function BipSearchBar({ initialQ, variant = 'inline' }: BipSearchBarProps) {
   const router = useRouter()
   const params = useSearchParams()
   const [value, setValue] = useState(initialQ)
+  const isHero = variant === 'hero'
 
   const commit = useDebouncedCallback((next: string) => {
     const p = new URLSearchParams(params)
@@ -23,13 +33,17 @@ export function BipSearchBar({ initialQ }: { initialQ: string }) {
   }, [initialQ])
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <label htmlFor="bip-search" className="sr-only">
         Search BIPs
       </label>
       <IconSearch
-        size={18}
-        className="absolute left-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
+        size={isHero ? 18 : 18}
+        className={
+          isHero
+            ? 'pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-eu-blue'
+            : 'pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted'
+        }
         aria-hidden="true"
       />
       <input
@@ -40,8 +54,16 @@ export function BipSearchBar({ initialQ }: { initialQ: string }) {
           setValue(e.target.value)
           commit(e.target.value)
         }}
-        placeholder="Search by title, university, or keyword"
-        className="w-full pl-10 pr-10 py-3 text-base border border-border rounded-md bg-white focus-visible:ring-2 focus-visible:ring-eu-blue focus-visible:outline-none"
+        placeholder={
+          isHero
+            ? 'Search by topic, university, or city'
+            : 'Search by title, university, or keyword'
+        }
+        className={
+          isHero
+            ? 'w-full rounded-full border-2 border-eu-blue-100 bg-white py-3 pl-11 pr-11 text-[15px] font-medium text-ink shadow-[0_4px_20px_rgba(10,23,53,0.12)] placeholder:text-muted focus-visible:border-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-eu-gold'
+            : 'w-full rounded-md border border-border bg-white py-3 pl-10 pr-10 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-eu-blue'
+        }
       />
       {value && (
         <button
@@ -50,9 +72,13 @@ export function BipSearchBar({ initialQ }: { initialQ: string }) {
             commit('')
           }}
           aria-label="Clear search"
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-ink"
+          className={
+            isHero
+              ? 'absolute right-4 top-1/2 -translate-y-1/2 text-muted hover:text-ink'
+              : 'absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-ink'
+          }
         >
-          <IconX size={18} aria-hidden="true" />
+          <IconX size={isHero ? 18 : 18} aria-hidden="true" />
         </button>
       )}
     </div>
