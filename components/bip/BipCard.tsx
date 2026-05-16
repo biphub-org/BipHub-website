@@ -103,6 +103,7 @@ export function BipCard({ bip }: BipCardProps) {
               'absolute bottom-3 left-3 rounded-pill border border-eu-gold',
               'bg-white/90 px-2 py-1 text-[10px] font-semibold text-ink-2',
             )}
+            title="This BIP is sample data shown while BipHub launches. Real listings replace these as universities submit."
           >
             Demo data
           </span>

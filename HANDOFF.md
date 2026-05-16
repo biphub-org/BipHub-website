@@ -25,11 +25,14 @@
 
 1. **Custom SMTP in Supabase Auth.** The built-in mailer is throttled to ~2 emails/hour. Verification + password-reset will fail for the third concurrent user. Walk-through (incomplete) lives at `https://supabase.com/dashboard/project/zbvcpiwbopmfbjfhzprw/auth/templates → SMTP Settings`. User skipped Resend signup mid-session — the friction was domain verification (`noreply@biphub.eu` is hardcoded in `lib/email/send.ts:100` but user doesn't own that domain). **Options when this resumes**: (a) buy `biphub.eu` and verify in Resend, (b) change the sender in `lib/email/send.ts` to `noreply@hexonasystems.com` and verify that.
 
-2. **Demo data decision.** All 20 launch BIPs have `is_seed=true` so every card shows a "Demo data" pill. My recommendation (stated to user, not yet acted on): keep them as-is — honest disclosure, ages out naturally when real submissions come in. User has not committed.
-
-3. **End-to-end smoke** never run against hosted: admin approves a real coordinator submission, coordinator gets the email. Will fail at the email step until SMTP is set up; `lib/email/send.ts` falls back to `console.log` when `RESEND_API_KEY` is unset (Phase 3 D-15).
+2. **End-to-end smoke** never run against hosted: admin approves a real coordinator submission, coordinator gets the email. Will fail at the email step until SMTP is set up; `lib/email/send.ts` falls back to `console.log` when `RESEND_API_KEY` is unset (Phase 3 D-15).
 
 ---
+
+## Locked decisions this session
+
+- **Demo data: keep as-is.** All 20 launch BIPs stay `is_seed=true` with the per-card + per-detail "Demo data" pill. Ages out automatically as real submissions land (real BIPs ship `is_seed=false`). Don't strip the pill and don't try to replace the 20 with real BIPs until the erasmusbip.org ToS review or coordinator outreach completes — both still open per CLAUDE.md. Tooltip parity added on `BipCard` so hover surfaces the launch-context explanation the same way `BipHeader` already does.
+- **Favicon.** `app/icon.svg` matches `LogoMark` (navy `#003399` rounded square, 11-star gold ring, white "B"). Auto-served via Next.js App Router file convention; no `<link>` injection needed. `apple-icon.png` and legacy `.ico` intentionally deferred.
 
 ## Polish queue (won't block launch)
 
@@ -99,6 +102,5 @@
 1. Resume SMTP setup (4-step walkthrough is in conversation history; pick a domain first).
 2. Once SMTP works, run the admin-approve smoke test end-to-end.
 3. Knock out Lighthouse + axe sweeps.
-4. Decide on demo-data treatment.
 
 After that the v1 launch list is empty.
