@@ -2,8 +2,8 @@
  * Homepage — DISC-01 through DISC-07.
  *
  * Async RSC that fetches all homepage data server-side, then passes typed props
- * to each section component. Client islands (EuropeMap, CategoriesBar, StatsSection,
- * BookmarkHeartIsland) receive pre-fetched data as props.
+ * to each section component. Client islands (EuropeMap, CategoriesBar, StatsSection)
+ * receive pre-fetched data as props.
  *
  * Architecture: Pattern 1 from ARCHITECTURE.md — RSC data fetcher + client island props.
  *

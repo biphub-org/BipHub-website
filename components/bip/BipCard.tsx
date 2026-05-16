@@ -1,15 +1,12 @@
 /**
  * BipCard — UI-SPEC line 332.
  *
- * RSC with a single 'use client' island for the bookmark heart (BookmarkHeartIsland).
- * All other rendering is server-side.
+ * Pure RSC (no client islands).
  *
  * Visual:
  *   - 1px border, 16px radius (rounded-lg), overflow-hidden
  *   - 140px gradient header (3 variants keyed off bip.id mod 3)
  *   - Country flag pill top-left, gold deadline pill top-right
- *   - "Demo data" mini-pill bottom-left on gradient header (when is_seed === true)
- *   - BookmarkHeartIsland top-right inside header alongside deadline pill
  *   - Body: field tag chip, 2-line clamped title, university name, meta row
  *   - Hover: border → eu-blue, translateY(-2px), shadow-md (CSS only, reduced-motion safe)
  */
@@ -23,7 +20,6 @@ import {
 import type { BipWithRelations } from '@/lib/types/bip'
 import { getCountryName } from '@/lib/countries'
 import { ISCED_FIELD_BY_ID } from '@/lib/isced'
-import { BookmarkHeartIsland } from './BookmarkHeartIsland'
 import { CountryFlag } from '@/components/ui/country-flag'
 import { cn } from '@/lib/utils/cn'
 
@@ -79,33 +75,17 @@ export function BipCard({ bip }: BipCardProps) {
           </span>
         )}
 
-        {/* Top-right: BookmarkHeart + deadline pill */}
-        <div className="absolute right-3 top-3 flex items-center gap-1.5">
-          <BookmarkHeartIsland slug={bip.slug} />
-          {deadlineFormatted && (
-            <span
-              className={cn(
-                'rounded-pill px-2.5 py-1 text-[11px] font-semibold',
-                isExpired
-                  ? 'bg-white/70 text-muted'
-                  : 'bg-eu-gold text-ink',
-              )}
-            >
-              {isExpired ? 'Closed' : deadlineFormatted}
-            </span>
-          )}
-        </div>
-
-        {/* Demo data pill — bottom-left of header (D-16) */}
-        {bip.is_seed && (
+        {/* Top-right: deadline pill */}
+        {deadlineFormatted && (
           <span
             className={cn(
-              'absolute bottom-3 left-3 rounded-pill border border-eu-gold',
-              'bg-white/90 px-2 py-1 text-[10px] font-semibold text-ink-2',
+              'absolute right-3 top-3 rounded-pill px-2.5 py-1 text-[11px] font-semibold',
+              isExpired
+                ? 'bg-white/70 text-muted'
+                : 'bg-eu-gold text-ink',
             )}
-            title="This BIP is sample data shown while BipHub launches. Real listings replace these as universities submit."
           >
-            Demo data
+            {isExpired ? 'Closed' : deadlineFormatted}
           </span>
         )}
       </div>

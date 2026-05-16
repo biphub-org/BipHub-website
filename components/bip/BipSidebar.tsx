@@ -4,7 +4,6 @@ import type { BipDetail } from '@/lib/queries/bipDetail'
 import { DeadlineBadge } from '@/components/bip/DeadlineBadge'
 import { BipApplyCta } from '@/components/bip/BipApplyCta'
 import { ShareButton } from '@/components/bip/ShareButton'
-import { BookmarkHeartIsland } from '@/components/bip/BookmarkHeartIsland'
 
 /**
  * BipSidebar — sticky 340px right column at lg+ (D-09 / UI-SPEC line 357).
@@ -13,16 +12,16 @@ import { BookmarkHeartIsland } from '@/components/bip/BookmarkHeartIsland'
  *   - Deadline countdown chip (DeadlineBadge)
  *   - Apply CTA button (full sidebar width, BipApplyCta)        ← public mode only
  *   - Key facts list (ECTS / Dates / Language / CEFR / City) — DETL-05
- *   - Action row: ShareButton + BookmarkHeartIsland             ← public mode only
+ *   - Action row: ShareButton                                   ← public mode only
  *
  * Sticky offset: top-[88px] accounts for 68px StickyNav + 20px breathing room.
  * Hidden on mobile (hidden lg:block) — mobile uses BipMobileApplyBar.
  *
  * Mode (Plan 03-03):
  *   - 'public' (default): unchanged Phase 1 behaviour.
- *   - 'admin-review': suppresses the Apply CTA AND the Share/Bookmark
- *     action row — admins viewing a pending submission must not be able
- *     to apply or bookmark from inside the review surface.
+ *   - 'admin-review': suppresses the Apply CTA AND the Share action row —
+ *     admins viewing a pending submission must not be able to apply from
+ *     inside the review surface.
  */
 export type BipSidebarMode = 'public' | 'admin-review'
 
@@ -95,11 +94,10 @@ export function BipSidebar({
           </dl>
         </div>
 
-        {/* Action row: Share + Bookmark. Suppressed in admin-review mode. */}
+        {/* Action row: Share. Suppressed in admin-review mode. */}
         {!isAdminReview && (
-          <div className="mt-6 pt-6 border-t border-border flex items-center gap-2">
+          <div className="mt-6 pt-6 border-t border-border">
             <ShareButton title={bip.title} url={url} />
-            <BookmarkHeartIsland slug={bip.slug} />
           </div>
         )}
       </div>

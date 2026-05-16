@@ -6,7 +6,6 @@ import { cn } from '@/lib/utils/cn'
 /**
  * BipHeader — RSC. Renders the BIP page hero area:
  *   - h1 with BIP title
- *   - "Demo data" pill (D-16) when bip.is_seed = true
  *   - Subtitle: host university · host city, country
  *   - Badge chips: 🌱 Green travel eligible, ♿ Inclusion support (UI-SPEC line 283)
  *
@@ -20,25 +19,14 @@ export function BipHeader({ bip }: { bip: BipDetail }) {
 
   return (
     <header className="mb-8">
-      {/* Title row + Demo data pill */}
-      <div className="flex flex-wrap items-start gap-3 mb-3">
-        <h1
-          className={cn(
-            'text-3xl lg:text-[44px] font-bold text-ink tracking-tight',
-            'leading-[1.15]',
-          )}
-        >
-          {bip.title}
-        </h1>
-        {bip.is_seed && (
-          <span
-            className="inline-flex items-center px-3 py-1 rounded-pill text-xs font-semibold bg-eu-gold-soft text-ink-2 border border-eu-gold self-start mt-1"
-            title="This BIP is sample data shown while BipHub launches. Real listings replace these as universities submit."
-          >
-            Demo data
-          </span>
+      <h1
+        className={cn(
+          'mb-3 text-3xl lg:text-[44px] font-bold text-ink tracking-tight',
+          'leading-[1.15]',
         )}
-      </div>
+      >
+        {bip.title}
+      </h1>
 
       {/* Subtitle: [flag] host university · host city, country */}
       {host && (
